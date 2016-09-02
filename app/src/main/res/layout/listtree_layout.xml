@@ -48,7 +48,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/btnLike"
-                android:src="@drawable/hearticon"
+                android:src="@drawable/icon_emptyheart"
+                android:layout_alignParentRight="true"
+                android:background="@null"
+                android:layout_centerInParent="true" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnDisLike"
+                android:src="@drawable/icon_hearticon"
                 android:layout_alignParentRight="true"
                 android:background="@null"
                 android:layout_centerInParent="true" />

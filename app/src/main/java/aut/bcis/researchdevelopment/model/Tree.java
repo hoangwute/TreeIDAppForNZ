@@ -10,8 +10,10 @@ public class Tree {
     private String genus;
     private String firstPicture;
     private int liked;
+    private int id;
 
-    public Tree(String commonName, String latinName, String family, String genus, String firstPicture, int liked) {
+    public Tree(int id, String commonName, String latinName, String family, String genus, String firstPicture, int liked) {
+        this.id = id;
         this.commonName = commonName;
         this.latinName = latinName;
         this.family = family;
@@ -28,6 +30,14 @@ public class Tree {
     }
 
     public Tree() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getCommonName() {

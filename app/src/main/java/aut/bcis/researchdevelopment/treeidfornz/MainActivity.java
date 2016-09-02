@@ -2,12 +2,16 @@ package aut.bcis.researchdevelopment.treeidfornz;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TabHost;
@@ -21,10 +25,15 @@ import aut.bcis.researchdevelopment.model.Tree;
 public class MainActivity extends AppCompatActivity {
     private TabHost tabHost;
     private SearchView searchView;
+    public static SQLiteDatabase database = null;
+    //--------------------------------------------------------------------------
     private ListView lvTreeList;
     private TreeAdapter treeAdapter;
-    private ArrayList<Tree> treeList;
-    public static SQLiteDatabase database = null;
+    private ArrayList<Object> treeList;
+    private CheckBox chkFamily, chkGenus;
+    private ImageButton btnFavourite;
+    public static boolean favouriteSelected = false;
+    //---------------------------------------------------------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,14 +42,15 @@ public class MainActivity extends AppCompatActivity {
         Database.getDatabaseFromAssets(MainActivity.this);
         addControls();
         addEvents();
-        handleDisplayAllTrees();
+        displayAllTreesSortedBy("CommonName");
     }
 
     private void addControls() {
+        //----------------------tabhost initiation--------------------------------
         tabHost = (TabHost)findViewById(R.id.tabHost);
         tabHost.setup();
         TabHost.TabSpec tab1 = tabHost.newTabSpec("t1");
-        tab1.setIndicator("",getResources().getDrawable(R.drawable.like));
+        tab1.setIndicator("",getResources().getDrawable(R.drawable.icon_like));
         tab1.setContent(R.id.tab1);
         TabHost.TabSpec tab2 = tabHost.newTabSpec("t2");
         tab2.setIndicator("bb");
@@ -55,27 +65,67 @@ public class MainActivity extends AppCompatActivity {
         tabHost.addTab(tab2);
         tabHost.addTab(tab3);
         tabHost.addTab(tab4);
-
+        //-----------------------list view initiation------------------------------
         lvTreeList = (ListView) findViewById(R.id.lvTreeList);
         treeList = new ArrayList<>();
-        treeAdapter = new TreeAdapter(MainActivity.this, R.layout.tree, treeList);
+        treeAdapter = new TreeAdapter(MainActivity.this, treeList);
         lvTreeList.setAdapter(treeAdapter);
+        //-----------------------other views initiation----------------------------
+        btnFavourite = (ImageButton) findViewById(R.id.btnFavourite);
+        chkFamily = (CheckBox) findViewById(R.id.chkFamily);
+        chkGenus = (CheckBox) findViewById(R.id.chkGenus);
     }
 
-    private void handleDisplayAllTrees() {
-        lvTreeList.setAdapter(treeAdapter);
+    private void displayAllTreesSortedBy(String sortType) {
+        int cursorCounter = 0;
         treeList.clear();
+        treeAdapter = new TreeAdapter(MainActivity.this, treeList); //this line fixes search bug occurred when changes the button
+        lvTreeList.setAdapter(treeAdapter);
         database = openOrCreateDatabase(Database.DATABASE_NAME, MODE_PRIVATE, null);
-        Cursor cursor = database.rawQuery("SELECT * FROM Tree ORDER BY CommonName", null);
+        Cursor cursor = database.rawQuery("SELECT * FROM Tree ORDER BY " + sortType, null);
         while(cursor.moveToNext()) {
-            int ID = cursor.getInt(cursor.getColumnIndex("ID"));
+            switch(sortType) {
+                case "CommonName":
+                    Utility.generateAlphabeticalHeaders(treeList, cursorCounter);
+                    break;
+                case "Family":
+                    Utility.generateFamilyHeaders(treeList, cursorCounter);
+                    break;
+                case "Genus":
+                    Utility.generateGenusHeaders(treeList, cursorCounter);
+                    break;
+            }
+            int Id = cursor.getInt(cursor.getColumnIndex("ID"));
             String commonName = cursor.getString(cursor.getColumnIndex("CommonName"));
             String latinName = cursor.getString(cursor.getColumnIndex("LatinName"));
             String family = cursor.getString(cursor.getColumnIndex("Family"));
             String genus = cursor.getString(cursor.getColumnIndex("Genus"));
             int isLiked = cursor.getInt(cursor.getColumnIndex("Liked"));
             String picturePath = cursor.getString(cursor.getColumnIndex("PicturePath"));
-            treeList.add(new Tree(commonName, latinName, family, genus, picturePath, isLiked));
+            treeList.add(new Tree(Id, commonName, latinName, family, genus, picturePath, isLiked));
+            ++cursorCounter;
+        }
+        cursor.close();
+        treeAdapter.notifyDataSetChanged();
+    }
+
+    private void displayAllFavouriteTrees() {
+        int cursorCounter = 0;
+        treeList.clear();
+        treeAdapter = new TreeAdapter(MainActivity.this, treeList); //this line fixes search bug occurred when changes the button
+        lvTreeList.setAdapter(treeAdapter);
+        database = openOrCreateDatabase(Database.DATABASE_NAME, MODE_PRIVATE, null);
+        Cursor cursor = database.rawQuery("SELECT * FROM Tree WHERE Liked = 1 ORDER BY CommonName", null);
+        while(cursor.moveToNext()) {
+            int Id = cursor.getInt(cursor.getColumnIndex("ID"));
+            String commonName = cursor.getString(cursor.getColumnIndex("CommonName"));
+            String latinName = cursor.getString(cursor.getColumnIndex("LatinName"));
+            String family = cursor.getString(cursor.getColumnIndex("Family"));
+            String genus = cursor.getString(cursor.getColumnIndex("Genus"));
+            int isLiked = cursor.getInt(cursor.getColumnIndex("Liked"));
+            String picturePath = cursor.getString(cursor.getColumnIndex("PicturePath"));
+            treeList.add(new Tree(Id, commonName, latinName, family, genus, picturePath, isLiked));
+            ++cursorCounter;
         }
         cursor.close();
         treeAdapter.notifyDataSetChanged();
@@ -94,12 +144,93 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if(tabId.equalsIgnoreCase("t3")) {
                     searchView.setVisibility(View.VISIBLE);
+                    if(favouriteSelected)
+                        displayAllFavouriteTrees();
+                    else
+                        displayTreeBasedOnCheckedBox();
                 }
                 if(tabId.equalsIgnoreCase("t4")) {
                     searchView.setVisibility(View.INVISIBLE);
                 }
             }
         });
+        chkGenus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked && chkFamily.isChecked()) { //only 1 button can be selected at once
+                    chkFamily.setChecked(false);
+                    displayTreesBasedOnState("Genus");
+                }
+                else if(!isChecked && !chkFamily.isChecked()) {
+                    displayTreesBasedOnState("CommonName");
+                }
+                else
+                    displayTreesBasedOnState("Genus");
+            }
+        });
+        chkFamily.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked && chkGenus.isChecked()) { //only 1 button can be selected at once
+                    chkGenus.setChecked(false);
+                    displayTreesBasedOnState("Family");
+                }
+                else if(!isChecked && !chkGenus.isChecked()) {
+                    displayTreesBasedOnState("CommonName");
+                }
+                else
+                    displayTreesBasedOnState("Family");
+            }
+        });
+        btnFavourite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(favouriteSelected == false) {
+                    displayAllFavouriteTrees();
+                    favouriteSelected = true;
+                    btnFavourite.setBackgroundColor(Color.GRAY);
+                    chkGenus.setEnabled(false);
+                    chkFamily.setEnabled(false);
+                }
+                else {
+                    displayTreeBasedOnCheckedBox();
+                    favouriteSelected = false;
+                    btnFavourite.setBackgroundColor(Color.WHITE);
+                    chkGenus.setEnabled(true);
+                    chkFamily.setEnabled(true);
+                }
+            }
+        });
+
+    }
+    private void displayTreesBasedOnState(String sortType) {
+        if(favouriteSelected == false) {
+            displayAllTreesSortedBy(sortType);
+        }
+        else
+            displayAllFavouriteTrees();
+    }
+//    private void displayFavouriteTreeBasedOnCheckedBox() {
+//        if(!chkFamily.isChecked() && !chkGenus.isChecked()) {
+//            displayAllFavouriteTreesSortedBy("CommonName");
+//        }
+//        else if(chkFamily.isChecked()) {
+//            displayAllFavouriteTreesSortedBy("Family");
+//        }
+//        else if(chkGenus.isChecked()) {
+//            displayAllFavouriteTreesSortedBy("Genus");
+//        }
+//    }
+    private void displayTreeBasedOnCheckedBox() {
+        if(!chkFamily.isChecked() && !chkGenus.isChecked()) {
+            displayAllTreesSortedBy("CommonName");
+        }
+        else if(chkFamily.isChecked()) {
+            displayAllTreesSortedBy("Family");
+        }
+        else if(chkGenus.isChecked()) {
+            displayAllTreesSortedBy("Genus");
+        }
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

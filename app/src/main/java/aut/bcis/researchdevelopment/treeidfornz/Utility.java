@@ -8,6 +8,9 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+
+import aut.bcis.researchdevelopment.model.ListHeader;
 
 /**
  * Created by VS9 X64Bit on 28/08/2016.
@@ -79,55 +82,312 @@ public class Utility {
         return BitmapFactory.decodeFile(path, options);
     }
 
+    public static void generateAlphabeticalHeaders(ArrayList<Object> treeList, int cursorCounter) {
+        switch(cursorCounter) {
+            case 0:
+                treeList.add(new ListHeader("A"));
+                break;
+            case 1:
+                treeList.add(new ListHeader("H"));
+                break;
+            case 4:
+                treeList.add(new ListHeader("K"));
+                break;
+            case 17:
+                treeList.add(new ListHeader("M"));
+                break;
+            case 23:
+                treeList.add(new ListHeader("N"));
+                break;
+            case 26:
+                treeList.add(new ListHeader("P"));
+                break;
+            case 32:
+                treeList.add(new ListHeader("R"));
+                break;
+            case 35:
+                treeList.add(new ListHeader("S"));
+                break;
+            case 36:
+                treeList.add(new ListHeader("T"));
+                break;
+            case 48:
+                treeList.add(new ListHeader("W"));
+                break;
+        }
+    }
+
+    public static void generateFamilyHeaders(ArrayList<Object> treeList, int cursorCounter) {
+        switch(cursorCounter) {
+            case 0:
+                treeList.add(new ListHeader("Araliaceae"));
+                break;
+            case 3:
+                treeList.add(new ListHeader("Araucariaceae"));
+                break;
+            case 4:
+                treeList.add(new ListHeader("Arecaceae"));
+                break;
+            case 5:
+                treeList.add(new ListHeader("Asteraceae"));
+                break;
+            case 6:
+                treeList.add(new ListHeader("Atherospermataceae"));
+                break;
+            case 7:
+                treeList.add(new ListHeader("Carpodetaceae"));
+                break;
+            case 8:
+                treeList.add(new ListHeader("Corynocarpaceae"));
+                break;
+            case 9:
+                treeList.add(new ListHeader("Cunoniaceae"));
+                break;
+            case 10:
+                treeList.add(new ListHeader("Elaeocarpaceae"));
+                break;
+            case 12:
+                treeList.add(new ListHeader("Fabaceae"));
+                break;
+            case 13:
+                treeList.add(new ListHeader("Griseliniaceae"));
+                break;
+            case 14:
+                treeList.add(new ListHeader("Lamiaceae"));
+                break;
+            case 15:
+                treeList.add(new ListHeader("Lauraceae"));
+                break;
+            case 17:
+                treeList.add(new ListHeader("Laxmanniaceae"));
+                break;
+            case 18:
+                treeList.add(new ListHeader("Malvaceae"));
+                break;
+            case 19:
+                treeList.add(new ListHeader("Meliaceae"));
+                break;
+            case 20:
+                treeList.add(new ListHeader("Monimiaceae"));
+                break;
+            case 21:
+                treeList.add(new ListHeader("Myrsinaceae"));
+                break;
+            case 22:
+                treeList.add(new ListHeader("Myrtaceae"));
+                break;
+            case 27:
+                treeList.add(new ListHeader("Nothofagaceae"));
+                break;
+            case 32:
+                treeList.add(new ListHeader("Onagraceae"));
+                break;
+            case 33:
+                treeList.add(new ListHeader("Pennantiaceae"));
+                break;
+            case 34:
+                treeList.add(new ListHeader("Piperaceae"));
+                break;
+            case 35:
+                treeList.add(new ListHeader("Pittosporaceae"));
+                break;
+            case 38:
+                treeList.add(new ListHeader("Podocarpaceae"));
+                break;
+            case 43:
+                treeList.add(new ListHeader("Proteaceae"));
+                break;
+            case 44:
+                treeList.add(new ListHeader("Prumnopityaceae"));
+                break;
+            case 45:
+                treeList.add(new ListHeader("Sapindaceae"));
+                break;
+            case 47:
+                treeList.add(new ListHeader("Scrophulariaceae"));
+                break;
+            case 48:
+                treeList.add(new ListHeader("Violaceae"));
+                break;
+
+        }
+    }
+
+    public static void generateGenusHeaders(ArrayList<Object> treeList, int cursorCounter) {
+        switch(cursorCounter) {
+            case 0:
+                treeList.add(new ListHeader("Agathis"));
+                break;
+            case 1:
+                treeList.add(new ListHeader("Alectryon"));
+                break;
+            case 2:
+                treeList.add(new ListHeader("Aristotelia"));
+                break;
+            case 3:
+                treeList.add(new ListHeader("Beilschmiedia"));
+                break;
+            case 5:
+                treeList.add(new ListHeader("Brachyglottis"));
+                break;
+            case 6:
+                treeList.add(new ListHeader("Carpodetus"));
+                break;
+            case 7:
+                treeList.add(new ListHeader("Cordyline"));
+                break;
+            case 8:
+                treeList.add(new ListHeader("Corynocarpus"));
+                break;
+            case 9:
+                treeList.add(new ListHeader("Dacrycarpus"));
+                break;
+            case 10:
+                treeList.add(new ListHeader("Dacrydium"));
+                break;
+            case 11:
+                treeList.add(new ListHeader("Dodonaea"));
+                break;
+            case 12:
+                treeList.add(new ListHeader("Dysoxylum"));
+                break;
+            case 13:
+                treeList.add(new ListHeader("Elaeocarpus"));
+                break;
+            case 14:
+                treeList.add(new ListHeader("Fuchsia"));
+                break;
+            case 15:
+                treeList.add(new ListHeader("Fuscospora"));
+                break;
+            case 18:
+                treeList.add(new ListHeader("Griselinia"));
+                break;
+            case 19:
+                treeList.add(new ListHeader("Hedycarya"));
+                break;
+            case 20:
+                treeList.add(new ListHeader("Hoheria"));
+                break;
+            case 21:
+                treeList.add(new ListHeader("Knightia"));
+                break;
+            case 22:
+                treeList.add(new ListHeader("Kunzea"));
+                break;
+            case 23:
+                treeList.add(new ListHeader("Laurelia"));
+                break;
+            case 24:
+                treeList.add(new ListHeader("Leptospermum"));
+                break;
+            case 25:
+                treeList.add(new ListHeader("Lophozonia"));
+                break;
+            case 26:
+                treeList.add(new ListHeader("Macropiper"));
+                break;
+            case 27:
+                treeList.add(new ListHeader("Melicytus"));
+                break;
+            case 28:
+                treeList.add(new ListHeader("Metrosideros"));
+                break;
+            case 31:
+                treeList.add(new ListHeader("Myoporum"));
+                break;
+            case 32:
+                treeList.add(new ListHeader("Myrsine"));
+                break;
+            case 33:
+                treeList.add(new ListHeader("Nothofagus"));
+                break;
+            case 34:
+                treeList.add(new ListHeader("Pennantia"));
+                break;
+            case 35:
+                treeList.add(new ListHeader("Phyllocladus"));
+                break;
+            case 36:
+                treeList.add(new ListHeader("Pittosporum"));
+                break;
+            case 39:
+                treeList.add(new ListHeader("Podocarpus"));
+                break;
+            case 40:
+                treeList.add(new ListHeader("Prumnopitys"));
+                break;
+            case 42:
+                treeList.add(new ListHeader("Pseudopanax"));
+                break;
+            case 44:
+                treeList.add(new ListHeader("Rhopalostylis"));
+                break;
+            case 45:
+                treeList.add(new ListHeader("Schefflera"));
+                break;
+            case 46:
+                treeList.add(new ListHeader("Sophora"));
+                break;
+            case 47:
+                treeList.add(new ListHeader("Vitex"));
+                break;
+            case 48:
+                treeList.add(new ListHeader("Weinmannia"));
+                break;
+
+        }
+    }
+
     public void archievedUpdatePicture(Context mContext) {
-        updateReportPicture(1, R.drawable.tikouka, mContext);
-        updateReportPicture(2, R.drawable.nikau, mContext);
-//        updateReportPicture(3, R.drawable.puriri);
-//        updateReportPicture(4, R.drawable.mapou);
-//        updateReportPicture(5, R.drawable.sevenfinger);
-//        updateReportPicture(6, R.drawable.fivefinger);
-//        updateReportPicture(7, R.drawable.kawakawa);
-//        updateReportPicture(8, R.drawable.northernrata);
-//        updateReportPicture(9, R.drawable.southernrata);
-//        updateReportPicture(10, R.drawable.pohutukawa);
-//        updateReportPicture(11, R.drawable.kamahi);
-//        updateReportPicture(12, R.drawable.pukatea);
-//        updateReportPicture(13, R.drawable.wineberry);
-//        updateReportPicture(14, R.drawable.pigeonwood);
-//        updateReportPicture(15, R.drawable.kohekohe);
-//        updateReportPicture(16, R.drawable.kaikomako);
-//        updateReportPicture(17, R.drawable.houherelacebark);
-//        updateReportPicture(18, R.drawable.horoekalancewood);
-//        updateReportPicture(19, R.drawable.honeysuckle);
-//        updateReportPicture(20, R.drawable.mahoe);
-//        updateReportPicture(21, R.drawable.ngaio);
-//        updateReportPicture(22, R.drawable.hinau);
-//        updateReportPicture(23, R.drawable.titoki);
-//        updateReportPicture(24, R.drawable.tanekaha);
-//        updateReportPicture(25, R.drawable.hardbeech);
-//        updateReportPicture(26, R.drawable.redbeech);
-//        updateReportPicture(27, R.drawable.silverbeech);
-//        updateReportPicture(28, R.drawable.marbleleaf);
-//        updateReportPicture(29, R.drawable.kowhai);
-//        updateReportPicture(30, R.drawable.matai);
-//        updateReportPicture(31, R.drawable.miro);
-//        updateReportPicture(32, R.drawable.whitepine);
-//        updateReportPicture(33, R.drawable.rimu);
-//        updateReportPicture(34, R.drawable.blackbeech);
-//        updateReportPicture(35, R.drawable.moutainbeech);
-//        updateReportPicture(36, R.drawable.totara);
-//        updateReportPicture(37, R.drawable.kapuka);
-//        updateReportPicture(38, R.drawable.karaka);
-//        updateReportPicture(39, R.drawable.rangiora);
-//        updateReportPicture(40, R.drawable.taraire);
-//        updateReportPicture(41, R.drawable.kauri);
-//        updateReportPicture(42, R.drawable.karo);
-//        updateReportPicture(43, R.drawable.treefuschia);
-//        updateReportPicture(44, R.drawable.tawa);
-//        updateReportPicture(45, R.drawable.akeake);
-//        updateReportPicture(46, R.drawable.lemonwood);
-//        updateReportPicture(47, R.drawable.kohuhu);
-//        updateReportPicture(48, R.drawable.kanuka);
-//        updateReportPicture(49, R.drawable.manuka);
+        updateReportPicture(1, R.drawable.tree_tikouka, mContext);
+        updateReportPicture(2, R.drawable.tree_nikau, mContext);
+//        updateReportPicture(3, R.drawable.tree_puriri);
+//        updateReportPicture(4, R.drawable.tree_mapou);
+//        updateReportPicture(5, R.drawable.tree_sevenfinger);
+//        updateReportPicture(6, R.drawable.tree_fivefinger);
+//        updateReportPicture(7, R.drawable.tree_kawakawa);
+//        updateReportPicture(8, R.drawable.tree_northernrata);
+//        updateReportPicture(9, R.drawable.tree_southernrata);
+//        updateReportPicture(10, R.drawable.tree_pohutukawa);
+//        updateReportPicture(11, R.drawable.tree_kamahi);
+//        updateReportPicture(12, R.drawable.tree_pukatea);
+//        updateReportPicture(13, R.drawable.tree_wineberry);
+//        updateReportPicture(14, R.drawable.tree_pigeonwood);
+//        updateReportPicture(15, R.drawable.tree_kohekohe);
+//        updateReportPicture(16, R.drawable.tree_kaikomako);
+//        updateReportPicture(17, R.drawable.tree_houherelacebark);
+//        updateReportPicture(18, R.drawable.tree_horoekalancewood);
+//        updateReportPicture(19, R.drawable.tree_honeysuckle);
+//        updateReportPicture(20, R.drawable.tree_mahoe);
+//        updateReportPicture(21, R.drawable.tree_ngaio);
+//        updateReportPicture(22, R.drawable.tree_hinau);
+//        updateReportPicture(23, R.drawable.tree_titoki);
+//        updateReportPicture(24, R.drawable.tree_tanekaha);
+//        updateReportPicture(25, R.drawable.tree_hardbeech);
+//        updateReportPicture(26, R.drawable.tree_redbeech);
+//        updateReportPicture(27, R.drawable.tree_silverbeech);
+//        updateReportPicture(28, R.drawable.tree_marbleleaf);
+//        updateReportPicture(29, R.drawable.tree_kowhai);
+//        updateReportPicture(30, R.drawable.tree_matai);
+//        updateReportPicture(31, R.drawable.tree_miro);
+//        updateReportPicture(32, R.drawable.tree_whitepine);
+//        updateReportPicture(33, R.drawable.tree_rimu);
+//        updateReportPicture(34, R.drawable.tree_blackbeech);
+//        updateReportPicture(35, R.drawable.tree_moutainbeech);
+//        updateReportPicture(36, R.drawable.tree_totara);
+//        updateReportPicture(37, R.drawable.tree_kapuka);
+//        updateReportPicture(38, R.drawable.tree_karaka);
+//        updateReportPicture(39, R.drawable.tree_rangiora);
+//        updateReportPicture(40, R.drawable.tree_taraire);
+//        updateReportPicture(41, R.drawable.tree_kauri);
+//        updateReportPicture(42, R.drawable.tree_karo);
+//        updateReportPicture(43, R.drawable.tree_treefuschia);
+//        updateReportPicture(44, R.drawable.tree_tawa);
+//        updateReportPicture(45, R.drawable.tree_akeake);
+//        updateReportPicture(46, R.drawable.tree_lemonwood);
+//        updateReportPicture(47, R.drawable.tree_kohuhu);
+//        updateReportPicture(48, R.drawable.tree_kanuka);
+//        updateReportPicture(49, R.drawable.tree_manuka);
     }
 }

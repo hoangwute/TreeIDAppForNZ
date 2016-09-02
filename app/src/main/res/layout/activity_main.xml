@@ -50,7 +50,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
-                    <include layout="@layout/tree_list"></include>
+                    <include layout="@layout/list_search_layout"></include>
                 </LinearLayout>
                 <LinearLayout
                     android:id="@+id/tab4"
