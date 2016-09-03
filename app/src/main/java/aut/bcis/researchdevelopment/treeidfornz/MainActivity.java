@@ -15,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TabHost;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -23,17 +24,19 @@ import aut.bcis.researchdevelopment.database.Database;
 import aut.bcis.researchdevelopment.model.Tree;
 
 public class MainActivity extends AppCompatActivity {
+    //-------------------------Main Activity-------------------------------------------------
     private TabHost tabHost;
     private SearchView searchView;
     public static SQLiteDatabase database = null;
-    //--------------------------------------------------------------------------
+    //-------------------------List/Search Function------------------------------------------
     private ListView lvTreeList;
     private TreeAdapter treeAdapter;
     private ArrayList<Object> treeList;
     private CheckBox chkFamily, chkGenus;
     private ImageButton btnFavourite;
     public static boolean favouriteSelected = false;
-    //---------------------------------------------------------------------------
+    public static TextView txtAnnounce;
+    //--------------------------Wizard Function-----------------------------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,27 +77,16 @@ public class MainActivity extends AppCompatActivity {
         btnFavourite = (ImageButton) findViewById(R.id.btnFavourite);
         chkFamily = (CheckBox) findViewById(R.id.chkFamily);
         chkGenus = (CheckBox) findViewById(R.id.chkGenus);
+        txtAnnounce = (TextView)findViewById(R.id.txtAnnounce);
     }
 
     private void displayAllTreesSortedBy(String sortType) {
-        int cursorCounter = 0;
         treeList.clear();
         treeAdapter = new TreeAdapter(MainActivity.this, treeList); //this line fixes search bug occurred when changes the button
         lvTreeList.setAdapter(treeAdapter);
         database = openOrCreateDatabase(Database.DATABASE_NAME, MODE_PRIVATE, null);
         Cursor cursor = database.rawQuery("SELECT * FROM Tree ORDER BY " + sortType, null);
         while(cursor.moveToNext()) {
-            switch(sortType) {
-                case "CommonName":
-                    Utility.generateAlphabeticalHeaders(treeList, cursorCounter);
-                    break;
-                case "Family":
-                    Utility.generateFamilyHeaders(treeList, cursorCounter);
-                    break;
-                case "Genus":
-                    Utility.generateGenusHeaders(treeList, cursorCounter);
-                    break;
-            }
             int Id = cursor.getInt(cursor.getColumnIndex("ID"));
             String commonName = cursor.getString(cursor.getColumnIndex("CommonName"));
             String latinName = cursor.getString(cursor.getColumnIndex("LatinName"));
@@ -103,14 +95,23 @@ public class MainActivity extends AppCompatActivity {
             int isLiked = cursor.getInt(cursor.getColumnIndex("Liked"));
             String picturePath = cursor.getString(cursor.getColumnIndex("PicturePath"));
             treeList.add(new Tree(Id, commonName, latinName, family, genus, picturePath, isLiked));
-            ++cursorCounter;
         }
         cursor.close();
+        switch(sortType) {
+            case "CommonName":
+                Utility.generateAlphabeticalHeaders(treeList);
+                break;
+            case "Family":
+                Utility.generateFamilyHeaders(treeList);
+                break;
+            case "Genus":
+                Utility.generateGenusHeaders(treeList);
+                break;
+        }
         treeAdapter.notifyDataSetChanged();
     }
 
-    private void displayAllFavouriteTrees() {
-        int cursorCounter = 0;
+    private void displayAllFavouriteTreesSortedBy(String sortType) {
         treeList.clear();
         treeAdapter = new TreeAdapter(MainActivity.this, treeList); //this line fixes search bug occurred when changes the button
         lvTreeList.setAdapter(treeAdapter);
@@ -125,9 +126,23 @@ public class MainActivity extends AppCompatActivity {
             int isLiked = cursor.getInt(cursor.getColumnIndex("Liked"));
             String picturePath = cursor.getString(cursor.getColumnIndex("PicturePath"));
             treeList.add(new Tree(Id, commonName, latinName, family, genus, picturePath, isLiked));
-            ++cursorCounter;
         }
         cursor.close();
+        if(treeList.size() == 0) {
+            txtAnnounce.setVisibility(View.VISIBLE);
+            txtAnnounce.setText("Please add more species into the favourite list.");
+        }
+        switch(sortType) {
+            case "CommonName":
+                Utility.generateAlphabeticalHeaders(treeList);
+                break;
+            case "Family":
+                Utility.generateFamilyHeaders(treeList);
+                break;
+            case "Genus":
+                Utility.generateGenusHeaders(treeList);
+                break;
+        }
         treeAdapter.notifyDataSetChanged();
     }
 
@@ -145,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
                 if(tabId.equalsIgnoreCase("t3")) {
                     searchView.setVisibility(View.VISIBLE);
                     if(favouriteSelected)
-                        displayAllFavouriteTrees();
+                        displayFavouriteTreeBasedOnCheckedBox();
                     else
                         displayTreeBasedOnCheckedBox();
                 }
@@ -185,19 +200,16 @@ public class MainActivity extends AppCompatActivity {
         btnFavourite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                txtAnnounce.setVisibility(View.INVISIBLE);
                 if(favouriteSelected == false) {
-                    displayAllFavouriteTrees();
+                    displayFavouriteTreeBasedOnCheckedBox();
                     favouriteSelected = true;
                     btnFavourite.setBackgroundColor(Color.GRAY);
-                    chkGenus.setEnabled(false);
-                    chkFamily.setEnabled(false);
                 }
                 else {
                     displayTreeBasedOnCheckedBox();
                     favouriteSelected = false;
                     btnFavourite.setBackgroundColor(Color.WHITE);
-                    chkGenus.setEnabled(true);
-                    chkFamily.setEnabled(true);
                 }
             }
         });
@@ -208,19 +220,19 @@ public class MainActivity extends AppCompatActivity {
             displayAllTreesSortedBy(sortType);
         }
         else
-            displayAllFavouriteTrees();
+            displayFavouriteTreeBasedOnCheckedBox();
     }
-//    private void displayFavouriteTreeBasedOnCheckedBox() {
-//        if(!chkFamily.isChecked() && !chkGenus.isChecked()) {
-//            displayAllFavouriteTreesSortedBy("CommonName");
-//        }
-//        else if(chkFamily.isChecked()) {
-//            displayAllFavouriteTreesSortedBy("Family");
-//        }
-//        else if(chkGenus.isChecked()) {
-//            displayAllFavouriteTreesSortedBy("Genus");
-//        }
-//    }
+    private void displayFavouriteTreeBasedOnCheckedBox() {
+        if(!chkFamily.isChecked() && !chkGenus.isChecked()) {
+            displayAllFavouriteTreesSortedBy("CommonName");
+        }
+        else if(chkFamily.isChecked()) {
+            displayAllFavouriteTreesSortedBy("Family");
+        }
+        else if(chkGenus.isChecked()) {
+            displayAllFavouriteTreesSortedBy("Genus");
+        }
+    }
     private void displayTreeBasedOnCheckedBox() {
         if(!chkFamily.isChecked() && !chkGenus.isChecked()) {
             displayAllTreesSortedBy("CommonName");
@@ -239,6 +251,7 @@ public class MainActivity extends AppCompatActivity {
         MenuItem menuSearch = menu.findItem(R.id.menuSearch);
         searchView = (SearchView) menuSearch.getActionView();
         searchView.setVisibility(View.INVISIBLE);
+        searchView.setQueryHint("Common/Latin name");
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {

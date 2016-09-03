@@ -33,11 +33,11 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
     private Activity context;
     private List<Object> objects;
     private ItemFilter mFilter = new ItemFilter();
-    private List<Object>originalData = null;
+    private List<Object> originalData = null;
     private Animation animation = null;
 
     public TreeAdapter(Activity context, List objects) {
-        super(context, 0, objects); //resource id is set to 0 because we are going to inflate 2 layouts instead of a fixed one.
+        super(context, 0, objects); //resource id is set to 0 because we are going to inflate 2 layouts instead of just a fixed one.
         this.context = context;
         this.objects = objects;
         this.originalData = objects;
@@ -52,7 +52,7 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, final ViewGroup parent) {
         Object item = this.objects.get(position);
         final ViewHolder holder;
         if(item instanceof Tree) {
@@ -72,7 +72,7 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
             final Tree tree = (Tree) item;
             holder.txtCommonName.setText(tree.getCommonName());
             holder.txtLatinName.setText(tree.getLatinName());
-            Picasso.with(context).load(new File(tree.getFirstPicture())).centerCrop().resize(120, 105).into(holder.imgFirstPicture);
+            Picasso.with(context).load(new File(tree.getFirstPicture())).centerCrop().resize(120, 105).into(holder.imgFirstPicture); //load picture using Picasso library
             if(tree.getLiked() == 1) {
                 holder.btnLike.setVisibility(View.INVISIBLE);
                 holder.btnDislike.setVisibility(View.VISIBLE);
@@ -94,12 +94,24 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
                     tree.setLiked(1); //save the state of the object
                 }
             });
-
             holder.btnDislike.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(MainActivity.favouriteSelected == true)
-                        handleDelete(tree);
+                    if(MainActivity.favouriteSelected == true) {
+                        if(position == objects.size()-1) {
+                            Object previousItem = objects.get(position-1);
+                            if(previousItem instanceof ListHeader)
+                                handleDelete(previousItem);
+                            handleDelete(tree);
+                        }
+                        else {
+                            Object previousItem = objects.get(position-1);
+                            Object nextItem = objects.get(position+1);
+                            if(previousItem instanceof ListHeader && nextItem instanceof ListHeader)
+                                handleDelete(previousItem);
+                            handleDelete(tree);
+                        }
+                    }
                     holder.btnDislike.setVisibility(View.INVISIBLE);
                     holder.btnLike.setVisibility(View.VISIBLE);
                     Cursor cursor = MainActivity.database.rawQuery("UPDATE Tree SET Liked = 0 where ID = " + tree.getId(), null);
@@ -107,6 +119,10 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
                     cursor.close();
                     Toast.makeText(context, tree.getCommonName() + " has been removed from the favourite list", Toast.LENGTH_SHORT).show();
                     tree.setLiked(0); //save the state of the object
+                    if(objects.size() == 0) {
+                        MainActivity.txtAnnounce.setVisibility(View.VISIBLE);
+                        MainActivity.txtAnnounce.setText("Please add more species into the favourite list.");
+                    }
                 }
             });
         }
@@ -128,8 +144,8 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
         convertView.startAnimation(animation);
         return convertView;
     }
-    private void handleDelete(Tree tree) {
-        this.remove(tree);
+    private void handleDelete(Object listObject) {
+        this.remove(listObject);
     }
     @Override
     public int getCount() { //fix array index out of bound exception
@@ -192,10 +208,8 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
                     nlist.add(list.get(i));
                 }
             }
-
             results.values = nlist;
             results.count = nlist.size();
-
             return results;
         }
 
