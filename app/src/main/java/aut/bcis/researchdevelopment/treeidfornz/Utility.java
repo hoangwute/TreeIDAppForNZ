@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,12 +33,12 @@ public class Utility {
             fos = new FileOutputStream(reportFilePath);
             bitmapPicture.compress(Bitmap.CompressFormat.PNG, 100 /*quality*/, fos);
             fos.close();
+            Toast.makeText(mContext, "Update " + picturePath + " successfully", Toast.LENGTH_SHORT).show();
         }
         catch (Exception ex) {
             Log.i("DATABASE", "Problem updating picture", ex);
             picturePath = "";
         }
-
         // Updates the database entry for the report to point to the picture
         Cursor cursor = MainActivity.database.rawQuery("UPDATE Tree SET PicturePath = '" + picturePath + "' WHERE ID = " + reportId, null);
         cursor.moveToFirst();
@@ -110,7 +111,36 @@ public class Utility {
         }
     }
 
-    public void archievedUpdatePicture(Context mContext) {
+    public static String countTreeTraits(String trait, String value) {
+        Cursor cursor = MainActivity.database.rawQuery("SELECT Count(*) FROM Tree WHERE " + trait + " = '" + value + "'", null);
+        int count = 0;
+        while(cursor.moveToNext()) {
+            count = cursor.getInt(cursor.getColumnIndex("Count(*)"));
+        }
+        cursor.close();
+        return String.valueOf(count);
+    }
+    public static String countTreeTraitsGivenMargin(String margin, String trait, String value) { //to be updated.
+        Cursor cursor = MainActivity.database.rawQuery("SELECT Count(*) FROM Tree WHERE MARGIN = '" + margin + "' AND " + trait + " = '" + value + "'", null);
+        int count = 0;
+        while(cursor.moveToNext()) {
+            count = cursor.getInt(cursor.getColumnIndex("Count(*)"));
+        }
+        cursor.close();
+        return String.valueOf(count);
+    }
+
+    public static String countTreeTraitsGivenArrangement(String arrangement, String trait, String value) { //to be updated.
+        Cursor cursor = MainActivity.database.rawQuery("SELECT Count(*) FROM Tree WHERE ARRANGEMENT = '" + arrangement + "' AND " + trait + " = '" + value + "'", null);
+        int count = 0;
+        while(cursor.moveToNext()) {
+            count = cursor.getInt(cursor.getColumnIndex("Count(*)"));
+        }
+        cursor.close();
+        return String.valueOf(count);
+    }
+
+    public static void archievedUpdatePicture(Context mContext) {
         updateReportPicture(1, R.drawable.tree_tikouka, mContext);
         updateReportPicture(2, R.drawable.tree_nikau, mContext);
         updateReportPicture(3, R.drawable.tree_puriri, mContext);

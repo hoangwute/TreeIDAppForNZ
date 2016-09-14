@@ -16,7 +16,8 @@
         <RelativeLayout
             android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:id="@+id/layoutExceptPicture">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -61,8 +62,7 @@
                 android:layout_alignParentRight="true"
                 android:background="@null"
                 android:layout_centerInParent="true" />
-
         </RelativeLayout>
-
     </LinearLayout>
+
 </RelativeLayout>
