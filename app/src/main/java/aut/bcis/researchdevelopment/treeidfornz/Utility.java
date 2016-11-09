@@ -139,6 +139,20 @@ public class Utility {
         cursor.close();
         return String.valueOf(count);
     }
+    public static void sortTypeSwitch(String sortType, ArrayList<Object> treeList) {
+        switch(sortType) {
+            case "CommonName":
+                Utility.generateAlphabeticalHeaders(treeList);
+                break;
+            case "Family":
+                Utility.generateFamilyHeaders(treeList);
+                break;
+            case "Genus":
+                Utility.generateGenusHeaders(treeList);
+                break;
+        }
+    }
+
 
     public static void archievedUpdatePicture(Context mContext) {
         updateReportPicture(1, R.drawable.tree_tikouka, mContext);

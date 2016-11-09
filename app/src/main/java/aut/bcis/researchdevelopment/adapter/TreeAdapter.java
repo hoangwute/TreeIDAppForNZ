@@ -65,7 +65,7 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
                 holder.btnLike = (ImageButton) convertView.findViewById(R.id.btnLike);
                 holder.btnDislike = (ImageButton) convertView.findViewById(R.id.btnDisLike);
                 holder.imgFirstPicture = (ImageView) convertView.findViewById(R.id.imgFirstPicture);
-                convertView.setTag(holder);
+                convertView.setTag(holder); //aa
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }

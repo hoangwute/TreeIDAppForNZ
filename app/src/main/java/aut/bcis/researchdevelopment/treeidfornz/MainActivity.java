@@ -9,15 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.SearchView;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -43,10 +40,11 @@ public class MainActivity extends AppCompatActivity {
     public static boolean favouriteSelected = false;
     public static TextView txtAnnounce;
     //--------------------------Wizard Function-----------------------------------------------
-    private RadioButton radToothed, radSmooth, radHandShaped, radOpposite, radAlternating;
+    private CheckBox chkToothed, chkSmooth, chkAlternating, chkOpposite, chkHandshaped;;
     private Button btnFinalise;
-    private String dynamicQuery;
-    private RadioGroup radioGroupMargin, radioGroupArrangement;
+    private String dynamicQuery = "SELECT * FROM Tree WHERE";
+    private TextView txtFirstHeader, txtSecondHeader;
+    private ArrayList<String> firstHeaderKeys = new ArrayList(), secondHeaderKeys = new ArrayList();
     private TextView txtToothedCount, txtSmoothCount, txtHandShapedCount, txtOppositeCount, txtAlternatingCount;
 
     @Override
@@ -64,16 +62,16 @@ public class MainActivity extends AppCompatActivity {
         tabHost = (TabHost)findViewById(R.id.tabHost);
         tabHost.setup();
         TabHost.TabSpec tab1 = tabHost.newTabSpec("t1");
-        tab1.setIndicator("",getResources().getDrawable(R.drawable.icon_like));
+        tab1.setIndicator("Home");
         tab1.setContent(R.id.tab1);
         TabHost.TabSpec tab2 = tabHost.newTabSpec("t2");
-        tab2.setIndicator("bb");
+        tab2.setIndicator("Wizard");
         tab2.setContent(R.id.tab2);
         TabHost.TabSpec tab3 = tabHost.newTabSpec("t3");
-        tab3.setIndicator("cc");
+        tab3.setIndicator("List");
         tab3.setContent(R.id.tab3);
         TabHost.TabSpec tab4 = tabHost.newTabSpec("t4");
-        tab4.setIndicator("dd");
+        tab4.setIndicator("");
         tab4.setContent(R.id.tab4);
         tabHost.addTab(tab1);
         tabHost.addTab(tab2);
@@ -90,26 +88,25 @@ public class MainActivity extends AppCompatActivity {
         chkGenus = (CheckBox) findViewById(R.id.chkGenus);
         txtAnnounce = (TextView)findViewById(R.id.txtAnnounce);
         //-----------------------wizard initiation----------------------------
-        radToothed = (RadioButton) findViewById(R.id.radToothed);
-        radSmooth = (RadioButton) findViewById(R.id.radSmooth);
-        radAlternating = (RadioButton) findViewById(R.id.radAlternating);
-        radOpposite = (RadioButton) findViewById(R.id.radOpposite);
-        radHandShaped = (RadioButton) findViewById(R.id.radHandShaped);
         btnFinalise = (Button) findViewById(R.id.btnFinalise);
-        btnFinalise.setEnabled(false);
-        radioGroupMargin = (RadioGroup) findViewById(R.id.radGroupMargin);
-        radioGroupArrangement = (RadioGroup) findViewById(R.id.radGroupArrangement);
-        txtToothedCount = (TextView) findViewById(R.id.txtToothedCount);
-        txtSmoothCount = (TextView)findViewById(R.id.txtSmoothCount);
-        txtHandShapedCount = (TextView) findViewById(R.id.txtHandShapedCount);
-        txtAlternatingCount = (TextView) findViewById(R.id.txtAlternatingCount);
-        txtOppositeCount = (TextView) findViewById(R.id.txtOppositeCount);
+        txtFirstHeader = (TextView) findViewById(R.id.txtFirstHeader);
+        txtSecondHeader = (TextView) findViewById(R.id.txtSecondHeader);
+        chkSmooth = (CheckBox) findViewById(R.id.chkSmooth);
+        chkToothed = (CheckBox) findViewById(R.id.chkToothed);
+        chkAlternating = (CheckBox) findViewById(R.id.chkAlternating);
+        chkHandshaped = (CheckBox) findViewById(R.id.chkHandshaped);
+        chkOpposite = (CheckBox) findViewById(R.id.chkOpposite);
+//        txtToothedCount = (TextView) findViewById(R.id.txtToothedCount);
+//        txtSmoothCount = (TextView)findViewById(R.id.txtSmoothCount);
+//        txtHandShapedCount = (TextView) findViewById(R.id.txtHandShapedCount);
+//        txtAlternatingCount = (TextView) findViewById(R.id.txtAlternatingCount);
+//        txtOppositeCount = (TextView) findViewById(R.id.txtOppositeCount);
         //---------------------------------------------------------------------------------
-        txtSmoothCount.setText(Utility.countTreeTraits("Margin", "smooth"));
-        txtToothedCount.setText(Utility.countTreeTraits("Margin", "toothed"));
-        txtHandShapedCount.setText(Utility.countTreeTraits("Arrangement", "hand-shaped"));
-        txtOppositeCount.setText(Utility.countTreeTraits("Arrangement", "opposite"));
-        txtAlternatingCount.setText(Utility.countTreeTraits("Arrangement", "alternating"));
+//        txtSmoothCount.setText(Utility.countTreeTraits("Margin", "smooth"));
+//        txtToothedCount.setText(Utility.countTreeTraits("Margin", "toothed"));
+//        txtHandShapedCount.setText(Utility.countTreeTraits("Arrangement", "hand-shaped"));
+//        txtOppositeCount.setText(Utility.countTreeTraits("Arrangement", "opposite"));
+//        txtAlternatingCount.setText(Utility.countTreeTraits("Arrangement", "alternating"));
     }
     private void addEvents() {
         tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
@@ -179,6 +176,67 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        //---------------------------wizard configuration-----------------------------
+        chkSmooth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    firstHeaderKeys.add("smooth");
+                }
+                else {
+                    firstHeaderKeys.remove("smooth");
+                }
+                updateCorrespondingHeader(1);
+            }
+        });
+        chkToothed.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    firstHeaderKeys.add("toothed");
+                }
+                else {
+                    firstHeaderKeys.remove("toothed");
+                }
+                updateCorrespondingHeader(1);
+            }
+        });
+        chkHandshaped.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    secondHeaderKeys.add("hand-shaped");
+                }
+                else {
+                    secondHeaderKeys.remove("hand-shaped");
+                }
+                updateCorrespondingHeader(2);
+            }
+        });
+        chkAlternating.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    secondHeaderKeys.add("alternating");
+                }
+                else {
+                    secondHeaderKeys.remove("alternating");
+                }
+                updateCorrespondingHeader(2);
+            }
+        });
+        chkOpposite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    secondHeaderKeys.add("opposite");
+                }
+                else {
+                    secondHeaderKeys.remove("opposite");
+                }
+                updateCorrespondingHeader(2);
+            }
+        });
         btnFinalise.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -192,132 +250,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        //---------------------------de-select radio button configuration-----------------------------
-        radToothed.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(radToothed.isChecked()) {
-                    radioGroupMargin.clearCheck();
-                    return true;
-                }
-                return false;
-            }
-        });
-        radSmooth.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(radSmooth.isChecked()) {
-                    radioGroupMargin.clearCheck();
-                    return true;
-                }
-                return false;
-            }
-        });
-        radHandShaped.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(radHandShaped.isChecked()) {
-                    radioGroupArrangement.clearCheck();
-                    return true;
-                }
-                return false;
-            }
-        });
-        radOpposite.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(radOpposite.isChecked()) {
-                    radioGroupArrangement.clearCheck();
-                    return true;
-                }
-                return false;
-            }
-        });
-        radAlternating.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(radAlternating.isChecked()) {
-                    radioGroupArrangement.clearCheck();
-                    return true;
-                }
-                return false;
-            }
-        });
-        //--------------------------- radio button numbers configuration-----------------------------
-        radToothed.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    txtHandShapedCount.setText(Utility.countTreeTraitsGivenMargin("toothed", "Arrangement", "hand-shaped"));
-                    txtOppositeCount.setText(Utility.countTreeTraitsGivenMargin("toothed", "Arrangement", "opposite"));
-                    txtAlternatingCount.setText(Utility.countTreeTraitsGivenMargin("toothed", "Arrangement", "alternating"));
-                }
-                else if(!isChecked && !radSmooth.isChecked()) {
-                    txtHandShapedCount.setText(Utility.countTreeTraits("Arrangement", "hand-shaped"));
-                    txtOppositeCount.setText(Utility.countTreeTraits("Arrangement", "opposite"));
-                    txtAlternatingCount.setText(Utility.countTreeTraits("Arrangement", "alternating"));
-                }
-                toggleButtonStateGivenMargin();
-            }
-        });
-        radSmooth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    txtHandShapedCount.setText(Utility.countTreeTraitsGivenMargin("smooth", "Arrangement", "hand-shaped"));
-                    txtOppositeCount.setText(Utility.countTreeTraitsGivenMargin("smooth", "Arrangement", "opposite"));
-                    txtAlternatingCount.setText(Utility.countTreeTraitsGivenMargin("smooth", "Arrangement", "alternating"));
-                }
-                else if(!isChecked && !radToothed.isChecked()) {
-                    txtHandShapedCount.setText(Utility.countTreeTraits("Arrangement", "hand-shaped"));
-                    txtOppositeCount.setText(Utility.countTreeTraits("Arrangement", "opposite"));
-                    txtAlternatingCount.setText(Utility.countTreeTraits("Arrangement", "alternating"));
-                }
-                toggleButtonStateGivenMargin();
-            }
-        });
-        radHandShaped.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    txtSmoothCount.setText(Utility.countTreeTraitsGivenArrangement("hand-shaped", "Margin", "smooth"));
-                    txtToothedCount.setText(Utility.countTreeTraitsGivenArrangement("hand-shaped", "Margin", "toothed"));
-                }
-                else if(!isChecked && !radOpposite.isChecked() && !radAlternating.isChecked()) {
-                    txtSmoothCount.setText(Utility.countTreeTraits("Margin", "smooth"));
-                    txtToothedCount.setText(Utility.countTreeTraits("Margin", "toothed"));
-                }
-                toggleButtonStateGivenArrangement();
-            }
-        });
-        radOpposite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    txtSmoothCount.setText(Utility.countTreeTraitsGivenArrangement("opposite", "Margin", "smooth"));
-                    txtToothedCount.setText(Utility.countTreeTraitsGivenArrangement("opposite", "Margin", "toothed"));
-                }
-                else if(!isChecked && !radHandShaped.isChecked() && !radAlternating.isChecked()) {
-                    txtSmoothCount.setText(Utility.countTreeTraits("Margin", "smooth"));
-                    txtToothedCount.setText(Utility.countTreeTraits("Margin", "toothed"));
-                }
-                toggleButtonStateGivenArrangement();
-            }
-        });
-        radAlternating.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    txtSmoothCount.setText(Utility.countTreeTraitsGivenArrangement("alternating", "Margin", "smooth"));
-                    txtToothedCount.setText(Utility.countTreeTraitsGivenArrangement("alternating", "Margin", "toothed"));
-                }
-                else if(!isChecked && !radOpposite.isChecked() && !radHandShaped.isChecked()) {
-                    txtSmoothCount.setText(Utility.countTreeTraits("Margin", "smooth"));
-                    txtToothedCount.setText(Utility.countTreeTraits("Margin", "toothed"));
-                }
-                toggleButtonStateGivenArrangement();
-            }
-        });
+
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -358,17 +291,7 @@ public class MainActivity extends AppCompatActivity {
             treeList.add(new Tree(Id, commonName, latinName, family, genus, picturePath, isLiked));
         }
         cursor.close();
-        switch(sortType) {
-            case "CommonName":
-                Utility.generateAlphabeticalHeaders(treeList);
-                break;
-            case "Family":
-                Utility.generateFamilyHeaders(treeList);
-                break;
-            case "Genus":
-                Utility.generateGenusHeaders(treeList);
-                break;
-        }
+        Utility.sortTypeSwitch(sortType, treeList);
         treeAdapter.notifyDataSetChanged();
     }
 
@@ -393,17 +316,7 @@ public class MainActivity extends AppCompatActivity {
             txtAnnounce.setVisibility(View.VISIBLE);
             txtAnnounce.setText("Please add more species into the favourite list.");
         }
-        switch(sortType) {
-            case "CommonName":
-                Utility.generateAlphabeticalHeaders(treeList);
-                break;
-            case "Family":
-                Utility.generateFamilyHeaders(treeList);
-                break;
-            case "Genus":
-                Utility.generateGenusHeaders(treeList);
-                break;
-        }
+        Utility.sortTypeSwitch(sortType, treeList);
         treeAdapter.notifyDataSetChanged();
     }
 
@@ -436,21 +349,57 @@ public class MainActivity extends AppCompatActivity {
             displayAllTreesSortedBy("Genus");
         }
     }
-
-    private boolean generateDynamicQuery() {
-        if(radToothed.isChecked() || radSmooth.isChecked()) { //check leaf margin row
-            if(radToothed.isChecked())
-                dynamicQuery += " AND Margin = 'toothed'";
-            if(radSmooth.isChecked())
-                dynamicQuery += " AND Margin = 'smooth'";
+    private void updateCorrespondingHeader(int headerNo) {
+        ArrayList<String> keys = new ArrayList<>();
+        TextView headerText = null;
+        switch(headerNo) {
+            case 1:
+                keys = firstHeaderKeys;
+                headerText = txtFirstHeader;
+                break;
+            case 2:
+                keys = secondHeaderKeys;
+                headerText = txtSecondHeader;
+                break;
         }
-        if(radHandShaped.isChecked() || radAlternating.isChecked() || radOpposite.isChecked()) { //check leaf arrangement row
-            if(radHandShaped.isChecked())
-                dynamicQuery += " AND Arrangement = 'hand-shaped'";
-            if(radOpposite.isChecked())
-                dynamicQuery += " AND Arrangement = 'opposite'";
-            if(radAlternating.isChecked())
-                dynamicQuery += " AND Arrangement = 'alternating'";
+        if(keys.isEmpty()) {
+            switch(headerNo) {
+                case 1:
+                    headerText.setText("Margin");
+                    break;
+                case 2:
+                    headerText.setText("Arrangement");
+                    break;
+            }
+        }
+        else {
+            headerText.setText("");
+            for (int i = 0; i < keys.size(); i++) {
+                if(i == keys.size() - 1)
+                    headerText.append(keys.get(i));
+                else
+                    headerText.append(keys.get(i) + ", ");
+            }
+        }
+    }
+    private boolean generateDynamicQuery() {
+        if(!firstHeaderKeys.isEmpty()) {
+            dynamicQuery += " AND Margin = ";
+            for(int i = 0; i < firstHeaderKeys.size(); i++) {
+                if(i != firstHeaderKeys.size() - 1)
+                    dynamicQuery += "'" + firstHeaderKeys.get(i) + "'" + " OR ";
+                else
+                    dynamicQuery += "'" + firstHeaderKeys.get(i) + "'";
+            }
+        }
+        if(!secondHeaderKeys.isEmpty()) {
+            dynamicQuery += " AND Arrangement = ";
+            for(int i = 0; i < secondHeaderKeys.size(); i++) {
+                if(i != secondHeaderKeys.size() - 1)
+                    dynamicQuery += "'" + secondHeaderKeys.get(i) + "'" + " OR ";
+                else
+                    dynamicQuery += "'" + secondHeaderKeys.get(i) + "'";
+            }
         }
         if(dynamicQuery.length() > 24) { // > 25 to make sure there is button selected.
             Toast.makeText(MainActivity.this, dynamicQuery.replaceFirst(dynamicQuery.substring(24,28),""), Toast.LENGTH_LONG).show();
@@ -462,31 +411,32 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void toggleButtonStateGivenMargin() { //to be updated.
-        if(Integer.parseInt(txtToothedCount.getText().toString()) == 0 || Integer.parseInt(txtSmoothCount.getText().toString()) == 0) {
-            if(Integer.parseInt(txtAlternatingCount.getText().toString()) == 0
-                    || Integer.parseInt(txtHandShapedCount.getText().toString()) == 0
-                    || Integer.parseInt(txtOppositeCount.getText().toString()) == 0)
-                btnFinalise.setEnabled(false);
-            else
-                btnFinalise.setEnabled(true);
-        }
-        else
-            btnFinalise.setEnabled(true);
-    }
 
-    private void toggleButtonStateGivenArrangement() { //to be updated.
-        if(Integer.parseInt(txtHandShapedCount.getText().toString()) == 0 || Integer.parseInt(txtSmoothCount.getText().toString()) == 0
-                || Integer.parseInt(txtAlternatingCount.getText().toString()) == 0) {
-            if(radToothed.isChecked() && Integer.parseInt(txtToothedCount.getText().toString()) == 0
-                    || radSmooth.isChecked() && Integer.parseInt(txtSmoothCount.getText().toString()) == 0)
-                btnFinalise.setEnabled(false);
-            else
-                btnFinalise.setEnabled(true);
-        }
-        else
-            btnFinalise.setEnabled(true);
-    }
+//    private void toggleButtonStateGivenMargin() { //to be updated.
+//        if(Integer.parseInt(txtToothedCount.getText().toString()) == 0 || Integer.parseInt(txtSmoothCount.getText().toString()) == 0) {
+//            if(Integer.parseInt(txtAlternatingCount.getText().toString()) == 0
+//                    || Integer.parseInt(txtHandShapedCount.getText().toString()) == 0
+//                    || Integer.parseInt(txtOppositeCount.getText().toString()) == 0)
+//                btnFinalise.setEnabled(false);
+//            else
+//                btnFinalise.setEnabled(true);
+//        }
+//        else
+//            btnFinalise.setEnabled(true);
+//    }
+//
+//    private void toggleButtonStateGivenArrangement() { //to be updated.
+//        if(Integer.parseInt(txtHandShapedCount.getText().toString()) == 0 || Integer.parseInt(txtSmoothCount.getText().toString()) == 0
+//                || Integer.parseInt(txtAlternatingCount.getText().toString()) == 0) {
+//            if(radToothed.isChecked() && Integer.parseInt(txtToothedCount.getText().toString()) == 0
+//                    || radSmooth.isChecked() && Integer.parseInt(txtSmoothCount.getText().toString()) == 0)
+//                btnFinalise.setEnabled(false);
+//            else
+//                btnFinalise.setEnabled(true);
+//        }
+//        else
+//            btnFinalise.setEnabled(true);
+//    }
 
     @Override
     protected void onResume() { //reset the dynamic query when back to the activity

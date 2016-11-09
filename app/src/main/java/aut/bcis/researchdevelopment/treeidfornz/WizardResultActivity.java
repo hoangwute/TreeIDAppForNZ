@@ -33,7 +33,7 @@ public class WizardResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wizard_result);
         addControls();
-        displayChosenKeys();
+        drawAllViews();
         displayAllClassifiedTrees();
     }
 
@@ -49,13 +49,15 @@ public class WizardResultActivity extends AppCompatActivity {
         receivedDynamicQuery = intent.getStringExtra("Query");
     }
 
-    private void displayChosenKeys() {
-        ArrayList<String> keyList = analyzeReceivedDynamicQuery();
-        for(int i = 0; i < keyList.size(); i++) {
-            ImageView keyImg = new ImageView(WizardResultActivity.this);
-            keyImg.setBackground(getDrawable(keyList.get(i)));
-            layoutKey.addView(keyImg, params);
-            if(i != keyList.size() - 1) {
+    private void drawAllViews() {
+        String [] words = receivedDynamicQuery.split(" ");
+        for(int i = 0; i < words.length; i++) {
+            drawViewsBasedOnName(words[i], "'toothed'");
+            drawViewsBasedOnName(words[i], "'smooth'");
+            drawViewsBasedOnName(words[i], "'alternating'");
+            drawViewsBasedOnName(words[i], "'hand-shaped'");
+            drawViewsBasedOnName(words[i], "'opposite'");
+            if(words[i].equalsIgnoreCase("and")) {
                 ImageView arrowImg = new ImageView(WizardResultActivity.this);
                 arrowImg.setBackgroundResource(R.drawable.wizard_arrow);
                 LinearLayout.LayoutParams arrowLayoutParams = new LinearLayout.LayoutParams(
@@ -64,46 +66,51 @@ public class WizardResultActivity extends AppCompatActivity {
                 arrowImg.setLayoutParams(arrowLayoutParams);
                 layoutKey.addView(arrowImg);
             }
+            if(words[i].equalsIgnoreCase("or")) {
+                ImageView arrowImg = new ImageView(WizardResultActivity.this);
+                arrowImg.setBackgroundResource(R.drawable.rsz_1forwardslash);
+                LinearLayout.LayoutParams arrowLayoutParams = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                arrowLayoutParams.gravity = Gravity.CENTER;
+                arrowImg.setLayoutParams(arrowLayoutParams);
+                layoutKey.addView(arrowImg);
+            }
+            drawViewsBasedOnName(words[i], "'opposite'");
+            drawViewsBasedOnName(words[i], "'alternating'");
+            drawViewsBasedOnName(words[i], "'opposite'");
+            drawViewsBasedOnName(words[i], "'alternating'");
+
         }
     }
 
-    private ArrayList<String> analyzeReceivedDynamicQuery() {
-        ArrayList<String> chosenKeys = new ArrayList<>();
-        if(receivedDynamicQuery.contains("toothed")) {
-            chosenKeys.add("toothed");
+    public void drawViewsBasedOnName(String word, String keyName) {
+        if(word.equalsIgnoreCase(keyName)) {
+            ImageView keyImg = new ImageView(WizardResultActivity.this);
+            keyImg.setBackground(getDrawable(word));
+            layoutKey.addView(keyImg, params);
         }
-        if(receivedDynamicQuery.contains("smooth")) {
-            chosenKeys.add("smooth");
-        }
-        if(receivedDynamicQuery.contains("hand-shaped")) {
-            chosenKeys.add("hand-shaped");
-        }
-        if(receivedDynamicQuery.contains("alternating")) {
-            chosenKeys.add("alternating");
-        }
-        if(receivedDynamicQuery.contains("opposite")) {
-            chosenKeys.add("opposite");
-        }
-        return chosenKeys;
     }
 
     private Drawable getDrawable(String key) {
         Drawable draw = null;
         switch(key) {
-            case "toothed":
-                draw = getResources().getDrawable(R.drawable.wizard_toothed);
+            case "'toothed'":
+                draw = getResources().getDrawable(R.drawable.rsz_wizard_toothed);
                 break;
-            case "smooth":
-                draw = getResources().getDrawable(R.drawable.wizard_smooth);
+            case "'smooth'":
+                draw = getResources().getDrawable(R.drawable.rsz_1wizard_smooth);
                 break;
-            case "hand-shaped":
-                draw = getResources().getDrawable(R.drawable.wizard_handshaped);
+            case "'hand-shaped'":
+                draw = getResources().getDrawable(R.drawable.rsz_wizard_handshaped);
                 break;
-            case "opposite":
-                draw = getResources().getDrawable(R.drawable.wizard_opposite);
+            case "'opposite'":
+                draw = getResources().getDrawable(R.drawable.rsz_wizard_opposite);
                 break;
-            case "alternating":
-                draw = getResources().getDrawable(R.drawable.wizard_alternating);
+            case "'alternating'":
+                draw = getResources().getDrawable(R.drawable.rsz_wizard_alternating);
+                break;
+            case "and":
+                draw = getResources().getDrawable(R.drawable.wizard_arrow);
                 break;
         }
         return draw;

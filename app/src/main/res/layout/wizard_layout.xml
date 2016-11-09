@@ -1,173 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1">
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    tools:context="vn.edu.topica.wizardtest.MainActivity">
+
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="1. Leaf margin"
-        android:id="@+id/textView"
-        android:textSize="17dp" />
-
-
-    <RadioGroup
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:id="@+id/radGroupMargin">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:id="@+id/txtToothedCount"
-            android:textColor="#12cd08" />
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Toothed"
-            android:id="@+id/radToothed"
-            android:checked="false"
-            android:paddingRight="5dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:id="@+id/txtSmoothCount"
-            android:textColor="#12cd08" />
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Smooth"
-            android:id="@+id/radSmooth"
-            android:checked="false" />
-
-    </RadioGroup>
+        android:id="@+id/txtFirstHeader"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="#0ddd2c"
+        android:textSize="15dp"
+        android:text="Margin" />
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false">
+        android:gravity="center">
 
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="50dp"
-            android:id="@+id/imgSmooth"
-            android:src="@drawable/wizard_smooth"
-            android:paddingLeft="30dp" />
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/chkSmooth"
+            android:button="@drawable/smooth_selector"
+            android:checked="false"
+            android:text="18"
+            android:textColor="#0ddd2c"
+            android:textAlignment="gravity"
+            android:textStyle="italic" />
 
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="50dp"
-            android:id="@+id/imgToothed"
-            android:paddingLeft="30dp"
-            android:src="@drawable/wizard_toothed" />
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/chkToothed"
+            android:button="@drawable/toothed_selector"
+            android:checked="false"
+            android:text="31"
+            android:textAlignment="gravity"
+            android:textColor="#0ddd2c"
+            android:textStyle="italic" />
     </LinearLayout>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="2 Leaf arrangement"
-        android:id="@+id/textView2"
-        android:textSize="17dp" />
-
-    <RadioGroup
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:id="@+id/radGroupArrangement">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="#12cd08"
-            android:id="@+id/txtHandShapedCount" />
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hand-shaped"
-            android:id="@+id/radHandShaped"
-            android:checked="false"
-            android:paddingRight="5dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="#12cd08"
-            android:id="@+id/txtOppositeCount" />
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Opposite"
-            android:id="@+id/radOpposite"
-            android:checked="false"
-            android:paddingRight="5dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="#12cd08"
-            android:id="@+id/txtAlternatingCount" />
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Alternating"
-            android:id="@+id/radAlternating"
-            android:checked="false" />
-    </RadioGroup>
+        android:id="@+id/txtSecondHeader"
+        android:background="#0ddd2c"
+        android:textSize="15dp"
+        android:text="Arrangement" />
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:gravity="center">
 
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:paddingLeft="50dp"
-            android:id="@+id/imgHandShaped"
-            android:src="@drawable/wizard_handshaped" />
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/chkAlternating"
+            android:button="@drawable/alternating_selector"
+            android:checked="false" />
 
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:paddingLeft="40dp"
-            android:id="@+id/imgOpposite"
-            android:src="@drawable/wizard_opposite" />
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/chkOpposite"
+            android:button="@drawable/opposite_selector"
+            android:checked="false" />
 
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:paddingLeft="40dp"
-            android:id="@+id/imgAlternating"
-            android:src="@drawable/wizard_alternating"
-            android:background="@null" />
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/chkHandshaped"
+            android:button="@drawable/handshaped_selector"
+            android:checked="false" />
     </LinearLayout>
 
     <Button
         android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:text="Finish"
+        android:layout_height="wrap_content"
+        android:text="FINISH"
         android:id="@+id/btnFinalise"
         android:layout_gravity="center_horizontal"
-        android:background="#068108"
-        android:textSize="15dp"
         android:textStyle="bold"
-        android:enabled="false" />
-
+        android:background="#0ddd2c" />
 
 </LinearLayout>
