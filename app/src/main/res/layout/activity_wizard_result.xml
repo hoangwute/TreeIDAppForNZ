@@ -7,8 +7,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/layoutKey"
-        android:gravity="center">
+        android:id="@+id/layoutKey">
 
         <TextView
             android:layout_width="wrap_content"
@@ -19,8 +18,38 @@
             android:textSize="15dp"
             android:layout_gravity="center"
             android:gravity="center"
-            android:textColor="#12cd08" />
+            android:textColor="#12cd08"
+            android:text="Key(s)" />
     </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/textView6"
+        android:height="1dp"
+        android:background="#115103" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Key(s)"
+        android:id="@+id/txtClassifiedKeys"
+        android:gravity="center"
+        android:background="#229b0c"
+        android:textStyle="bold" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/textView7"
+        android:height="1dp"
+        android:background="#115103" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/layoutReview"></LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
@@ -37,7 +66,16 @@
         android:text="Trees satisfied"
         android:id="@+id/txtClassifiedResults"
         android:gravity="center"
-        android:textColor="#12cd08" />
+        android:background="#229b0c"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/textView5"
+        android:height="1dp"
+        android:background="#115103" />
 
     <ListView
         android:layout_width="match_parent"

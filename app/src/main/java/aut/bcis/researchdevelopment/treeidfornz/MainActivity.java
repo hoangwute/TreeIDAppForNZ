@@ -1,15 +1,18 @@
 package aut.bcis.researchdevelopment.treeidfornz;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -20,17 +23,32 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import java.util.ArrayList;
 
 import aut.bcis.researchdevelopment.adapter.TreeAdapter;
 import aut.bcis.researchdevelopment.database.Database;
 import aut.bcis.researchdevelopment.model.Tree;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     //-------------------------Main Activity-------------------------------------------------
     private TabHost tabHost;
     private SearchView searchView;
     public static SQLiteDatabase database = null;
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
     //-------------------------List/Search Function------------------------------------------
     private ListView lvTreeList;
     private TreeAdapter treeAdapter;
@@ -46,6 +64,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView txtFirstHeader, txtSecondHeader;
     private ArrayList<String> firstHeaderKeys = new ArrayList(), secondHeaderKeys = new ArrayList();
     private TextView txtToothedCount, txtSmoothCount, txtHandShapedCount, txtOppositeCount, txtAlternatingCount;
+    //--------------------------Tree Map Function-----------------------------------------------
+    private GoogleMap mMap;
+    private ProgressDialog progressDialog;
+    private boolean mapLoaded = false;
+    private Button btnAddLocation;
+    private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         tab3.setIndicator("List");
         tab3.setContent(R.id.tab3);
         TabHost.TabSpec tab4 = tabHost.newTabSpec("t4");
-        tab4.setIndicator("");
+        tab4.setIndicator("Map");
         tab4.setContent(R.id.tab4);
         tabHost.addTab(tab1);
         tabHost.addTab(tab2);
@@ -107,6 +131,12 @@ public class MainActivity extends AppCompatActivity {
 //        txtHandShapedCount.setText(Utility.countTreeTraits("Arrangement", "hand-shaped"));
 //        txtOppositeCount.setText(Utility.countTreeTraits("Arrangement", "opposite"));
 //        txtAlternatingCount.setText(Utility.countTreeTraits("Arrangement", "alternating"));
+        //-----------------------tree map initiation----------------------------
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+        btnAddLocation = (Button) findViewById(R.id.btnAddLocation);
+
     }
     private void addEvents() {
         tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
@@ -129,9 +159,17 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if(tabId.equalsIgnoreCase("t4")) {
                     searchView.setVisibility(View.INVISIBLE);
+                    if(mapLoaded == false) {
+                        progressDialog = new ProgressDialog(MainActivity.this);
+                        progressDialog.setTitle("Announcement");
+                        progressDialog.setMessage("Loading map...");
+                        progressDialog.setCanceledOnTouchOutside(false);
+                        progressDialog.show();
+                    }
                 }
             }
         });
+        //---------------------------list configuration-----------------------------
         chkGenus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -174,6 +212,17 @@ public class MainActivity extends AppCompatActivity {
                     favouriteSelected = false;
                     btnFavourite.setBackgroundColor(Color.WHITE);
                 }
+            }
+        });
+        lvTreeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) { /*position cannot be used here as array list is fixed and not changed
+                                                                                               according to search filter */
+                Intent intent = new Intent(MainActivity.this, TreeDetailActivity.class);
+                TextView txtCommonName = (TextView) view.findViewById(R.id.txtCommonName);
+                String treeName = txtCommonName.getText().toString();
+                intent.putExtra("Tree", treeName);
+                startActivity(intent);
             }
         });
         //---------------------------wizard configuration-----------------------------
@@ -250,6 +299,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        //---------------------------tree map configuration-----------------------------
+        btnAddLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openAutoCompleteActivity();
+            }
+        });
+
 
     }
     @Override
@@ -408,6 +465,75 @@ public class MainActivity extends AppCompatActivity {
         }
         else { //no button selected will give a random query to avoid crash cause of substring.
             return false; //a random query which will give no result which is what we want since no button is selected.
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                progressDialog.dismiss();
+                mapLoaded = true;
+            }
+        });
+        // Add a marker in Sydney and move the camera
+        LatLng newZealand = new LatLng(-41.270020, 173.891755);
+        mMap.addMarker(new MarkerOptions().position(newZealand).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newZealand, 5));
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Intent intent = new Intent(MainActivity.this, MarkerInformationActivity.class);
+                intent.putExtra("Bundle", (Bundle) marker.getTag());
+                startActivity(intent);
+                return false;
+            }
+        });
+    }
+
+    private void openAutoCompleteActivity() {
+        try {
+            Intent intent =
+                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                            .build(this);
+            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+        } catch (GooglePlayServicesRepairableException e) {
+            // Indicates that Google Play Services is either not installed or not up to date. Prompt
+            // the user to correct the issue.
+            GoogleApiAvailability.getInstance().getErrorDialog(this, e.getConnectionStatusCode(),
+                    0 /* requestCode */).show();
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // Indicates that Google Play Services is not available and the problem is not easily
+            // resolvable.
+            String message = "Google Play Services is not available: " +
+                    GoogleApiAvailability.getInstance().getErrorString(e.errorCode);
+
+            Log.e(LOG_TAG, message);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(this, data);
+                LatLng spottedTreeLocation = place.getLatLng();
+                Marker newMarker = mMap.addMarker(new MarkerOptions().position(spottedTreeLocation));
+                Bundle bundle = new Bundle();
+                bundle.putString("Tree name", "Hahaha");
+                bundle.putString("Tree place", place.getName().toString());
+                newMarker.setTag(bundle);
+                Log.i(LOG_TAG, "Place: " + place.getName());
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(this, data);
+                // TODO: Handle the error.
+                Log.i(LOG_TAG, status.getStatusMessage());
+
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
         }
     }
 
