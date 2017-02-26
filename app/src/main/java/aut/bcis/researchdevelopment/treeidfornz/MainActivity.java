@@ -2,12 +2,13 @@ package aut.bcis.researchdevelopment.treeidfornz;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,32 +24,31 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
 import aut.bcis.researchdevelopment.adapter.TreeAdapter;
-import aut.bcis.researchdevelopment.database.Database;
+import aut.bcis.researchdevelopment.database.DBContract;
+import aut.bcis.researchdevelopment.database.DBInitialization;
 import aut.bcis.researchdevelopment.model.Tree;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+    //-------------------------Constants-----------------------------------------------------
+    public static final int START_CHAR_POSITION_TO_DELETE = 24;
+    public static final int END_CHAR_POSITION_TO_DELETE = 28;
+    
     //-------------------------Main Activity-------------------------------------------------
     private TabHost tabHost;
     private SearchView searchView;
     public static SQLiteDatabase database = null;
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    public static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private ProgressDialog loadDatabaseDialog;
     //-------------------------List/Search Function------------------------------------------
     private ListView lvTreeList;
     private TreeAdapter treeAdapter;
@@ -60,25 +60,42 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //--------------------------Wizard Function-----------------------------------------------
     private CheckBox chkToothed, chkSmooth, chkAlternating, chkOpposite, chkHandshaped;;
     private Button btnFinalise;
-    private String dynamicQuery = "SELECT * FROM Tree WHERE";
+    private String dynamicQuery = "SELECT * FROM " + DBContract.TABLE_TREE + " WHERE";
     private TextView txtFirstHeader, txtSecondHeader;
     private ArrayList<String> firstHeaderKeys = new ArrayList(), secondHeaderKeys = new ArrayList();
     private TextView txtToothedCount, txtSmoothCount, txtHandShapedCount, txtOppositeCount, txtAlternatingCount;
     //--------------------------Tree Map Function-----------------------------------------------
-    private GoogleMap mMap;
-    private ProgressDialog progressDialog;
+    protected static GoogleMap mMap;
+    private ProgressDialog loadGoogleMapDialog;
     private boolean mapLoaded = false;
-    private Button btnAddLocation;
-    private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Database.getDatabaseFromAssets(MainActivity.this);
-        database = openOrCreateDatabase(Database.DATABASE_NAME, MODE_PRIVATE, null);
+        DBInitialization.getDatabaseFromAssets(MainActivity.this);
+        database = openOrCreateDatabase(DBInitialization.DATABASE_NAME, MODE_PRIVATE, null);
+        loadPictureIntoDatabase();
         addControls();
         addEvents();
+    }
+
+    private void loadPictureIntoDatabase() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (!prefs.getBoolean("firstTime", false)) {
+            // <---- run your one time code here
+            loadDatabaseDialog = new ProgressDialog(MainActivity.this);
+            loadDatabaseDialog.setTitle("Please be patient");
+            loadDatabaseDialog.setMessage("Setting up the database...");
+            loadDatabaseDialog.setCanceledOnTouchOutside(false);
+            loadDatabaseDialog.show();
+            Utility.archivedUpdatePicture(MainActivity.this);
+            loadDatabaseDialog.dismiss();
+            // mark first time has runned.
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("firstTime", true);
+            editor.commit();
+        }
     }
 
     private void addControls() {
@@ -135,7 +152,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        btnAddLocation = (Button) findViewById(R.id.btnAddLocation);
 
     }
     private void addEvents() {
@@ -148,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
                 if(tabId.equalsIgnoreCase("t2")) {
                     searchView.setVisibility(View.INVISIBLE);
-                    dynamicQuery = "SELECT * FROM Tree WHERE";
+                    dynamicQuery = "SELECT * FROM " + DBContract.TABLE_TREE + " WHERE";
                 }
                 if(tabId.equalsIgnoreCase("t3")) {
                     searchView.setVisibility(View.VISIBLE);
@@ -160,11 +176,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if(tabId.equalsIgnoreCase("t4")) {
                     searchView.setVisibility(View.INVISIBLE);
                     if(mapLoaded == false) {
-                        progressDialog = new ProgressDialog(MainActivity.this);
-                        progressDialog.setTitle("Announcement");
-                        progressDialog.setMessage("Loading map...");
-                        progressDialog.setCanceledOnTouchOutside(false);
-                        progressDialog.show();
+                        loadGoogleMapDialog = new ProgressDialog(MainActivity.this);
+                        loadGoogleMapDialog.setTitle("Announcement");
+                        loadGoogleMapDialog.setMessage("Loading map...");
+                        loadGoogleMapDialog.setCanceledOnTouchOutside(false);
+                        loadGoogleMapDialog.show();
                     }
                 }
             }
@@ -175,13 +191,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked && chkFamily.isChecked()) { //only 1 button can be selected at once
                     chkFamily.setChecked(false);
-                    displayTreesBasedOnState("Genus");
+                    displayTreesBasedOnState(DBContract.COLUMN_GENUS);
                 }
                 else if(!isChecked && !chkFamily.isChecked()) {
-                    displayTreesBasedOnState("CommonName");
+                    displayTreesBasedOnState(DBContract.COLUMN_COMMON_NAME);
                 }
                 else
-                    displayTreesBasedOnState("Genus");
+                    displayTreesBasedOnState(DBContract.COLUMN_GENUS);
             }
         });
         chkFamily.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -189,13 +205,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked && chkGenus.isChecked()) { //only 1 button can be selected at once
                     chkGenus.setChecked(false);
-                    displayTreesBasedOnState("Family");
+                    displayTreesBasedOnState(DBContract.COLUMN_FAMILY);
                 }
                 else if(!isChecked && !chkGenus.isChecked()) {
-                    displayTreesBasedOnState("CommonName");
+                    displayTreesBasedOnState(DBContract.COLUMN_COMMON_NAME);
                 }
                 else
-                    displayTreesBasedOnState("Family");
+                    displayTreesBasedOnState(DBContract.COLUMN_FAMILY);
             }
         });
         btnFavourite.setOnClickListener(new View.OnClickListener() {
@@ -300,12 +316,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
         //---------------------------tree map configuration-----------------------------
-        btnAddLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openAutoCompleteActivity();
-            }
-        });
 
 
     }
@@ -335,16 +345,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         treeList.clear();
         treeAdapter = new TreeAdapter(MainActivity.this, treeList); //this line fixes search bug occurred when changes the button
         lvTreeList.setAdapter(treeAdapter);
-        database = openOrCreateDatabase(Database.DATABASE_NAME, MODE_PRIVATE, null);
-        Cursor cursor = database.rawQuery("SELECT * FROM Tree ORDER BY " + sortType, null);
+        database = openOrCreateDatabase(DBInitialization.DATABASE_NAME, MODE_PRIVATE, null);
+        Cursor cursor = database.rawQuery("SELECT * FROM " + DBContract.TABLE_TREE + " ORDER BY " + sortType, null);
         while(cursor.moveToNext()) {
-            int Id = cursor.getInt(cursor.getColumnIndex("ID"));
-            String commonName = cursor.getString(cursor.getColumnIndex("CommonName"));
-            String latinName = cursor.getString(cursor.getColumnIndex("LatinName"));
-            String family = cursor.getString(cursor.getColumnIndex("Family"));
-            String genus = cursor.getString(cursor.getColumnIndex("Genus"));
-            int isLiked = cursor.getInt(cursor.getColumnIndex("Liked"));
-            String picturePath = cursor.getString(cursor.getColumnIndex("PicturePath"));
+            int Id = cursor.getInt(cursor.getColumnIndex(DBContract.COLUMN_ID));
+            String commonName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_COMMON_NAME));
+            String latinName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_LATIN_NAME));
+            String family = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_FAMILY));
+            String genus = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_GENUS));
+            int isLiked = cursor.getInt(cursor.getColumnIndex(DBContract.COLUMN_LIKED));
+            String picturePath = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_PICTURE_PATH));
             treeList.add(new Tree(Id, commonName, latinName, family, genus, picturePath, isLiked));
         }
         cursor.close();
@@ -356,16 +366,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         treeList.clear();
         treeAdapter = new TreeAdapter(MainActivity.this, treeList); //this line fixes search bug occurred when changes the button
         lvTreeList.setAdapter(treeAdapter);
-        database = openOrCreateDatabase(Database.DATABASE_NAME, MODE_PRIVATE, null);
-        Cursor cursor = database.rawQuery("SELECT * FROM Tree WHERE Liked = 1 ORDER BY CommonName", null);
+        database = openOrCreateDatabase(DBInitialization.DATABASE_NAME, MODE_PRIVATE, null);
+        Cursor cursor = database.rawQuery("SELECT * FROM " + DBContract.TABLE_TREE + " WHERE " + DBContract.COLUMN_LIKED + " = 1 ORDER BY " + DBContract.COLUMN_COMMON_NAME, null);
         while(cursor.moveToNext()) {
-            int Id = cursor.getInt(cursor.getColumnIndex("ID"));
-            String commonName = cursor.getString(cursor.getColumnIndex("CommonName"));
-            String latinName = cursor.getString(cursor.getColumnIndex("LatinName"));
-            String family = cursor.getString(cursor.getColumnIndex("Family"));
-            String genus = cursor.getString(cursor.getColumnIndex("Genus"));
-            int isLiked = cursor.getInt(cursor.getColumnIndex("Liked"));
-            String picturePath = cursor.getString(cursor.getColumnIndex("PicturePath"));
+            int Id = cursor.getInt(cursor.getColumnIndex(DBContract.COLUMN_ID));
+            String commonName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_COMMON_NAME));
+            String latinName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_LATIN_NAME));
+            String family = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_FAMILY));
+            String genus = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_GENUS));
+            int isLiked = cursor.getInt(cursor.getColumnIndex(DBContract.COLUMN_LIKED));
+            String picturePath = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_PICTURE_PATH));
             treeList.add(new Tree(Id, commonName, latinName, family, genus, picturePath, isLiked));
         }
         cursor.close();
@@ -386,24 +396,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
     private void displayFavouriteTreeBasedOnCheckedBox() {
         if(!chkFamily.isChecked() && !chkGenus.isChecked()) {
-            displayAllFavouriteTreesSortedBy("CommonName");
+            displayAllFavouriteTreesSortedBy(DBContract.COLUMN_COMMON_NAME);
         }
         else if(chkFamily.isChecked()) {
-            displayAllFavouriteTreesSortedBy("Family");
+            displayAllFavouriteTreesSortedBy(DBContract.COLUMN_FAMILY);
         }
         else if(chkGenus.isChecked()) {
-            displayAllFavouriteTreesSortedBy("Genus");
+            displayAllFavouriteTreesSortedBy(DBContract.COLUMN_GENUS);
         }
     }
     private void displayTreeBasedOnCheckedBox() {
         if(!chkFamily.isChecked() && !chkGenus.isChecked()) {
-            displayAllTreesSortedBy("CommonName");
+            displayAllTreesSortedBy(DBContract.COLUMN_COMMON_NAME);
         }
         else if(chkFamily.isChecked()) {
-            displayAllTreesSortedBy("Family");
+            displayAllTreesSortedBy(DBContract.COLUMN_FAMILY);
         }
         else if(chkGenus.isChecked()) {
-            displayAllTreesSortedBy("Genus");
+            displayAllTreesSortedBy(DBContract.COLUMN_GENUS);
         }
     }
     private void updateCorrespondingHeader(int headerNo) {
@@ -422,10 +432,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if(keys.isEmpty()) {
             switch(headerNo) {
                 case 1:
-                    headerText.setText("Margin");
+                    headerText.setText(DBContract.COLUMN_MARGIN);
                     break;
                 case 2:
-                    headerText.setText("Arrangement");
+                    headerText.setText(DBContract.COLUMN_ARRANGEMENT);
                     break;
             }
         }
@@ -441,7 +451,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
     private boolean generateDynamicQuery() {
         if(!firstHeaderKeys.isEmpty()) {
-            dynamicQuery += " AND Margin = ";
+            dynamicQuery += " AND " + DBContract.COLUMN_MARGIN + " = ";
             for(int i = 0; i < firstHeaderKeys.size(); i++) {
                 if(i != firstHeaderKeys.size() - 1)
                     dynamicQuery += "'" + firstHeaderKeys.get(i) + "'" + " OR ";
@@ -450,7 +460,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
         if(!secondHeaderKeys.isEmpty()) {
-            dynamicQuery += " AND Arrangement = ";
+            dynamicQuery += " AND " + DBContract.COLUMN_ARRANGEMENT + " = ";
             for(int i = 0; i < secondHeaderKeys.size(); i++) {
                 if(i != secondHeaderKeys.size() - 1)
                     dynamicQuery += "'" + secondHeaderKeys.get(i) + "'" + " OR ";
@@ -458,9 +468,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     dynamicQuery += "'" + secondHeaderKeys.get(i) + "'";
             }
         }
-        if(dynamicQuery.length() > 24) { // > 25 to make sure there is button selected.
-            Toast.makeText(MainActivity.this, dynamicQuery.replaceFirst(dynamicQuery.substring(24,28),""), Toast.LENGTH_LONG).show();
-            dynamicQuery = dynamicQuery.replaceFirst(dynamicQuery.substring(24, 28), "").concat(" ORDER BY CommonName");
+        if(dynamicQuery.length() > START_CHAR_POSITION_TO_DELETE) { // > 25 to make sure there is button selected.
+            Toast.makeText(MainActivity.this, dynamicQuery.replaceFirst(dynamicQuery.substring(START_CHAR_POSITION_TO_DELETE, END_CHAR_POSITION_TO_DELETE),""), Toast.LENGTH_LONG).show();
+            dynamicQuery = dynamicQuery.replaceFirst(dynamicQuery.substring(START_CHAR_POSITION_TO_DELETE, END_CHAR_POSITION_TO_DELETE), "").concat(" ORDER BY " + DBContract.COLUMN_COMMON_NAME);
             return true;
         }
         else { //no button selected will give a random query to avoid crash cause of substring.
@@ -474,13 +484,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
-                progressDialog.dismiss();
+                loadGoogleMapDialog.dismiss();
                 mapLoaded = true;
             }
         });
         // Add a marker in Sydney and move the camera
         LatLng newZealand = new LatLng(-41.270020, 173.891755);
-        mMap.addMarker(new MarkerOptions().position(newZealand).title("Marker in Sydney"));
+//        mMap.addMarker(new MarkerOptions().position(newZealand).title("Marker in New Zealand"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newZealand, 5));
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -491,50 +501,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return false;
             }
         });
-    }
-
-    private void openAutoCompleteActivity() {
-        try {
-            Intent intent =
-                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
-                            .build(this);
-            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-        } catch (GooglePlayServicesRepairableException e) {
-            // Indicates that Google Play Services is either not installed or not up to date. Prompt
-            // the user to correct the issue.
-            GoogleApiAvailability.getInstance().getErrorDialog(this, e.getConnectionStatusCode(),
-                    0 /* requestCode */).show();
-        } catch (GooglePlayServicesNotAvailableException e) {
-            // Indicates that Google Play Services is not available and the problem is not easily
-            // resolvable.
-            String message = "Google Play Services is not available: " +
-                    GoogleApiAvailability.getInstance().getErrorString(e.errorCode);
-
-            Log.e(LOG_TAG, message);
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-        }
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(this, data);
-                LatLng spottedTreeLocation = place.getLatLng();
-                Marker newMarker = mMap.addMarker(new MarkerOptions().position(spottedTreeLocation));
-                Bundle bundle = new Bundle();
-                bundle.putString("Tree name", "Hahaha");
-                bundle.putString("Tree place", place.getName().toString());
-                newMarker.setTag(bundle);
-                Log.i(LOG_TAG, "Place: " + place.getName());
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-                // TODO: Handle the error.
-                Log.i(LOG_TAG, status.getStatusMessage());
-
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
-            }
-        }
     }
 
 
@@ -566,7 +532,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     protected void onResume() { //reset the dynamic query when back to the activity
-        dynamicQuery = "SELECT * FROM Tree WHERE";
+        dynamicQuery = "SELECT * FROM " + DBContract.TABLE_TREE + " WHERE";
         super.onResume();
     }
 }

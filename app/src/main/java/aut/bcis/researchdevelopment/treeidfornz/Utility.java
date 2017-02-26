@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
+import aut.bcis.researchdevelopment.database.DBContract;
 import aut.bcis.researchdevelopment.model.ListHeader;
 import aut.bcis.researchdevelopment.model.Tree;
 
@@ -40,7 +41,7 @@ public class Utility {
             picturePath = "";
         }
         // Updates the database entry for the report to point to the picture
-        Cursor cursor = MainActivity.database.rawQuery("UPDATE Tree SET PicturePath = '" + picturePath + "' WHERE ID = " + reportId, null);
+        Cursor cursor = MainActivity.database.rawQuery("UPDATE Tree SET " + DBContract.COLUMN_PICTURE_PATH +  " = '" + picturePath + "' WHERE ID = " + reportId, null);
         cursor.moveToFirst();
         cursor.close();
     }
@@ -121,7 +122,7 @@ public class Utility {
         return String.valueOf(count);
     }
     public static String countTreeTraitsGivenMargin(String margin, String trait, String value) { //to be updated.
-        Cursor cursor = MainActivity.database.rawQuery("SELECT Count(*) FROM Tree WHERE MARGIN = '" + margin + "' AND " + trait + " = '" + value + "'", null);
+        Cursor cursor = MainActivity.database.rawQuery("SELECT Count(*) FROM Tree WHERE " + DBContract.COLUMN_MARGIN + " = '" + margin + "' AND " + trait + " = '" + value + "'", null);
         int count = 0;
         while(cursor.moveToNext()) {
             count = cursor.getInt(cursor.getColumnIndex("Count(*)"));
@@ -131,7 +132,7 @@ public class Utility {
     }
 
     public static String countTreeTraitsGivenArrangement(String arrangement, String trait, String value) { //to be updated.
-        Cursor cursor = MainActivity.database.rawQuery("SELECT Count(*) FROM Tree WHERE ARRANGEMENT = '" + arrangement + "' AND " + trait + " = '" + value + "'", null);
+        Cursor cursor = MainActivity.database.rawQuery("SELECT Count(*) FROM Tree WHERE " + DBContract.COLUMN_ARRANGEMENT + " = '" + arrangement + "' AND " + trait + " = '" + value + "'", null);
         int count = 0;
         while(cursor.moveToNext()) {
             count = cursor.getInt(cursor.getColumnIndex("Count(*)"));
@@ -141,20 +142,20 @@ public class Utility {
     }
     public static void sortTypeSwitch(String sortType, ArrayList<Object> treeList) {
         switch(sortType) {
-            case "CommonName":
+            case DBContract.COLUMN_COMMON_NAME:
                 Utility.generateAlphabeticalHeaders(treeList);
                 break;
-            case "Family":
+            case DBContract.COLUMN_FAMILY:
                 Utility.generateFamilyHeaders(treeList);
                 break;
-            case "Genus":
+            case DBContract.COLUMN_GENUS:
                 Utility.generateGenusHeaders(treeList);
                 break;
         }
     }
 
 
-    public static void archievedUpdatePicture(Context mContext) {
+    public static void archivedUpdatePicture(Context mContext) {
         updateReportPicture(1, R.drawable.tree_tikouka, mContext);
         updateReportPicture(2, R.drawable.tree_nikau, mContext);
         updateReportPicture(3, R.drawable.tree_puriri, mContext);

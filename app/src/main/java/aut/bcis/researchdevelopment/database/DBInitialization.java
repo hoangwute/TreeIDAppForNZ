@@ -12,8 +12,8 @@ import java.io.OutputStream;
 /**
  * Created by VS9 X64Bit on 26/08/2016.
  */
-public class Database {
-    public static String DATABASE_NAME = "NativeTree.sqlite";
+public class DBInitialization {
+    public static final String DATABASE_NAME = "NativeTree.sqlite";
     private static final String DB_PATH_SUFFIX = "/databases/";
 
     public static void getDatabaseFromAssets(Activity context) {

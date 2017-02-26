@@ -6,11 +6,6 @@
     android:layout_height="match_parent"
     >
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Add location"
-        android:id="@+id/btnAddLocation" />
 
     <fragment
         android:id="@+id/map"

@@ -17,7 +17,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import aut.bcis.researchdevelopment.adapter.TreeAdapter;
-import aut.bcis.researchdevelopment.database.Database;
+import aut.bcis.researchdevelopment.database.DBInitialization;
 import aut.bcis.researchdevelopment.model.Tree;
 
 public class WizardResultActivity extends AppCompatActivity {
@@ -35,7 +35,7 @@ public class WizardResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wizard_result);
         addControls();
-//        drawAllViews();
+//        drawAllViews(); //
         drawViews();
         displayAllClassifiedTrees();
     }
@@ -170,7 +170,7 @@ public class WizardResultActivity extends AppCompatActivity {
         classifiedTreeList.clear();
         classifiedTreeAdapter = new TreeAdapter(WizardResultActivity.this, classifiedTreeList); //this line fixes search bug occurred when changes the button
         lvClassifiedTreeList.setAdapter(classifiedTreeAdapter);
-        MainActivity.database = openOrCreateDatabase(Database.DATABASE_NAME, MODE_PRIVATE, null);
+        MainActivity.database = openOrCreateDatabase(DBInitialization.DATABASE_NAME, MODE_PRIVATE, null);
         Cursor cursor = MainActivity.database.rawQuery(receivedDynamicQuery, null); //cursor based on the dynamic query statement
         while(cursor.moveToNext()) {
             int Id = cursor.getInt(cursor.getColumnIndex("ID"));
