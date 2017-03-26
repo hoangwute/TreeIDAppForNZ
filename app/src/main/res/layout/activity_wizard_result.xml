@@ -21,6 +21,7 @@
             android:textColor="#12cd08"
             android:text="Key(s)" />
     </LinearLayout>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -76,11 +77,17 @@
         android:id="@+id/textView5"
         android:height="1dp"
         android:background="#115103" />
-
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="300dp"
         android:id="@+id/lvClassifiedTreeList"
-        android:layout_gravity="center_horizontal" />
+        />
+
+    <fragment
+        android:id="@+id/tabs"
+        android:name="aut.bcis.researchdevelopment.treeidfornz.TabsFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 
 </LinearLayout>

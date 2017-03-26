@@ -1,5 +1,6 @@
 package aut.bcis.researchdevelopment.treeidfornz;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -7,13 +8,20 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.Marker;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Random;
 
 import aut.bcis.researchdevelopment.database.DBContract;
+import aut.bcis.researchdevelopment.database.DBInitialization;
 import aut.bcis.researchdevelopment.model.ListHeader;
 import aut.bcis.researchdevelopment.model.Tree;
+import aut.bcis.researchdevelopment.model.TreeMarker;
+
+import static aut.bcis.researchdevelopment.treeidfornz.MainActivity.database;
 
 /**
  * Created by VS9 X64Bit on 28/08/2016.
@@ -35,35 +43,55 @@ public class Utility {
             bitmapPicture.compress(Bitmap.CompressFormat.PNG, 100 /*quality*/, fos);
             fos.close();
             Toast.makeText(mContext, "Update " + picturePath + " successfully", Toast.LENGTH_SHORT).show();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             Log.i("DATABASE", "Problem updating picture", ex);
             picturePath = "";
         }
         // Updates the database entry for the report to point to the picture
-        Cursor cursor = MainActivity.database.rawQuery("UPDATE Tree SET " + DBContract.COLUMN_PICTURE_PATH +  " = '" + picturePath + "' WHERE ID = " + reportId, null);
+        Cursor cursor = database.rawQuery("UPDATE Tree SET " + DBContract.COLUMN_PICTURE_PATH + " = '" + picturePath + "' WHERE ID = " + reportId, null);
         cursor.moveToFirst();
         cursor.close();
+    }
+
+    public static String getTakenPicturePath(Bitmap bitmapPicture, Context mContext) {
+        // Saves the new picture to the internal storage with the unique identifier of the report as
+        // the name. That way, there will never be two report pictures with the same name.
+        Random rand = new Random();
+        int randomNum = rand.nextInt((10000000 - 1) + 1) + 1;
+        String picturePath = "";
+        File internalStorage = mContext.getDir("TakenPictures", Context.MODE_PRIVATE);
+        File reportFilePath = new File(internalStorage, randomNum + ".jpg");
+        picturePath = reportFilePath.toString();
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(reportFilePath);
+            bitmapPicture.compress(Bitmap.CompressFormat.PNG, 100 /*quality*/, fos);
+            fos.close();
+            Toast.makeText(mContext, "Update " + picturePath + " successfully", Toast.LENGTH_SHORT).show();
+        } catch (Exception ex) {
+            Log.i("DATABASE", "Problem updating picture", ex);
+            picturePath = "";
+        }
+        return picturePath;
     }
 
     public static void generateAlphabeticalHeaders(ArrayList<Object> treeList) {
         ArrayList<Integer> positionList = new ArrayList<>();
         ArrayList<String> valueList = new ArrayList<>();
-        for(int i = 0; i < treeList.size(); i++) {
+        for (int i = 0; i < treeList.size(); i++) {
             Tree tree = (Tree) treeList.get(i);
-            if(i == 0) {
+            if (i == 0) {
                 positionList.add(i);
                 valueList.add(tree.getCommonName().substring(0, 1)); //get the first letter
-            }
-            else {
-                Tree previousTree = (Tree) treeList.get(i-1);
-                if(!tree.getCommonName().substring(0, 1).equalsIgnoreCase(previousTree.getCommonName().substring(0, 1))) {
+            } else {
+                Tree previousTree = (Tree) treeList.get(i - 1);
+                if (!tree.getCommonName().substring(0, 1).equalsIgnoreCase(previousTree.getCommonName().substring(0, 1))) {
                     positionList.add(i);
                     valueList.add(tree.getCommonName().substring(0, 1));
                 }
             }
         }
-        for(int i = 0; i < positionList.size(); i++) {
+        for (int i = 0; i < positionList.size(); i++) {
             treeList.add(positionList.get(i) + i, new ListHeader(valueList.get(i))); //important plus i here as the array shifts the object position
         }
     }
@@ -71,21 +99,20 @@ public class Utility {
     public static void generateGenusHeaders(ArrayList<Object> treeList) {
         ArrayList<Integer> positionList = new ArrayList<>();
         ArrayList<String> valueList = new ArrayList<>();
-        for(int i = 0; i < treeList.size(); i++) {
+        for (int i = 0; i < treeList.size(); i++) {
             Tree tree = (Tree) treeList.get(i);
-            if(i == 0) {
+            if (i == 0) {
                 positionList.add(i);
                 valueList.add(tree.getGenus());
-            }
-            else {
-                Tree previousTree = (Tree) treeList.get(i-1);
-                if(!tree.getGenus().equalsIgnoreCase(previousTree.getGenus())) {
+            } else {
+                Tree previousTree = (Tree) treeList.get(i - 1);
+                if (!tree.getGenus().equalsIgnoreCase(previousTree.getGenus())) {
                     positionList.add(i);
                     valueList.add(tree.getGenus());
                 }
             }
         }
-        for(int i = 0; i < positionList.size(); i++) {
+        for (int i = 0; i < positionList.size(); i++) {
             treeList.add(positionList.get(i) + i, new ListHeader(valueList.get(i))); //important plus i here as the array shifts the object position
         }
     }
@@ -93,38 +120,38 @@ public class Utility {
     public static void generateFamilyHeaders(ArrayList<Object> treeList) {
         ArrayList<Integer> positionList = new ArrayList<>();
         ArrayList<String> valueList = new ArrayList<>();
-        for(int i = 0; i < treeList.size(); i++) {
+        for (int i = 0; i < treeList.size(); i++) {
             Tree tree = (Tree) treeList.get(i);
-            if(i == 0) {
+            if (i == 0) {
                 positionList.add(i);
                 valueList.add(tree.getFamily().trim());
-            }
-            else {
-                Tree previousTree = (Tree) treeList.get(i-1);
-                if(!tree.getFamily().trim().equalsIgnoreCase(previousTree.getFamily().trim())) {
+            } else {
+                Tree previousTree = (Tree) treeList.get(i - 1);
+                if (!tree.getFamily().trim().equalsIgnoreCase(previousTree.getFamily().trim())) {
                     positionList.add(i);
                     valueList.add(tree.getFamily().trim());
                 }
             }
         }
-        for(int i = 0; i < positionList.size(); i++) {
+        for (int i = 0; i < positionList.size(); i++) {
             treeList.add(positionList.get(i) + i, new ListHeader(valueList.get(i))); //important plus i here as the array shifts the object position
         }
     }
 
     public static String countTreeTraits(String trait, String value) {
-        Cursor cursor = MainActivity.database.rawQuery("SELECT Count(*) FROM Tree WHERE " + trait + " = '" + value + "'", null);
+        Cursor cursor = database.rawQuery("SELECT Count(*) FROM Tree WHERE " + trait + " = '" + value + "'", null);
         int count = 0;
-        while(cursor.moveToNext()) {
+        while (cursor.moveToNext()) {
             count = cursor.getInt(cursor.getColumnIndex("Count(*)"));
         }
         cursor.close();
         return String.valueOf(count);
     }
+
     public static String countTreeTraitsGivenMargin(String margin, String trait, String value) { //to be updated.
-        Cursor cursor = MainActivity.database.rawQuery("SELECT Count(*) FROM Tree WHERE " + DBContract.COLUMN_MARGIN + " = '" + margin + "' AND " + trait + " = '" + value + "'", null);
+        Cursor cursor = database.rawQuery("SELECT Count(*) FROM Tree WHERE " + DBContract.COLUMN_MARGIN + " = '" + margin + "' AND " + trait + " = '" + value + "'", null);
         int count = 0;
-        while(cursor.moveToNext()) {
+        while (cursor.moveToNext()) {
             count = cursor.getInt(cursor.getColumnIndex("Count(*)"));
         }
         cursor.close();
@@ -132,16 +159,89 @@ public class Utility {
     }
 
     public static String countTreeTraitsGivenArrangement(String arrangement, String trait, String value) { //to be updated.
-        Cursor cursor = MainActivity.database.rawQuery("SELECT Count(*) FROM Tree WHERE " + DBContract.COLUMN_ARRANGEMENT + " = '" + arrangement + "' AND " + trait + " = '" + value + "'", null);
+        Cursor cursor = database.rawQuery("SELECT Count(*) FROM Tree WHERE " + DBContract.COLUMN_ARRANGEMENT + " = '" + arrangement + "' AND " + trait + " = '" + value + "'", null);
         int count = 0;
-        while(cursor.moveToNext()) {
+        while (cursor.moveToNext()) {
             count = cursor.getInt(cursor.getColumnIndex("Count(*)"));
         }
         cursor.close();
         return String.valueOf(count);
     }
+
+    public static int countSightedTreeType(String commonName) {
+        Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM " + DBContract.TABLE_MARKER + " WHERE " + DBContract.COLUMN_MARKER_COMMON_NAME + " = '" + commonName + "'", null);
+        int count = 0;
+        while (cursor.moveToNext()) {
+            count = cursor.getInt(cursor.getColumnIndex("COUNT(*)"));
+        }
+        cursor.close();
+        return count;
+    }
+
+    public static int countAllSightedTree() {
+        Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM " + DBContract.TABLE_MARKER, null);
+        int count = 0;
+        while (cursor.moveToNext()) {
+            count = cursor.getInt(cursor.getColumnIndex("COUNT(*)"));
+        }
+        cursor.close();
+        return count;
+    }
+
+    public static void insertNewMarker(TreeMarker marker) {
+        Cursor cursor = null;
+        if (!marker.getNote().isEmpty()) {
+            cursor = database.rawQuery("INSERT INTO MARKER(CommonName, LatinName, Location, Note, ImagePath" +
+                    ", Latitude, Longitude) VALUES ('" + marker.getCommonName() + "', '" + marker.getLatinName() + "', '" +
+                    marker.getLocation() + "', '" + marker.getNote() + "', '" + marker.getImagePath() + "', " + marker.getLatitude()
+                    + ", " + marker.getLongitude() + ")", null);
+        } else {
+            cursor = database.rawQuery("INSERT INTO MARKER(CommonName, LatinName, Location, Note, ImagePath" +
+                    ", Latitude, Longitude) VALUES ('" + marker.getCommonName() + "', '" + marker.getLatinName() + "', '" +
+                    marker.getLocation() + "', '', '" + marker.getImagePath() + "', " + marker.getLatitude()
+                    + ", " + marker.getLongitude() + ")", null);
+        }
+        cursor.moveToFirst();
+        cursor.close();
+    }
+
+    public static boolean foundInsertedFilter(String filterCommonName) {
+        Cursor cursor = database.rawQuery("SELECT CommonName FROM MARKER", null);
+        while (cursor.moveToNext()) {
+            String commonName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_MARKER_COMMON_NAME));
+            if (commonName.equals(filterCommonName)) {
+                return true;
+            }
+        }
+        cursor.close();
+        return false;
+    }
+
+    public static void insertFilterEntry(TreeMarker marker) {
+        Cursor cursor = database.rawQuery("INSERT INTO FilterEntry(CommonName, LatinName, Filtered) VALUES ('" + marker.getCommonName() + "', '" + marker.getLatinName() + "', 1)", null);
+        cursor.moveToFirst();
+        cursor.close();
+    }
+
+//    public static void updateFilterStatus(boolean b, int filterId, Activity context) {
+//        Cursor cursor = null;
+//        if (b == true) {
+//            cursor = MainActivity.database.rawQuery("UPDATE FilterEntry SET Filtered = 1 WHERE ID = " + filterId, null);
+////            Toast.makeText(context, "(Intentional click) updated to 1", Toast.LENGTH_SHORT).show();
+//        }
+//        else {
+//            cursor = MainActivity.database.rawQuery("UPDATE FilterEntry SET Filtered = 0 WHERE ID = " + filterId, null);
+////            Toast.makeText(context, "(Intentional click) updated to 0", Toast.LENGTH_SHORT).show();
+//
+//        }
+//        cursor.moveToFirst();
+//        cursor.close();
+//    }
+
+
+
     public static void sortTypeSwitch(String sortType, ArrayList<Object> treeList) {
-        switch(sortType) {
+        switch (sortType) {
             case DBContract.COLUMN_COMMON_NAME:
                 Utility.generateAlphabeticalHeaders(treeList);
                 break;
@@ -154,13 +254,32 @@ public class Utility {
         }
     }
 
+    public static int checkFilterStatus(String markerCommonName) {
+        Cursor cursor = database.rawQuery("SELECT Filtered FROM FilterEntry WHERE CommonName = '" + markerCommonName + "'", null);
+        int filteredStatus = 0;
+        while (cursor.moveToNext()) {
+             filteredStatus = cursor.getInt(cursor.getColumnIndex("Filtered"));
+        }
+        cursor.close();
+        return filteredStatus;
+    }
+    public static String findTreeAttributeValueGivenName(String commonName, String treeAttribute) {
+        String value = null;
+        Cursor cursor = database.rawQuery("SELECT " + treeAttribute + " FROM " + DBContract.TABLE_TREE + " WHERE " + DBContract.COLUMN_COMMON_NAME + " = '" + commonName + "'", null);
+        while (cursor.moveToNext()) {
+             value = cursor.getString(cursor.getColumnIndex(treeAttribute));
+        }
+        cursor.close();
+        return value;
+    }
+
 
     public static void archivedUpdatePicture(Context mContext) {
         updateReportPicture(1, R.drawable.tree_tikouka, mContext);
         updateReportPicture(2, R.drawable.tree_nikau, mContext);
         updateReportPicture(3, R.drawable.tree_puriri, mContext);
         updateReportPicture(4, R.drawable.tree_mapou, mContext);
-        updateReportPicture(5, R.drawable.tree_sevenfinger,mContext);
+        updateReportPicture(5, R.drawable.tree_sevenfinger, mContext);
         updateReportPicture(6, R.drawable.tree_fivefinger, mContext);
         updateReportPicture(7, R.drawable.tree_kawakawa, mContext);
         updateReportPicture(8, R.drawable.tree_northernrata, mContext);

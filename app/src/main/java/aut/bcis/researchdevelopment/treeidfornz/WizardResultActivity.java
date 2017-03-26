@@ -1,11 +1,13 @@
 package aut.bcis.researchdevelopment.treeidfornz;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -42,6 +44,9 @@ public class WizardResultActivity extends AppCompatActivity {
 
     private void addControls() {
         lvClassifiedTreeList = (ListView) findViewById(R.id.lvClassifiedTreeList);
+//        Configuration configuration = WizardResultActivity.this.getResources().getConfiguration();
+//        int screenHeightDp = configuration.screenHeightDp;
+        lvClassifiedTreeList.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 400)); //to be fixed
         classifiedTreeList = new ArrayList<>();
         classifiedTreeAdapter = new TreeAdapter(WizardResultActivity.this, classifiedTreeList);
         lvClassifiedTreeList.setAdapter(classifiedTreeAdapter);
