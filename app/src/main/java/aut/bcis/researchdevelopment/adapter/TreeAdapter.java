@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
@@ -24,6 +23,8 @@ import java.util.List;
 
 import aut.bcis.researchdevelopment.model.ListHeader;
 import aut.bcis.researchdevelopment.model.Tree;
+import aut.bcis.researchdevelopment.treeidfornz.IdentificationResultActivity;
+import aut.bcis.researchdevelopment.treeidfornz.ListActivity;
 import aut.bcis.researchdevelopment.treeidfornz.MainActivity;
 import aut.bcis.researchdevelopment.treeidfornz.R;
 
@@ -98,7 +99,8 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
             holder.btnDislike.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(MainActivity.favouriteSelected == true) {
+                    if((context.getLocalClassName().equals("ListActivity") && ListActivity.favouriteSelected == true) ||
+                            (context.getLocalClassName().equals("IdentificationResultActivity") && IdentificationResultActivity.identifiedFavouriteSelected == true)) {
                         if(position == objects.size()-1) {
                             Object previousItem = objects.get(position-1);
                             if(previousItem instanceof ListHeader)
@@ -121,8 +123,14 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
                     Toast.makeText(context, tree.getCommonName() + " has been removed from the favourite list", Toast.LENGTH_SHORT).show();
                     tree.setLiked(0); //save the state of the object
                     if(objects.size() == 0) {
-                        MainActivity.txtAnnounce.setVisibility(View.VISIBLE);
-                        MainActivity.txtAnnounce.setText("Please add more species into the favourite list.");
+                        if(ListActivity.favouriteSelected == true) {
+                            ListActivity.txtAnnounce.setVisibility(View.VISIBLE);
+                            ListActivity.txtAnnounce.setText("Please add more species into the favourite list.");
+                        }
+                        else if(IdentificationResultActivity.identifiedFavouriteSelected == true) {
+                            IdentificationResultActivity.txtIdentifiedAnnounce.setVisibility(View.VISIBLE);
+                            IdentificationResultActivity.txtIdentifiedAnnounce.setText("Please add more species into the favourite list.");
+                        }
                     }
                 }
             });

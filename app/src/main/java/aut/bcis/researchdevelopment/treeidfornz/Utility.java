@@ -22,6 +22,7 @@ import aut.bcis.researchdevelopment.model.Tree;
 import aut.bcis.researchdevelopment.model.TreeMarker;
 
 import static aut.bcis.researchdevelopment.treeidfornz.MainActivity.database;
+import static aut.bcis.researchdevelopment.treeidfornz.R.id.chkGenus;
 
 /**
  * Created by VS9 X64Bit on 28/08/2016.
@@ -223,22 +224,6 @@ public class Utility {
         cursor.close();
     }
 
-//    public static void updateFilterStatus(boolean b, int filterId, Activity context) {
-//        Cursor cursor = null;
-//        if (b == true) {
-//            cursor = MainActivity.database.rawQuery("UPDATE FilterEntry SET Filtered = 1 WHERE ID = " + filterId, null);
-////            Toast.makeText(context, "(Intentional click) updated to 1", Toast.LENGTH_SHORT).show();
-//        }
-//        else {
-//            cursor = MainActivity.database.rawQuery("UPDATE FilterEntry SET Filtered = 0 WHERE ID = " + filterId, null);
-////            Toast.makeText(context, "(Intentional click) updated to 0", Toast.LENGTH_SHORT).show();
-//
-//        }
-//        cursor.moveToFirst();
-//        cursor.close();
-//    }
-
-
 
     public static void sortTypeSwitch(String sortType, ArrayList<Object> treeList) {
         switch (sortType) {
@@ -272,6 +257,7 @@ public class Utility {
         cursor.close();
         return value;
     }
+
 
 
     public static void archivedUpdatePicture(Context mContext) {

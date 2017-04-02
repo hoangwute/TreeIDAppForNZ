@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,7 +24,6 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Spinner;
-import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,15 +32,11 @@ import com.google.android.gms.maps.model.Marker;
 
 import java.util.ArrayList;
 
-import aut.bcis.researchdevelopment.adapter.FilterAdapter;
 import aut.bcis.researchdevelopment.adapter.TreeAdapter;
 import aut.bcis.researchdevelopment.database.DBContract;
 import aut.bcis.researchdevelopment.database.DBInitialization;
 import aut.bcis.researchdevelopment.model.FilterEntry;
 import aut.bcis.researchdevelopment.model.Tree;
-
-import static aut.bcis.researchdevelopment.treeidfornz.TabsFragment.backed;
-import static aut.bcis.researchdevelopment.treeidfornz.TabsFragment.tabHost;
 
 public class MainActivity extends AppCompatActivity {
     //-------------------------Constants-----------------------------------------------------
@@ -63,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
     public static TextView txtAnnounce;
     //--------------------------Wizard Function-----------------------------------------------
     private CheckBox chkToothed, chkSmooth, chkAlternating, chkOpposite, chkHandshaped;
-    ;
     private Button btnFinalise;
     public static String dynamicQuery = "SELECT * FROM " + DBContract.TABLE_TREE + " WHERE";
     private TextView txtFirstHeader, txtSecondHeader;
@@ -87,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         database = openOrCreateDatabase(DBInitialization.DATABASE_NAME, MODE_PRIVATE, null);
         loadPictureIntoDatabase();
         addControls();
-        addEvents();
+//        addEvents();
     }
 
     private void loadPictureIntoDatabase() {
@@ -109,49 +104,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addControls() {
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        TextView txtBarTitle = (TextView) myToolbar.findViewById(R.id.toolbar_title);
+        txtBarTitle.setText("Home");
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         //-----------------------list view initiation------------------------------
-        lvTreeList = (ListView) findViewById(R.id.lvTreeList);
-        treeList = new ArrayList<>();
-        treeAdapter = new TreeAdapter(MainActivity.this, treeList);
-        lvTreeList.setAdapter(treeAdapter);
+//        lvTreeList = (ListView) findViewById(R.id.lvTreeList);
+//        treeList = new ArrayList<>();
+//        treeAdapter = new TreeAdapter(MainActivity.this, treeList);
+//        lvTreeList.setAdapter(treeAdapter);
         //-----------------------other views initiation----------------------------
-        btnFavourite = (ImageButton) findViewById(R.id.btnFavourite);
-        chkFamily = (CheckBox) findViewById(R.id.chkFamily);
-        chkGenus = (CheckBox) findViewById(R.id.chkGenus);
-        txtAnnounce = (TextView) findViewById(R.id.txtAnnounce);
-        //-----------------------wizard initiation----------------------------
-        btnFinalise = (Button) findViewById(R.id.btnFinalise);
-        txtFirstHeader = (TextView) findViewById(R.id.txtFirstHeader);
-        txtSecondHeader = (TextView) findViewById(R.id.txtSecondHeader);
-        chkSmooth = (CheckBox) findViewById(R.id.chkSmooth);
-        chkToothed = (CheckBox) findViewById(R.id.chkToothed);
-        chkAlternating = (CheckBox) findViewById(R.id.chkAlternating);
-        chkHandshaped = (CheckBox) findViewById(R.id.chkHandshaped);
-        chkOpposite = (CheckBox) findViewById(R.id.chkOpposite);
-        if (favouriteSelected)
-            displayFavouriteTreeBasedOnCheckedBox();
-        else
-            displayTreeBasedOnCheckedBox();
-//        txtToothedCount = (TextView) findViewById(R.id.txtToothedCount);
-//        txtSmoothCount = (TextView)findViewById(R.id.txtSmoothCount);
-//        txtHandShapedCount = (TextView) findViewById(R.id.txtHandShapedCount);
-//        txtAlternatingCount = (TextView) findViewById(R.id.txtAlternatingCount);
-//        txtOppositeCount = (TextView) findViewById(R.id.txtOppositeCount);
-        //---------------------------------------------------------------------------------
-//        txtSmoothCount.setText(Utility.countTreeTraits("Margin", "smooth"));
-//        txtToothedCount.setText(Utility.countTreeTraits("Margin", "toothed"));
-//        txtHandShapedCount.setText(Utility.countTreeTraits("Arrangement", "hand-shaped"));
-//        txtOppositeCount.setText(Utility.countTreeTraits("Arrangement", "opposite"));
-//        txtAlternatingCount.setText(Utility.countTreeTraits("Arrangement", "alternating"));
+//        btnFavourite = (ImageButton) findViewById(R.id.btnFavourite);
+//        chkFamily = (CheckBox) findViewById(R.id.chkFamily);
+//        chkGenus = (CheckBox) findViewById(R.id.chkGenus);
+//        txtAnnounce = (TextView) findViewById(R.id.txtAnnounce);
+//        //-----------------------wizard initiation----------------------------
+//        btnFinalise = (Button) findViewById(R.id.btnFinalise);
+//        txtFirstHeader = (TextView) findViewById(R.id.txtFirstHeader);
+//        txtSecondHeader = (TextView) findViewById(R.id.txtSecondHeader);
+//        chkSmooth = (CheckBox) findViewById(R.id.chkSmooth);
+//        chkToothed = (CheckBox) findViewById(R.id.chkToothed);
+//        chkAlternating = (CheckBox) findViewById(R.id.chkAlternating);
+//        chkHandshaped = (CheckBox) findViewById(R.id.chkHandshaped);
+//        chkOpposite = (CheckBox) findViewById(R.id.chkOpposite);
+//        if (favouriteSelected)
+//            displayFavouriteTreeBasedOnCheckedBox();
+//        else
+//            displayTreeBasedOnCheckedBox();
         //-----------------------tree map initiation----------------------------
-        database = openOrCreateDatabase(DBInitialization.DATABASE_NAME, MODE_PRIVATE, null);
-        markerList = new ArrayList<>();
-        txtSightedTreeCount = (TextView) findViewById(R.id.txtSightedTreeCount);
-        txtSightedTreeCount.setText(String.valueOf(Utility.countAllSightedTree()));
-        spinnerCollection = (Spinner) findViewById(R.id.spinner_collection);
-        filterEntriesList = new ArrayList<>();
-        filterEntryAdapter = new FilterAdapter(MainActivity.this, R.layout.filter_layout, R.id.txtFilterCommonName, filterEntriesList);
-        spinnerCollection.setAdapter(filterEntryAdapter);
+//        database = openOrCreateDatabase(DBInitialization.DATABASE_NAME, MODE_PRIVATE, null);
+//        markerList = new ArrayList<>();
+//        txtSightedTreeCount = (TextView) findViewById(R.id.txtSightedTreeCount);
+//        txtSightedTreeCount.setText(String.valueOf(Utility.countAllSightedTree()));
+//        spinnerCollection = (Spinner) findViewById(R.id.spinner_collection);
+//        filterEntriesList = new ArrayList<>();
+//        filterEntryAdapter = new FilterAdapter(MainActivity.this, R.layout.filter_layout, R.id.txtFilterCommonName, filterEntriesList);
+//        spinnerCollection.setAdapter(filterEntryAdapter);
 //        getAllActiveMarkers(MainActivity.this);
 
     }
@@ -269,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (generateDynamicQuery() == true) {
-                    Intent intent = new Intent(MainActivity.this, WizardResultActivity.class);
+                    Intent intent = new Intent(MainActivity.this, IdentificationResultActivity.class);
                     intent.putExtra("Query", dynamicQuery);
                     startActivity(intent);
                 } else {
@@ -285,24 +274,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_find, menu);
-        MenuItem menuSearch = menu.findItem(R.id.menuSearch);
-        searchView = (SearchView) menuSearch.getActionView();
-        searchView.setVisibility(View.INVISIBLE);
-        searchView.setQueryHint("Common/Latin name");
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                treeAdapter.getFilter().filter(newText);
-                return false;
-            }
-        });
+        inflater.inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.menuHome) {
+            Intent intent = new Intent(MainActivity.this, MainActivity.class);
+            startActivity(intent);
+        }
+        else if(item.getItemId() == R.id.menuList) {
+            Intent intent = new Intent(MainActivity.this, ListActivity.class);
+            startActivity(intent);
+        }
+        else if(item.getItemId() == R.id.menuIdentification) {
+            Intent intent = new Intent(MainActivity.this, IdentificationActivity.class);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void displayAllTreesSortedBy(String sortType) {
@@ -454,59 +444,32 @@ public class MainActivity extends AppCompatActivity {
         filterEntryAdapter.notifyDataSetChanged();
     }
 
-
-//    private void toggleButtonStateGivenMargin() { //to be updated.
-//        if(Integer.parseInt(txtToothedCount.getText().toString()) == 0 || Integer.parseInt(txtSmoothCount.getText().toString()) == 0) {
-//            if(Integer.parseInt(txtAlternatingCount.getText().toString()) == 0
-//                    || Integer.parseInt(txtHandShapedCount.getText().toString()) == 0
-//                    || Integer.parseInt(txtOppositeCount.getText().toString()) == 0)
-//                btnFinalise.setEnabled(false);
-//            else
-//                btnFinalise.setEnabled(true);
-//        }
-//        else
-//            btnFinalise.setEnabled(true);
-//    }
-//
-//    private void toggleButtonStateGivenArrangement() { //to be updated.
-//        if(Integer.parseInt(txtHandShapedCount.getText().toString()) == 0 || Integer.parseInt(txtSmoothCount.getText().toString()) == 0
-//                || Integer.parseInt(txtAlternatingCount.getText().toString()) == 0) {
-//            if(radToothed.isChecked() && Integer.parseInt(txtToothedCount.getText().toString()) == 0
-//                    || radSmooth.isChecked() && Integer.parseInt(txtSmoothCount.getText().toString()) == 0)
-//                btnFinalise.setEnabled(false);
-//            else
-//                btnFinalise.setEnabled(true);
-//        }
-//        else
-//            btnFinalise.setEnabled(true);
-//    }
-
     @Override
     protected void onResume() {
-        database = openOrCreateDatabase(DBInitialization.DATABASE_NAME, MODE_PRIVATE, null);
-        Toast.makeText(MainActivity.this, "RESUMED", Toast.LENGTH_SHORT).show();
-        dynamicQuery = "SELECT * FROM " + DBContract.TABLE_TREE + " WHERE"; //reset the dynamic query when back to the activity
-        tabHost = (TabHost) findViewById(R.id.tabHost);
-        if (backed == true) {
-            switch (TabsFragment.currentTab) {
-                case 1:
-                    TabsFragment.tabHost.setCurrentTab(0);
-                    backed = false;
-                    break;
-                case 2:
-                    TabsFragment.tabHost.setCurrentTab(1);
-                    backed = false;
-                    break;
-                case 3:
-                    TabsFragment.tabHost.setCurrentTab(2);
-                    backed = false;
-                    break;
-                case 4:
-                    TabsFragment.tabHost.setCurrentTab(3);
-                    backed = false;
-                    break;
-            }
-        }
+//        database = openOrCreateDatabase(DBInitialization.DATABASE_NAME, MODE_PRIVATE, null);
+//        Toast.makeText(MainActivity.this, "RESUMED", Toast.LENGTH_SHORT).show();
+//        dynamicQuery = "SELECT * FROM " + DBContract.TABLE_TREE + " WHERE"; //reset the dynamic query when back to the activity
+//        tabHost = (TabHost) findViewById(R.id.tabHost);
+//        if (backed == true) {
+//            switch (TabsFragment.currentTab) {
+//                case 1:
+//                    TabsFragment.tabHost.setCurrentTab(0);
+//                    backed = false;
+//                    break;
+//                case 2:
+//                    TabsFragment.tabHost.setCurrentTab(1);
+//                    backed = false;
+//                    break;
+//                case 3:
+//                    TabsFragment.tabHost.setCurrentTab(2);
+//                    backed = false;
+//                    break;
+//                case 4:
+//                    TabsFragment.tabHost.setCurrentTab(3);
+//                    backed = false;
+//                    break;
+//            }
+//        }
         super.onResume();
     }
 

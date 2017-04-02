@@ -5,13 +5,13 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/txtListHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
-        android:id="@+id/txtListHeader"
         android:background="#0ddd2c"
+        android:focusable="true"
+        android:text="Large Text"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="15dp"
-        android:textStyle="bold"
-        android:focusable="true"/> <!-- get focus so the list header is unclickable -->
+        android:textStyle="bold" /> <!-- get focus so the list header is unclickable -->
 </LinearLayout>

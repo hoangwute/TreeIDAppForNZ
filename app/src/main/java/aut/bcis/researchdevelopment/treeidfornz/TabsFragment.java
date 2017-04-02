@@ -130,7 +130,7 @@ public class TabsFragment extends Fragment implements OnMapReadyCallback {
                     Toast.makeText(getActivity(), "JUMP HERE", Toast.LENGTH_SHORT).show();
 //                    markerList = new ArrayList<Marker>();
                     currentTab = 4;
-                    MainActivity.searchView.setVisibility(View.INVISIBLE);
+//                    MainActivity.searchView.setVisibility(View.INVISIBLE);
                     if(getActivity().getLocalClassName().equals("MainActivity")) {
 //                        markerList.clear();
                         displayMarkers();

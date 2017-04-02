@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="1">
 
+    <ImageView
+        android:id="@+id/imgPic"
+        android:layout_width="match_parent"
+        android:layout_height="250dp" />
+
     <TextView
+        android:id="@+id/txtImagePosition"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
-        android:id="@+id/txtImagePosition"
+        android:background="#0ddd2c"
         android:gravity="center"
-        android:paddingTop="25dp"
-        android:textSize="14sp" />
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:id="@+id/imgPic"
-        android:paddingTop="30dp" />
+        android:paddingTop="10dp"
+        android:text="Large Text"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/cast_expanded_controller_progress_text_color"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
 </LinearLayout>

@@ -48,6 +48,7 @@ public class ImageSwipeAdapter extends PagerAdapter {
         ImageView imgPic = (ImageView) itemView.findViewById(R.id.imgPic);
         TextView txtImageTitle = (TextView)itemView.findViewById(R.id.txtImagePosition);
         imgPic.setImageResource(imageList.get(position));
+        imgPic.setScaleType(ImageView.ScaleType.FIT_XY);
 //        Picasso.with(context).load(new File(imageList.get(position))).centerCrop().resize(120, 105).into(imgPic); //load picture using Picasso library
         switch(position) {
             case 0:
