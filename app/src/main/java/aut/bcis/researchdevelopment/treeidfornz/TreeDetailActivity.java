@@ -2,17 +2,20 @@ package aut.bcis.researchdevelopment.treeidfornz;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -20,16 +23,19 @@ import java.util.ArrayList;
 import aut.bcis.researchdevelopment.adapter.ImageSwipeAdapter;
 import aut.bcis.researchdevelopment.database.DBContract;
 import aut.bcis.researchdevelopment.database.DBInitialization;
+import aut.bcis.researchdevelopment.model.CustomViewPager;
 
 import static aut.bcis.researchdevelopment.treeidfornz.TabsFragment.backed;
 
 public class TreeDetailActivity extends AppCompatActivity {
-    private TextView txtTreeCommonName, txtTreeLatinName, txtTreeFamily;
+    private TextView txtTreeCommonName, txtTreeLatinName, txtTreeMaoriName, txtTreeFamily, txtImageDescription, txtTreeGroup;
+    private CheckBox chkTreeFavourite;
     private String treeCommonName;
-    private ImageButton btnAdd;
+    private ImageButton btnAdd, btnTreeFruitStatus, btnTreeFlowerStatus;
     private ViewPager viewPager;
     private ImageSwipeAdapter imageSwipeAdapter;
     private ArrayList<Integer> imageList;
+    private final String ATTRIBUTE_COLOR_CODE = "<font color=#4c4c4c>";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,37 +50,55 @@ public class TreeDetailActivity extends AppCompatActivity {
         setSupportActionBar(myToolbar);
         TextView txtBarTitle = (TextView) myToolbar.findViewById(R.id.toolbar_title);
         txtBarTitle.setText("Species Details");
+        txtBarTitle.setTextColor(Color.WHITE);
+        Drawable drawable = ContextCompat.getDrawable(getApplicationContext(),R.drawable.icon_menuu); // change tool bar icon
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        myToolbar.setOverflowIcon(drawable);
         txtTreeCommonName = (TextView) findViewById(R.id.txtTreeCommonName);
         txtTreeLatinName = (TextView) findViewById(R.id.txtTreeLatinName);
+        txtTreeMaoriName = (TextView) findViewById(R.id.txtTreeMaoriName);
         txtTreeFamily = (TextView) findViewById(R.id.txtTreeFamily);
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        txtTreeGroup = (TextView) findViewById(R.id.txtTreeGroup);
+        chkTreeFavourite = (CheckBox) findViewById(R.id.chkTreeFavourite);
+        btnTreeFruitStatus = (ImageButton) findViewById(R.id.btnTreeFruitStatus);
+        btnTreeFlowerStatus = (ImageButton) findViewById(R.id.btnTreeFlowerStatus);
+        btnTreeFlowerStatus.setPressed(true);
+        viewPager = (CustomViewPager) findViewById(R.id.viewpager);
         imageList = new ArrayList<>();
         imageList.add(R.drawable.tree_akeake); imageList.add(R.drawable.tree_blackbeech); imageList.add(R.drawable.tree_fivefinger); imageList.add(R.drawable.tree_honeysuckle);
         imageSwipeAdapter = new ImageSwipeAdapter(this, imageList);
         viewPager.setAdapter(imageSwipeAdapter);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabDots);
         tabLayout.setupWithViewPager(viewPager);
-        btnAdd = (ImageButton) findViewById(R.id.btnAdd);
+//        btnAdd = (ImageButton) findViewById(R.id.btnAdd);
         Intent intent = getIntent();
         treeCommonName = intent.getStringExtra("Tree");
-        txtTreeCommonName.setText(treeCommonName);
-        txtTreeLatinName.setText(Utility.findTreeAttributeValueGivenName(treeCommonName, DBContract.COLUMN_LATIN_NAME));
-        txtTreeFamily.setText("Tree Family: " + Utility.findTreeAttributeValueGivenName(treeCommonName, DBContract.COLUMN_FAMILY));
+        txtTreeCommonName.append(Html.fromHtml(ATTRIBUTE_COLOR_CODE + treeCommonName + "</font>"));
+        txtTreeMaoriName.append(Html.fromHtml(ATTRIBUTE_COLOR_CODE + Utility.findTreeAttributeValueGivenName(treeCommonName, DBContract.COLUMN_MAORI_NAME) + "<font>"));
+        txtTreeLatinName.append(Html.fromHtml(ATTRIBUTE_COLOR_CODE + Utility.findTreeAttributeValueGivenName(treeCommonName, DBContract.COLUMN_LATIN_NAME) + "<font>"));
+        txtTreeFamily.append(Html.fromHtml(ATTRIBUTE_COLOR_CODE + Utility.findTreeAttributeValueGivenName(treeCommonName, DBContract.COLUMN_FAMILY) + "<font>"));
+        txtTreeGroup.append(Html.fromHtml(ATTRIBUTE_COLOR_CODE + Utility.findTreeAttributeValueGivenName(treeCommonName, DBContract.COLUMN_GENUS) + "<font>"));
+        txtImageDescription = (TextView) findViewById(R.id.txtImageDescription);
+        txtImageDescription.setText(treeCommonName);
+        if(Utility.findTreeAttributeValueGivenName(treeCommonName, DBContract.COLUMN_LIKED).equals("1")) {
+            chkTreeFavourite.setChecked(true);
+        }
+        else
+            chkTreeFavourite.setChecked(false);
     }
 
     private void addEvents() {
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(TreeDetailActivity.this, SaveSightedTreeActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("CommonName", treeCommonName);
-                bundle.putString("LatinName", getTreeAttributesBasedOnCommonName("LatinName"));
-                intent.putExtra("Bundle", bundle);
-                startActivity(intent);
-            }
-        });
+//        btnAdd.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(TreeDetailActivity.this, SaveSightedTreeActivity.class);
+//                Bundle bundle = new Bundle();
+//                bundle.putString("CommonName", treeCommonName);
+//                bundle.putString("LatinName", getTreeAttributesBasedOnCommonName("LatinName"));
+//                intent.putExtra("Bundle", bundle);
+//                startActivity(intent);
+//            }
+//        });
     }
 
     @Override

@@ -47,6 +47,7 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
 
     private static class ViewHolder {
         private TextView txtCommonName;
+        private TextView txtMaoriName;
         private TextView txtLatinName;
         private ImageButton btnLike, btnDislike;
         private ImageView imgFirstPicture;
@@ -63,6 +64,7 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
                 holder = new ViewHolder();
                 convertView = inflater.inflate(R.layout.listtree_layout, null);
                 holder.txtCommonName = (TextView) convertView.findViewById(R.id.txtCommonName);
+                holder.txtMaoriName = (TextView) convertView.findViewById(R.id.txtMaoriName);
                 holder.txtLatinName = (TextView) convertView.findViewById(R.id.txtLatinName);
                 holder.btnLike = (ImageButton) convertView.findViewById(R.id.btnLike);
                 holder.btnDislike = (ImageButton) convertView.findViewById(R.id.btnDisLike);
@@ -74,7 +76,11 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
             final Tree tree = (Tree) item;
             holder.txtCommonName.setText(tree.getCommonName());
             holder.txtLatinName.setText(tree.getLatinName());
-            Picasso.with(context).load(new File(tree.getFirstPicture())).centerCrop().resize(120, 105).into(holder.imgFirstPicture); //load picture using Picasso library
+            holder.txtMaoriName.setText(tree.getMaoriName());
+            if(tree.getFirstPicture() != null)
+                Picasso.with(context).load(new File(tree.getFirstPicture())).centerCrop().resize(120, 105).into(holder.imgFirstPicture); //load picture using Picasso library
+            holder.imgFirstPicture.setScaleType(ImageView.ScaleType.FIT_XY);
+
             if(tree.getLiked() == 1) {
                 holder.btnLike.setVisibility(View.INVISIBLE);
                 holder.btnDislike.setVisibility(View.VISIBLE);
@@ -123,14 +129,14 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
                     Toast.makeText(context, tree.getCommonName() + " has been removed from the favourite list", Toast.LENGTH_SHORT).show();
                     tree.setLiked(0); //save the state of the object
                     if(objects.size() == 0) {
-                        if(ListActivity.favouriteSelected == true) {
-                            ListActivity.txtAnnounce.setVisibility(View.VISIBLE);
-                            ListActivity.txtAnnounce.setText("Please add more species into the favourite list.");
-                        }
-                        else if(IdentificationResultActivity.identifiedFavouriteSelected == true) {
-                            IdentificationResultActivity.txtIdentifiedAnnounce.setVisibility(View.VISIBLE);
-                            IdentificationResultActivity.txtIdentifiedAnnounce.setText("Please add more species into the favourite list.");
-                        }
+//                        if(ListActivity.favouriteSelected == true) {
+//                            ListActivity.txtAnnounce.setVisibility(View.VISIBLE);
+//                            ListActivity.txtAnnounce.setText("Please add more species into the favourite list.");
+//                        }
+//                        else if(IdentificationResultActivity.identifiedFavouriteSelected == true) {
+//                            IdentificationResultActivity.txtIdentifiedAnnounce.setVisibility(View.VISIBLE);
+//                            IdentificationResultActivity.txtIdentifiedAnnounce.setText("Please add more species into the favourite list.");
+//                        }
                     }
                 }
             });

@@ -304,12 +304,13 @@ public class MainActivity extends AppCompatActivity {
         while (cursor.moveToNext()) {
             int Id = cursor.getInt(cursor.getColumnIndex(DBContract.COLUMN_ID));
             String commonName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_COMMON_NAME));
+            String maoriName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_MAORI_NAME));
             String latinName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_LATIN_NAME));
             String family = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_FAMILY));
             String genus = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_GENUS));
             int isLiked = cursor.getInt(cursor.getColumnIndex(DBContract.COLUMN_LIKED));
             String picturePath = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_PICTURE_PATH));
-            treeList.add(new Tree(Id, commonName, latinName, family, genus, picturePath, isLiked));
+            treeList.add(new Tree(Id, commonName, maoriName, latinName, family, genus, picturePath, isLiked));
         }
         cursor.close();
         Utility.sortTypeSwitch(sortType, treeList);
@@ -325,12 +326,13 @@ public class MainActivity extends AppCompatActivity {
         while (cursor.moveToNext()) {
             int Id = cursor.getInt(cursor.getColumnIndex(DBContract.COLUMN_ID));
             String commonName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_COMMON_NAME));
+            String maoriName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_MAORI_NAME));
             String latinName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_LATIN_NAME));
             String family = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_FAMILY));
             String genus = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_GENUS));
             int isLiked = cursor.getInt(cursor.getColumnIndex(DBContract.COLUMN_LIKED));
             String picturePath = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_PICTURE_PATH));
-            treeList.add(new Tree(Id, commonName, latinName, family, genus, picturePath, isLiked));
+            treeList.add(new Tree(Id, commonName, maoriName, latinName, family, genus, picturePath, isLiked));
         }
         cursor.close();
         if (treeList.size() == 0) { //no favourite tree yet

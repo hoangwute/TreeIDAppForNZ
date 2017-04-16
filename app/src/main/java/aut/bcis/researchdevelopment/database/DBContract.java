@@ -10,6 +10,7 @@ public class DBContract {
     public static final String COLUMN_ID = "ID";
     public static final String COLUMN_COMMON_NAME = "CommonName";
     public static final String COLUMN_LATIN_NAME = "LatinName";
+    public static final String COLUMN_MAORI_NAME = "MaoriName";
     public static final String COLUMN_FAMILY = "Family";
     public static final String COLUMN_GENUS = "Genus";
     public static final String COLUMN_LIKED = "Liked";

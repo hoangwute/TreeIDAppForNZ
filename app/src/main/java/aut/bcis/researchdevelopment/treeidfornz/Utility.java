@@ -97,6 +97,48 @@ public class Utility {
         }
     }
 
+    public static void generateAlphabeticalHeadersLatinName(ArrayList<Object> treeList) {
+        ArrayList<Integer> positionList = new ArrayList<>();
+        ArrayList<String> valueList = new ArrayList<>();
+        for (int i = 0; i < treeList.size(); i++) {
+            Tree tree = (Tree) treeList.get(i);
+            if (i == 0) {
+                positionList.add(i);
+                valueList.add(tree.getLatinName().substring(0, 1)); //get the first letter
+            } else {
+                Tree previousTree = (Tree) treeList.get(i - 1);
+                if (!tree.getLatinName().substring(0, 1).equalsIgnoreCase(previousTree.getLatinName().substring(0, 1))) {
+                    positionList.add(i);
+                    valueList.add(tree.getLatinName().substring(0, 1));
+                }
+            }
+        }
+        for (int i = 0; i < positionList.size(); i++) {
+            treeList.add(positionList.get(i) + i, new ListHeader(valueList.get(i))); //important plus i here as the array shifts the object position
+        }
+    }
+
+    public static void generateAlphabeticalHeadersMaoriName(ArrayList<Object> treeList) {
+        ArrayList<Integer> positionList = new ArrayList<>();
+        ArrayList<String> valueList = new ArrayList<>();
+        for (int i = 0; i < treeList.size(); i++) {
+            Tree tree = (Tree) treeList.get(i);
+            if (i == 0) {
+                positionList.add(i);
+                valueList.add(tree.getMaoriName().substring(0, 1)); //get the first letter
+            } else {
+                Tree previousTree = (Tree) treeList.get(i - 1);
+                if (!tree.getMaoriName().substring(0, 1).equalsIgnoreCase(previousTree.getMaoriName().substring(0, 1))) {
+                    positionList.add(i);
+                    valueList.add(tree.getMaoriName().substring(0, 1));
+                }
+            }
+        }
+        for (int i = 0; i < positionList.size(); i++) {
+            treeList.add(positionList.get(i) + i, new ListHeader(valueList.get(i))); //important plus i here as the array shifts the object position
+        }
+    }
+
     public static void generateGenusHeaders(ArrayList<Object> treeList) {
         ArrayList<Integer> positionList = new ArrayList<>();
         ArrayList<String> valueList = new ArrayList<>();
@@ -139,35 +181,6 @@ public class Utility {
         }
     }
 
-    public static String countTreeTraits(String trait, String value) {
-        Cursor cursor = database.rawQuery("SELECT Count(*) FROM Tree WHERE " + trait + " = '" + value + "'", null);
-        int count = 0;
-        while (cursor.moveToNext()) {
-            count = cursor.getInt(cursor.getColumnIndex("Count(*)"));
-        }
-        cursor.close();
-        return String.valueOf(count);
-    }
-
-    public static String countTreeTraitsGivenMargin(String margin, String trait, String value) { //to be updated.
-        Cursor cursor = database.rawQuery("SELECT Count(*) FROM Tree WHERE " + DBContract.COLUMN_MARGIN + " = '" + margin + "' AND " + trait + " = '" + value + "'", null);
-        int count = 0;
-        while (cursor.moveToNext()) {
-            count = cursor.getInt(cursor.getColumnIndex("Count(*)"));
-        }
-        cursor.close();
-        return String.valueOf(count);
-    }
-
-    public static String countTreeTraitsGivenArrangement(String arrangement, String trait, String value) { //to be updated.
-        Cursor cursor = database.rawQuery("SELECT Count(*) FROM Tree WHERE " + DBContract.COLUMN_ARRANGEMENT + " = '" + arrangement + "' AND " + trait + " = '" + value + "'", null);
-        int count = 0;
-        while (cursor.moveToNext()) {
-            count = cursor.getInt(cursor.getColumnIndex("Count(*)"));
-        }
-        cursor.close();
-        return String.valueOf(count);
-    }
 
     public static int countSightedTreeType(String commonName) {
         Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM " + DBContract.TABLE_MARKER + " WHERE " + DBContract.COLUMN_MARKER_COMMON_NAME + " = '" + commonName + "'", null);
@@ -230,6 +243,12 @@ public class Utility {
             case DBContract.COLUMN_COMMON_NAME:
                 Utility.generateAlphabeticalHeaders(treeList);
                 break;
+            case DBContract.COLUMN_LATIN_NAME:
+                Utility.generateAlphabeticalHeadersLatinName(treeList);
+                break;
+            case DBContract.COLUMN_MAORI_NAME:
+                Utility.generateAlphabeticalHeadersMaoriName(treeList);
+                break;
             case DBContract.COLUMN_FAMILY:
                 Utility.generateFamilyHeaders(treeList);
                 break;
@@ -264,22 +283,22 @@ public class Utility {
         updateReportPicture(1, R.drawable.tree_tikouka, mContext);
         updateReportPicture(2, R.drawable.tree_nikau, mContext);
         updateReportPicture(3, R.drawable.tree_puriri, mContext);
-        updateReportPicture(4, R.drawable.tree_mapou, mContext);
-        updateReportPicture(5, R.drawable.tree_sevenfinger, mContext);
-        updateReportPicture(6, R.drawable.tree_fivefinger, mContext);
-        updateReportPicture(7, R.drawable.tree_kawakawa, mContext);
-        updateReportPicture(8, R.drawable.tree_northernrata, mContext);
-        updateReportPicture(9, R.drawable.tree_southernrata, mContext);
-        updateReportPicture(10, R.drawable.tree_pohutukawa, mContext);
-        updateReportPicture(11, R.drawable.tree_kamahi, mContext);
-        updateReportPicture(12, R.drawable.tree_pukatea, mContext);
-        updateReportPicture(13, R.drawable.tree_wineberry, mContext);
-        updateReportPicture(14, R.drawable.tree_pigeonwood, mContext);
-        updateReportPicture(15, R.drawable.tree_kohekohe, mContext);
-        updateReportPicture(16, R.drawable.tree_kaikomako, mContext);
-        updateReportPicture(17, R.drawable.tree_houherelacebark, mContext);
-        updateReportPicture(18, R.drawable.tree_horoekalancewood, mContext);
-        updateReportPicture(19, R.drawable.tree_honeysuckle, mContext);
+        updateReportPicture(4, R.drawable.tree_sevenfinger, mContext);
+        updateReportPicture(5, R.drawable.tree_fivefinger, mContext);
+        updateReportPicture(6, R.drawable.tree_kawakawa, mContext);
+        updateReportPicture(7, R.drawable.tree_northernrata, mContext);
+        updateReportPicture(8, R.drawable.tree_southernrata, mContext);
+        updateReportPicture(9, R.drawable.tree_pohutukawa, mContext);
+        updateReportPicture(10, R.drawable.tree_kamahi, mContext);
+        updateReportPicture(11, R.drawable.tree_pukatea, mContext);
+        updateReportPicture(12, R.drawable.tree_wineberry, mContext);
+        updateReportPicture(13, R.drawable.tree_pigeonwood, mContext);
+        updateReportPicture(14, R.drawable.tree_kohekohe, mContext);
+        updateReportPicture(15, R.drawable.tree_houherelacebark, mContext);
+        updateReportPicture(16, R.drawable.tree_horoekalancewood, mContext);
+        updateReportPicture(17, R.drawable.tree_horoekalancewood, mContext);
+        updateReportPicture(18, R.drawable.tree_honeysuckle, mContext);
+        updateReportPicture(19, R.drawable.tree_mahoe, mContext);
         updateReportPicture(20, R.drawable.tree_mahoe, mContext);
         updateReportPicture(21, R.drawable.tree_ngaio, mContext);
         updateReportPicture(22, R.drawable.tree_hinau, mContext);
@@ -292,23 +311,23 @@ public class Utility {
         updateReportPicture(29, R.drawable.tree_kowhai, mContext);
         updateReportPicture(30, R.drawable.tree_matai, mContext);
         updateReportPicture(31, R.drawable.tree_miro, mContext);
-        updateReportPicture(32, R.drawable.tree_kahikatea, mContext);
-        updateReportPicture(33, R.drawable.tree_rimu, mContext);
-        updateReportPicture(34, R.drawable.tree_blackbeech, mContext);
-        updateReportPicture(35, R.drawable.tree_moutainbeech, mContext);
-        updateReportPicture(36, R.drawable.tree_totara, mContext);
-        updateReportPicture(37, R.drawable.tree_kapuka, mContext);
+        updateReportPicture(32, R.drawable.tree_rimu, mContext);
+        updateReportPicture(33, R.drawable.tree_blackbeech, mContext);
+        updateReportPicture(34, R.drawable.tree_moutainbeech, mContext);
+        updateReportPicture(35, R.drawable.tree_totara, mContext);
+        updateReportPicture(36, R.drawable.tree_kapuka, mContext);
+        updateReportPicture(37, R.drawable.tree_pukatea, mContext); //false
         updateReportPicture(38, R.drawable.tree_karaka, mContext);
         updateReportPicture(39, R.drawable.tree_rangiora, mContext);
         updateReportPicture(40, R.drawable.tree_taraire, mContext);
         updateReportPicture(41, R.drawable.tree_kauri, mContext);
         updateReportPicture(42, R.drawable.tree_karo, mContext);
         updateReportPicture(43, R.drawable.tree_treefuschia, mContext);
-        updateReportPicture(44, R.drawable.tree_tawa, mContext);
-        updateReportPicture(45, R.drawable.tree_akeake, mContext);
-        updateReportPicture(46, R.drawable.tree_tarata, mContext);
-        updateReportPicture(47, R.drawable.tree_kohuhu, mContext);
-        updateReportPicture(48, R.drawable.tree_kanuka, mContext);
-        updateReportPicture(49, R.drawable.tree_manuka, mContext);
+//        updateReportPicture(44, R.drawable.tree_tawa, mContext);
+//        updateReportPicture(45, R.drawable.tree_akeake, mContext);
+//        updateReportPicture(46, R.drawable.tree_tarata, mContext);
+//        updateReportPicture(47, R.drawable.tree_kohuhu, mContext);
+//        updateReportPicture(48, R.drawable.tree_kanuka, mContext);
+//        updateReportPicture(49, R.drawable.tree_manuka, mContext);
     }
 }

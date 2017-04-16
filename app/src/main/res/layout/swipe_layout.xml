@@ -9,19 +9,6 @@
     <ImageView
         android:id="@+id/imgPic"
         android:layout_width="match_parent"
-        android:layout_height="250dp" />
-
-    <TextView
-        android:id="@+id/txtImagePosition"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#0ddd2c"
-        android:gravity="center"
-        android:paddingTop="10dp"
-        android:text="Large Text"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@color/cast_expanded_controller_progress_text_color"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:layout_height="300dp" />
 
 </LinearLayout>

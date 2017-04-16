@@ -6,18 +6,35 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <ImageView
+            android:id="@+id/imgFirstPicture"
             android:layout_width="80dp"
-            android:layout_height="70dp"
-            android:id="@+id/imgFirstPicture" />
+            android:layout_height="80dp" />
 
         <RelativeLayout
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/layoutExceptPicture">
+
+            <TextView
+                android:id="@+id/txtMaoriName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:focusable="false"
+                android:paddingLeft="7dp"
+                android:text="Large Text"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="12dp"
+                android:textStyle="bold" /> <!-- remove focus so the list item is clickable -->
 
             <TextView
                 android:layout_width="wrap_content"
@@ -28,10 +45,11 @@
                 android:textStyle="bold"
                 android:textSize="13dp"
                 android:paddingLeft="7dp"
-                android:layout_alignTop="@+id/btnLike"
+                android:paddingTop="7dp"
+                android:focusable="false"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:focusable="false"/> <!-- remove focus so the list item is clickable -->
+                android:layout_above="@+id/txtMaoriName" /> <!-- remove focus so the list item is clickable -->
 
             <TextView
                 android:layout_width="wrap_content"
@@ -42,16 +60,17 @@
                 android:textSize="10dp"
                 android:textStyle="italic"
                 android:paddingLeft="7dp"
-                android:layout_alignBottom="@+id/btnLike"
+                android:paddingTop="1dp"
+                android:focusable="false"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:focusable="false"/> <!-- remove focus so the list item is clickable -->
+                android:layout_below="@+id/txtMaoriName" /> <!-- remove focus so the list item is clickable -->
 
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/btnLike"
-                android:src="@drawable/icon_emptyheart"
+                android:src="@drawable/icon_whiteheart"
                 android:layout_alignParentRight="true"
                 android:background="@null"
                 android:layout_centerInParent="true"
@@ -62,12 +81,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/btnDisLike"
-                android:src="@drawable/icon_hearticon"
-                android:layout_alignParentRight="true"
+                android:src="@drawable/icon_greenheart"
                 android:background="@null"
-                android:layout_centerInParent="true"
                 android:focusableInTouchMode="true"
-                android:focusable="false"/> <!-- remove focus so the list item is clickable -->
+                android:focusable="false"
+                android:layout_alignTop="@+id/btnLike"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" /> <!-- remove focus so the list item is clickable -->
         </RelativeLayout>
     </LinearLayout>
 

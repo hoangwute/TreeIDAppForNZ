@@ -1,22 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--xmlns:tools="http://schemas.android.com/tools"-->
-    <!--android:layout_width="fill_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:fillViewport="true">-->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    tools:context="aut.bcis.researchdevelopment.treeidfornz.TreeDetailActivity">
-
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#0ddd2c"
+        android:background="#91B54D"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
@@ -27,84 +18,255 @@
             style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
             android:layout_gravity="center" />
     </android.support.v7.widget.Toolbar>
-    <RelativeLayout
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        >
-
-        <android.support.v4.view.ViewPager
-            android:id="@+id/viewpager"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
-        </android.support.v4.view.ViewPager>
-
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tabDots"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerHorizontal="false"
-            app:tabBackground="@drawable/tab_selector"
-            app:tabGravity="center"
-            app:tabIndicatorHeight="0dp" />
-    </RelativeLayout>
-
-    <LinearLayout
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-       >
-
-        <TextView
+        android:fillViewport="true">
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Large Text"
-            android:id="@+id/txtTreeCommonName"
-            android:textStyle="normal|bold"
-            android:layout_weight="1"
-            android:gravity="center_vertical" />
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:orientation="vertical"
+            tools:context="aut.bcis.researchdevelopment.treeidfornz.TreeDetailActivity">
 
+            <RelativeLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                >
 
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btnAdd"
-            android:src="@drawable/icon_add"
-            android:layout_weight="1" />
+                <aut.bcis.researchdevelopment.model.CustomViewPager
+                    android:id="@+id/viewpager"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"></aut.bcis.researchdevelopment.model.CustomViewPager>
 
-    </LinearLayout>
-    <LinearLayout
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
-        <TextView
-            android:layout_width="wrap_content"
-            android:id="@+id/txtTreeLatinName"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Widget.ActionBar.Title" />
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/tabDots"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerHorizontal="false"
+                    app:tabBackground="@drawable/tab_selector"
+                    app:tabGravity="center"
+                    app:tabIndicatorHeight="0dp" />
+            </RelativeLayout>
 
-        <TextView
-            android:text="TextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/txtTreeFamily"
-            android:layout_weight="1"
-            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Widget.TextView"
-            android:fontFamily="sans-serif" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/txtImageDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#519032"
+                android:gravity="center"
+                android:paddingBottom="17dp"
+                android:paddingTop="17dp"
+                android:text="Large Text"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/cast_expanded_controller_progress_text_color"
+                android:textSize="25dp"
+                android:textStyle="bold" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#e5e5e5"
+                android:orientation="horizontal">
 
-</LinearLayout>
-<!--</ScrollView>-->
+                <ImageButton
+                    android:id="@+id/btnTreeMedicalUse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:clickable="false"
+                    android:background="@drawable/shape_medical"
+                    app:srcCompat="@drawable/icon_medical" />
+                <ImageButton
+                    android:id="@+id/btnTreePoisonStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:clickable="false"
+                    android:background="@null"
+                    app:srcCompat="@drawable/icon_poison" />
+                <ImageButton
+                    android:id="@+id/btnTreeFruitStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:clickable="false"
+                    android:background="@drawable/selector_season_status"
+                    app:srcCompat="@drawable/icon_fruit" />
+                <ImageButton
+                    android:id="@+id/btnTreeFlowerStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:clickable="false"
+                    android:background="@drawable/selector_season_status"
+                    app:srcCompat="@drawable/icon_flower" />
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
 
+                <CheckBox
+                    android:id="@+id/chkTreeFavourite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:button="@drawable/selector_tree_favourtite"
+                    android:clickable="false"
+                    android:paddingRight="10dp"
+                    android:paddingTop="30dp"
+                    android:textAlignment="viewEnd" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <TextView
+                    android:id="@+id/txtTreeCommonName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="3dp"
+                    android:text="Common name:  "
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/black" />
+                <TextView
+                    android:id="@+id/line1"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:background="#e5e5e5" />
+                <TextView
+                    android:id="@+id/txtTreeMaoriName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingBottom="3dp"
+                    android:paddingTop="3dp"
+                    android:text="Maori name:        "
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/black" />
+                <TextView
+                    android:id="@+id/line2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:background="#e5e5e5" />
+                <TextView
+                    android:id="@+id/txtTreeLatinName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingBottom="3dp"
+                    android:paddingTop="3dp"
+                    android:text="Latin name:         "
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/black" />
+                <TextView
+                    android:id="@+id/line3"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:background="#e5e5e5" />
+                <TextView
+                    android:id="@+id/txtTreeFamily"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingBottom="3dp"
+                    android:paddingTop="3dp"
+                    android:text="Family:                 "
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/black" />
+                <TextView
+                    android:id="@+id/line4"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:background="#e5e5e5" />
+                <TextView
+                    android:id="@+id/txtTreeGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingBottom="3dp"
+                    android:paddingTop="3dp"
+                    android:text="Group:                  "
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/black" />
+                <TextView
+                    android:id="@+id/line5"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:background="#e5e5e5" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="20dp">
+
+                <Button
+                    android:id="@+id/btnAddSighting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/shape_sighting"
+                    android:text="ADD A SIGHTING"
+                    android:textColor="#519032" />
+
+                <Button
+                    android:id="@+id/btnShowSighting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/shape_sighting"
+                    android:text="MY SIGHTINGS"
+                    android:textColor="#519032" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingTop="20dp"
+                android:text="SPECIES FEATURES"
+                android:textAlignment="center"
+                android:textColor="@android:color/black" />
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

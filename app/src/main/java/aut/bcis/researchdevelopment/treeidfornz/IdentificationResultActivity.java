@@ -17,6 +17,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,10 +35,12 @@ public class IdentificationResultActivity extends AppCompatActivity {
     private TreeAdapter identifiedTreeAdapter;
     private ArrayList<Object> identifiedTreeList;
     private String receivedDynamicQuery;
-    private CheckBox chkIdentifiedFamily, chkIdentifiedGenus;
+    private CheckBox chkIdentifiedFamily, chkIdentifiedGenus, chkIdentifiedExpandSort;
     private ImageButton btnIdentifiedFavourite;
     public static boolean identifiedFavouriteSelected = false; //class variable used in TreeAdapter.
     public static TextView txtIdentifiedAnnounce;
+    private RadioGroup groupIdentifiedRad;
+    private RadioButton radIdentifiedEnglishName, radIdentifiedMaoriName, radIdentifiedLatinName;
 
 
     @Override
@@ -63,11 +67,17 @@ public class IdentificationResultActivity extends AppCompatActivity {
         btnIdentifiedFavourite = (ImageButton) findViewById(R.id.btnIdentifiedFavourite);
         chkIdentifiedFamily = (CheckBox) findViewById(R.id.chkIdentifiedFamily);
         chkIdentifiedGenus = (CheckBox) findViewById(R.id.chkIdentifiedGenus);
+        chkIdentifiedExpandSort = (CheckBox) findViewById(R.id.chkIdentifiedExpandSort);
+        radIdentifiedEnglishName = (RadioButton) findViewById(R.id.radIdentifiedEnglishName);
+        radIdentifiedLatinName = (RadioButton) findViewById(R.id.radIdentifiedLatinName);
+        radIdentifiedMaoriName = (RadioButton) findViewById(R.id.radIdentifiedMaoriName);
         txtIdentifiedAnnounce = (TextView) findViewById(R.id.txtIdentifiedAnnounce);
         if (identifiedFavouriteSelected)
             displayAllIdentifiedFavouriteTreeBasedOnCheckedBox();
         else
             displayAllIdentifiedTreeBasedOnCheckedBox();
+        groupIdentifiedRad = (RadioGroup) findViewById(R.id.groupIdentifiedRad);
+        groupIdentifiedRad.bringToFront();
     }
 
     private void addEvents() {
@@ -78,7 +88,7 @@ public class IdentificationResultActivity extends AppCompatActivity {
                     chkIdentifiedFamily.setChecked(false);
                     displayTreesBasedOnState(DBContract.COLUMN_GENUS);
                 } else if (!isChecked && !chkIdentifiedFamily.isChecked()) {
-                    displayTreesBasedOnState(DBContract.COLUMN_COMMON_NAME);
+                    displayIdentifiedTreeBasedOnStateAndRadButton();
                 } else
                     displayTreesBasedOnState(DBContract.COLUMN_GENUS);
             }
@@ -90,9 +100,23 @@ public class IdentificationResultActivity extends AppCompatActivity {
                     chkIdentifiedGenus.setChecked(false);
                     displayTreesBasedOnState(DBContract.COLUMN_FAMILY);
                 } else if (!isChecked && !chkIdentifiedGenus.isChecked()) {
-                    displayTreesBasedOnState(DBContract.COLUMN_COMMON_NAME);
+                    displayIdentifiedTreeBasedOnStateAndRadButton();
                 } else
                     displayTreesBasedOnState(DBContract.COLUMN_FAMILY);
+            }
+        });
+        chkIdentifiedExpandSort.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b) {
+                    groupIdentifiedRad.setVisibility(View.VISIBLE);
+                }
+                else {
+                    if(!chkIdentifiedFamily.isChecked() && !chkIdentifiedGenus.isChecked()) {
+                        displayIdentifiedTreeBasedOnStateAndRadButton();
+                    }
+                    groupIdentifiedRad.setVisibility(View.INVISIBLE);
+                }
             }
         });
         btnIdentifiedFavourite.setOnClickListener(new View.OnClickListener() {
@@ -173,12 +197,13 @@ public class IdentificationResultActivity extends AppCompatActivity {
         while (cursor.moveToNext()) {
             int Id = cursor.getInt(cursor.getColumnIndex(DBContract.COLUMN_ID));
             String commonName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_COMMON_NAME));
+            String maoriName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_MAORI_NAME));
             String latinName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_LATIN_NAME));
             String family = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_FAMILY));
             String genus = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_GENUS));
             int isLiked = cursor.getInt(cursor.getColumnIndex(DBContract.COLUMN_LIKED));
             String picturePath = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_PICTURE_PATH));
-            identifiedTreeList.add(new Tree(Id, commonName, latinName, family, genus, picturePath, isLiked));
+            identifiedTreeList.add(new Tree(Id, commonName, maoriName, latinName, family, genus, picturePath, isLiked));
         }
         cursor.close();
         Utility.sortTypeSwitch(sortType, identifiedTreeList);
@@ -195,12 +220,13 @@ public class IdentificationResultActivity extends AppCompatActivity {
         while (cursor.moveToNext()) {
             int Id = cursor.getInt(cursor.getColumnIndex(DBContract.COLUMN_ID));
             String commonName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_COMMON_NAME));
+            String maoriName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_MAORI_NAME));
             String latinName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_LATIN_NAME));
             String family = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_FAMILY));
             String genus = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_GENUS));
             int isLiked = cursor.getInt(cursor.getColumnIndex(DBContract.COLUMN_LIKED));
             String picturePath = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_PICTURE_PATH));
-            identifiedTreeList.add(new Tree(Id, commonName, latinName, family, genus, picturePath, isLiked));
+            identifiedTreeList.add(new Tree(Id, commonName, maoriName, latinName, family, genus, picturePath, isLiked));
         }
         cursor.close();
         if (identifiedTreeList.size() == 0) { //no favourite tree yet
@@ -220,7 +246,12 @@ public class IdentificationResultActivity extends AppCompatActivity {
 
     private void displayAllIdentifiedFavouriteTreeBasedOnCheckedBox() {
         if (!chkIdentifiedFamily.isChecked() && !chkIdentifiedGenus.isChecked()) {
-            displayAllIdentifiedFavouriteTreesSortedBy(DBContract.COLUMN_COMMON_NAME);
+            if(radIdentifiedEnglishName.isChecked())
+                displayAllIdentifiedFavouriteTreesSortedBy(DBContract.COLUMN_COMMON_NAME);
+            else if(radIdentifiedLatinName.isChecked())
+                displayAllIdentifiedFavouriteTreesSortedBy(DBContract.COLUMN_LATIN_NAME);
+            else if(radIdentifiedMaoriName.isChecked())
+                displayAllIdentifiedFavouriteTreesSortedBy(DBContract.COLUMN_MAORI_NAME);
         } else if (chkIdentifiedFamily.isChecked()) {
             displayAllIdentifiedFavouriteTreesSortedBy(DBContract.COLUMN_FAMILY);
         } else if (chkIdentifiedGenus.isChecked()) {
@@ -230,31 +261,25 @@ public class IdentificationResultActivity extends AppCompatActivity {
 
     private void displayAllIdentifiedTreeBasedOnCheckedBox() {
         if (!chkIdentifiedFamily.isChecked() && !chkIdentifiedGenus.isChecked()) {
-            displayAllIdentifiedTreesSortedBy(DBContract.COLUMN_COMMON_NAME);
+            if(radIdentifiedEnglishName.isChecked())
+                displayAllIdentifiedTreesSortedBy(DBContract.COLUMN_COMMON_NAME);
+            else if(radIdentifiedLatinName.isChecked())
+                displayAllIdentifiedTreesSortedBy(DBContract.COLUMN_LATIN_NAME);
+            else if(radIdentifiedMaoriName.isChecked())
+                displayAllIdentifiedTreesSortedBy(DBContract.COLUMN_MAORI_NAME);
         } else if (chkIdentifiedFamily.isChecked()) {
             displayAllIdentifiedTreesSortedBy(DBContract.COLUMN_FAMILY);
         } else if (chkIdentifiedGenus.isChecked()) {
             displayAllIdentifiedTreesSortedBy(DBContract.COLUMN_GENUS);
         }
     }
-
-    private void displayAllClassifiedTrees() {
-        identifiedTreeList.clear();
-        identifiedTreeAdapter = new TreeAdapter(IdentificationResultActivity.this, identifiedTreeList); //this line fixes search bug occurred when changes the button
-        lvIdentifiedTreeList.setAdapter(identifiedTreeAdapter);
-        MainActivity.database = openOrCreateDatabase(DBInitialization.DATABASE_NAME, MODE_PRIVATE, null);
-        Cursor cursor = MainActivity.database.rawQuery(receivedDynamicQuery, null); //cursor based on the dynamic query statement
-        while(cursor.moveToNext()) {
-            int Id = cursor.getInt(cursor.getColumnIndex("ID"));
-            String commonName = cursor.getString(cursor.getColumnIndex("CommonName"));
-            String latinName = cursor.getString(cursor.getColumnIndex("LatinName"));
-            String family = cursor.getString(cursor.getColumnIndex("Family"));
-            String genus = cursor.getString(cursor.getColumnIndex("Genus"));
-            int isLiked = cursor.getInt(cursor.getColumnIndex("Liked"));
-            String picturePath = cursor.getString(cursor.getColumnIndex("PicturePath"));
-            identifiedTreeList.add(new Tree(Id, commonName, latinName, family, genus, picturePath, isLiked));
-        }
-        cursor.close();
-        identifiedTreeAdapter.notifyDataSetChanged();
+    private void displayIdentifiedTreeBasedOnStateAndRadButton() {
+        if(radIdentifiedEnglishName.isChecked())
+            displayTreesBasedOnState(DBContract.COLUMN_COMMON_NAME);
+        else if(radIdentifiedLatinName.isChecked())
+            displayTreesBasedOnState(DBContract.COLUMN_LATIN_NAME);
+        else if(radIdentifiedMaoriName.isChecked())
+            displayTreesBasedOnState(DBContract.COLUMN_MAORI_NAME);
     }
+
 }

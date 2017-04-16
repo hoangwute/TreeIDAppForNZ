@@ -6,15 +6,20 @@ package aut.bcis.researchdevelopment.model;
 public class Tree {
     private String commonName;
     private String latinName;
+    private String maoriName;
+
+
+
     private String family;
     private String genus;
     private String firstPicture;
     private int liked;
     private int id;
 
-    public Tree(int id, String commonName, String latinName, String family, String genus, String firstPicture, int liked) {
+    public Tree(int id, String commonName, String maoriName, String latinName, String family, String genus, String firstPicture, int liked) {
         this.id = id;
         this.commonName = commonName;
+        this.maoriName = maoriName;
         this.latinName = latinName;
         this.family = family;
         this.genus = genus;
@@ -86,5 +91,13 @@ public class Tree {
 
     public void setLiked(int liked) {
         this.liked = liked;
+    }
+
+    public String getMaoriName() {
+        return maoriName;
+    }
+
+    public void setMaoriName(String maoriName) {
+        this.maoriName = maoriName;
     }
 }

@@ -8,10 +8,14 @@
         android:id="@+id/txtListHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#0ddd2c"
+        android:background="#D3D3D3"
         android:focusable="true"
+        android:paddingBottom="3dp"
+        android:paddingStart="20dp"
+        android:paddingTop="3dp"
         android:text="Large Text"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="15dp"
-        android:textStyle="bold" /> <!-- get focus so the list header is unclickable -->
+        android:textStyle="bold"
+        android:typeface="sans" /> <!-- get focus so the list header is unclickable -->
 </LinearLayout>

@@ -1,70 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    tools:context="aut.bcis.researchdevelopment.treeidfornz.MainActivity">
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/my_toolbar"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <RadioGroup
+        android:id="@+id/groupIdentifiedRad"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#0ddd2c"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="90dip"
+        android:background="?android:attr/windowBackground"
+        android:visibility="invisible"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radIdentifiedEnglishName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="English Name" />
+
+        <RadioButton
+            android:id="@+id/radIdentifiedMaoriName"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="Maori Name" />
+
+        <RadioButton
+            android:id="@+id/radIdentifiedLatinName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Latin Name" />
+    </RadioGroup>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
+        tools:context="aut.bcis.researchdevelopment.treeidfornz.MainActivity">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/my_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#0ddd2c"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+                android:layout_gravity="center" />
+        </android.support.v7.widget.Toolbar>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Family"
+                android:button="@null"
+                android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                android:id="@+id/chkIdentifiedFamily" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Genus"
+                android:button="@null"
+                android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                android:id="@+id/chkIdentifiedGenus" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnIdentifiedFavourite"
+                android:src="@drawable/icon_greenheart"
+                android:background="@null" />
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/chkIdentifiedExpandSort"
+                android:button="@drawable/icon_sort"
+                android:checked="false" />
+
+        </LinearLayout>
+
         <TextView
-            android:id="@+id/toolbar_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
-            android:layout_gravity="center" />
-    </android.support.v7.widget.Toolbar>
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Medium Text"
+            android:id="@+id/txtIdentifiedAnnounce"
+            android:layout_gravity="center_horizontal"
+            android:textSize="6sp"
+            android:visibility="invisible" />
 
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Family"
-            android:button="@null"
-            android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
-            android:id="@+id/chkIdentifiedFamily" />
-
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Genus"
-            android:button="@null"
-            android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
-            android:id="@+id/chkIdentifiedGenus" />
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btnIdentifiedFavourite"
-            android:src="@drawable/icon_hearticon"
-            android:background="@null" />
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/lvIdentifiedTreeList" />
 
     </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Medium Text"
-        android:id="@+id/txtIdentifiedAnnounce"
-        android:layout_gravity="center_horizontal"
-        android:textSize="12dp"
-        android:visibility="invisible" />
-
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:id="@+id/lvIdentifiedTreeList" />
-
-</LinearLayout>
+</FrameLayout>

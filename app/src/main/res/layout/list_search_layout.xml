@@ -41,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btnFavourite"
-            android:src="@drawable/icon_hearticon"
+            android:src="@drawable/icon_greenheart"
             android:background="@null" />
 
     </LinearLayout>
