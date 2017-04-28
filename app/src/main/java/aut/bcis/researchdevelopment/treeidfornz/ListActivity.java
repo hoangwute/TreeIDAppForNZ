@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 
@@ -37,7 +38,7 @@ public class ListActivity extends AppCompatActivity {
     private ListView lvTreeList;
     private TreeAdapter treeAdapter;
     private ArrayList<Object> treeList;
-    private CheckBox chkFamily, chkGenus, chkExpandSort, chkFavourite;
+    private CheckBox chkFamily, chkStructuralClass, chkExpandSort, chkFavourite;
     public static boolean favouriteSelected = false; //class variable used in TreeAdapter.
     private RadioGroup groupRad;
     private RadioButton radEnglishName, radMaoriName, radLatinName;
@@ -66,7 +67,7 @@ public class ListActivity extends AppCompatActivity {
         treeAdapter = new TreeAdapter(ListActivity.this, treeList);
         lvTreeList.setAdapter(treeAdapter);
         chkFamily = (CheckBox) findViewById(R.id.chkFamily);
-        chkGenus = (CheckBox) findViewById(R.id.chkGenus);
+        chkStructuralClass = (CheckBox) findViewById(R.id.chkStructuralClass);
         chkFavourite = (CheckBox) findViewById(R.id.chkFavourite);
         chkExpandSort = (CheckBox) findViewById(R.id.chkExpandSort);
         radEnglishName = (RadioButton) findViewById(R.id.radEnglishName);
@@ -79,6 +80,17 @@ public class ListActivity extends AppCompatActivity {
             displayTreeBasedOnCheckedBox();
         groupRad = (RadioGroup) findViewById(R.id.groupRad);
         groupRad.bringToFront();
+        Intent intent = getIntent();
+        String homePage = intent.getStringExtra("FromHomePage");
+        if(homePage != null && homePage.equals("homepage")) {
+            chkFavourite.post(new Runnable() {
+                @Override
+                public void run() { //the decisive factor for all other views dimension as this is the only group which has 4 views.
+                    chkFavourite.setChecked(true);
+                    listSearch.clearFocus();
+                }
+            });
+        }
     }
     private void addEvents() {
         listSearch.setQueryHint("Search by keyword...");
@@ -105,41 +117,41 @@ public class ListActivity extends AppCompatActivity {
         linearLayout3.setLayoutParams(params);
         AutoCompleteTextView autoComplete = (AutoCompleteTextView) linearLayout3.getChildAt(0);
         autoComplete.setTextSize(15);
-        chkGenus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        chkStructuralClass.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked && chkFamily.isChecked()) { //only 1 button can be selected at once
                     chkFamily.setChecked(false);
-                    chkGenus.setTextColor(Color.BLACK);
+                    chkStructuralClass.setTextColor(Color.BLACK);
                     chkFamily.setTextColor(Color.WHITE);
-                    displayTreesBasedOnState(DBContract.COLUMN_GENUS);
+                    displayTreesBasedOnState(DBContract.COLUMN_STRUCTURAL_CLASS);
                 } else if (!isChecked && !chkFamily.isChecked()) {
-                    chkGenus.setTextColor(Color.WHITE);
+                    chkStructuralClass.setTextColor(Color.WHITE);
                     chkFamily.setTextColor(Color.WHITE);
                     displayTreeBasedOnStateAndRadButton();
                 } else {
-                    chkGenus.setTextColor(Color.BLACK);
+                    chkStructuralClass.setTextColor(Color.BLACK);
                     chkFamily.setTextColor(Color.WHITE);
-                    displayTreesBasedOnState(DBContract.COLUMN_GENUS);
+                    displayTreesBasedOnState(DBContract.COLUMN_STRUCTURAL_CLASS);
                 }
             }
         });
         chkFamily.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked && chkGenus.isChecked()) { //only 1 button can be selected at once
-                    chkGenus.setChecked(false);
+                if (isChecked && chkStructuralClass.isChecked()) { //only 1 button can be selected at once
+                    chkStructuralClass.setChecked(false);
                     chkFamily.setTextColor(Color.BLACK);
-                    chkGenus.setTextColor(Color.WHITE);
+                    chkStructuralClass.setTextColor(Color.WHITE);
                     displayTreesBasedOnState(DBContract.COLUMN_FAMILY);
-                } else if (!isChecked && !chkGenus.isChecked()) {
+                } else if (!isChecked && !chkStructuralClass.isChecked()) {
                     chkFamily.setTextColor(Color.WHITE);
-                    chkGenus.setTextColor(Color.WHITE);
+                    chkStructuralClass.setTextColor(Color.WHITE);
                     displayTreeBasedOnStateAndRadButton();
                 } else {
                     displayTreesBasedOnState(DBContract.COLUMN_FAMILY);
                     chkFamily.setTextColor(Color.BLACK);
-                    chkGenus.setTextColor(Color.WHITE);
+                    chkStructuralClass.setTextColor(Color.WHITE);
                 }
             }
         });
@@ -218,7 +230,7 @@ public class ListActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
                     radEnglishName.setTextColor(Color.BLACK);
-                    displayAccordingToRadButton();
+                    displayAccordingToRadButton(DBContract.COLUMN_COMMON_NAME);
                 }
                 else {
                     radEnglishName.setTextColor(Color.WHITE);
@@ -230,7 +242,7 @@ public class ListActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
                     radMaoriName.setTextColor(Color.BLACK);
-                    displayAccordingToRadButton();
+                    displayAccordingToRadButton(DBContract.COLUMN_MAORI_NAME);
                 }
                 else {
                     radMaoriName.setTextColor(Color.WHITE);
@@ -242,7 +254,7 @@ public class ListActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
                     radLatinName.setTextColor(Color.BLACK);
-                    displayAccordingToRadButton();
+                    displayAccordingToRadButton(DBContract.COLUMN_LATIN_NAME);
                 }
                 else {
                     radLatinName.setTextColor(Color.WHITE);
@@ -286,10 +298,10 @@ public class ListActivity extends AppCompatActivity {
             String maoriName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_MAORI_NAME));
             String latinName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_LATIN_NAME));
             String family = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_FAMILY));
-            String genus = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_GENUS));
+            String structuralClass = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_STRUCTURAL_CLASS));
+            String mainPicture = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_MAIN_PICTURE));
             int isLiked = cursor.getInt(cursor.getColumnIndex(DBContract.COLUMN_LIKED));
-            String picturePath = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_PICTURE_PATH));
-            treeList.add(new Tree(Id, commonName, maoriName, latinName, family, genus, picturePath, isLiked));
+            treeList.add(new Tree(Id, commonName, maoriName, latinName, family, structuralClass, mainPicture, isLiked));
         }
         cursor.close();
         Utility.sortTypeSwitch(sortType, treeList);
@@ -308,16 +320,12 @@ public class ListActivity extends AppCompatActivity {
             String maoriName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_MAORI_NAME));
             String latinName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_LATIN_NAME));
             String family = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_FAMILY));
-            String genus = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_GENUS));
+            String structuralClass = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_STRUCTURAL_CLASS));
+            String mainPicture = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_MAIN_PICTURE));
             int isLiked = cursor.getInt(cursor.getColumnIndex(DBContract.COLUMN_LIKED));
-            String picturePath = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_PICTURE_PATH));
-            treeList.add(new Tree(Id, commonName, maoriName, latinName, family, genus, picturePath, isLiked));
+            treeList.add(new Tree(Id, commonName, maoriName, latinName, family, structuralClass, mainPicture, isLiked));
         }
         cursor.close();
-//        if (treeList.size() == 0) { //no favourite tree yet
-//            txtAnnounce.setVisibility(View.VISIBLE);
-//            txtAnnounce.setText("Please add more species into the favourite list.");
-//        }
         Utility.sortTypeSwitch(sortType, treeList);
         treeAdapter.notifyDataSetChanged();
     }
@@ -330,7 +338,7 @@ public class ListActivity extends AppCompatActivity {
     }
 
     private void displayFavouriteTreeBasedOnCheckedBox() {
-        if (!chkFamily.isChecked() && !chkGenus.isChecked()) {
+        if (!chkFamily.isChecked() && !chkStructuralClass.isChecked()) {
             if(radEnglishName.isChecked())
                 displayAllFavouriteTreesSortedBy(DBContract.COLUMN_COMMON_NAME);
             else if(radLatinName.isChecked())
@@ -339,13 +347,13 @@ public class ListActivity extends AppCompatActivity {
                 displayAllFavouriteTreesSortedBy(DBContract.COLUMN_MAORI_NAME);
         } else if (chkFamily.isChecked()) {
             displayAllFavouriteTreesSortedBy(DBContract.COLUMN_FAMILY);
-        } else if (chkGenus.isChecked()) {
-            displayAllFavouriteTreesSortedBy(DBContract.COLUMN_GENUS);
+        } else if (chkStructuralClass.isChecked()) {
+            displayAllFavouriteTreesSortedBy(DBContract.COLUMN_STRUCTURAL_CLASS);
         }
     }
 
     private void displayTreeBasedOnCheckedBox() {
-        if (!chkFamily.isChecked() && !chkGenus.isChecked()) {
+        if (!chkFamily.isChecked() && !chkStructuralClass.isChecked()) {
             if(radEnglishName.isChecked())
                 displayAllTreesSortedBy(DBContract.COLUMN_COMMON_NAME);
             else if(radLatinName.isChecked())
@@ -354,8 +362,8 @@ public class ListActivity extends AppCompatActivity {
                 displayAllTreesSortedBy(DBContract.COLUMN_MAORI_NAME);
         } else if (chkFamily.isChecked()) {
             displayAllTreesSortedBy(DBContract.COLUMN_FAMILY);
-        } else if (chkGenus.isChecked()) {
-            displayAllTreesSortedBy(DBContract.COLUMN_GENUS);
+        } else if (chkStructuralClass.isChecked()) {
+            displayAllTreesSortedBy(DBContract.COLUMN_STRUCTURAL_CLASS);
         }
     }
 
@@ -367,24 +375,20 @@ public class ListActivity extends AppCompatActivity {
         else if(radMaoriName.isChecked())
             displayTreesBasedOnState(DBContract.COLUMN_MAORI_NAME);
     }
-    private void displayAccordingToRadButton() {
-        if (!chkFamily.isChecked() && !chkGenus.isChecked()) {
+    private void displayAccordingToRadButton(String nameSetting) {
+        if (!chkFamily.isChecked() && !chkStructuralClass.isChecked()) {
             if(favouriteSelected) {
-                if(radEnglishName.isChecked())
-                    displayAllFavouriteTreesSortedBy(DBContract.COLUMN_COMMON_NAME);
-                else if(radLatinName.isChecked())
-                    displayAllFavouriteTreesSortedBy(DBContract.COLUMN_LATIN_NAME);
-                else if(radMaoriName.isChecked())
-                    displayAllFavouriteTreesSortedBy(DBContract.COLUMN_MAORI_NAME);
+                displayAllFavouriteTreesSortedBy(nameSetting);
             }
             else {
-                if (radEnglishName.isChecked())
-                    displayAllTreesSortedBy(DBContract.COLUMN_COMMON_NAME);
-                else if (radLatinName.isChecked())
-                    displayAllTreesSortedBy(DBContract.COLUMN_LATIN_NAME);
-                else if (radMaoriName.isChecked())
-                    displayAllTreesSortedBy(DBContract.COLUMN_MAORI_NAME);
+                displayAllTreesSortedBy(nameSetting);
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        listSearch.clearFocus();
+        super.onResume();
     }
 }

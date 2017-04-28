@@ -77,8 +77,8 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
             holder.txtCommonName.setText(tree.getCommonName());
             holder.txtLatinName.setText(tree.getLatinName());
             holder.txtMaoriName.setText(tree.getMaoriName());
-            if(tree.getFirstPicture() != null)
-                Picasso.with(context).load(new File(tree.getFirstPicture())).centerCrop().resize(120, 105).into(holder.imgFirstPicture); //load picture using Picasso library
+            if(tree.getMainPicture() != null)
+                Picasso.with(context).load(new File(tree.getMainPicture())).centerCrop().resize(120, 105).into(holder.imgFirstPicture); //load picture using Picasso library
             holder.imgFirstPicture.setScaleType(ImageView.ScaleType.FIT_XY);
 
             if(tree.getLiked() == 1) {
@@ -145,7 +145,7 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
             if (convertView == null) {
                 LayoutInflater inflater = this.context.getLayoutInflater();
                 holder = new ViewHolder();
-                convertView = inflater.inflate(R.layout.listheader_layout, null);
+                convertView = inflater.inflate(R.layout.header_list_layout, null);
                 holder.txtListHeader = (TextView) convertView.findViewById(R.id.txtListHeader);
                 convertView.setTag(holder);
             } else {
@@ -213,7 +213,7 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
             for (int i = 0; i < count; i++) {
                 if(list.get(i) instanceof Tree) {
                     Tree tree = (Tree) list.get(i);
-                    filterableString = tree.getCommonName() + tree.getLatinName();
+                    filterableString = tree.getCommonName() + tree.getLatinName() + tree.getMaoriName();
                 }
                 else if(list.get(i) instanceof Object) {
                     ListHeader header = (ListHeader) list.get(i);

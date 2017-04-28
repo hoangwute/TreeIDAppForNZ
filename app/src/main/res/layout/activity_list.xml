@@ -113,7 +113,7 @@
                 android:textColor="#ffffff" />
 
             <CheckBox
-                android:id="@+id/chkGenus"
+                android:id="@+id/chkStructuralClass"
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"

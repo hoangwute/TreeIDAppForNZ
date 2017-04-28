@@ -2,11 +2,12 @@ package aut.bcis.researchdevelopment.treeidfornz;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.location.Location;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -16,71 +17,53 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.AutocompleteFilter;
-import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Set;
 
 import aut.bcis.researchdevelopment.database.DBContract;
 import aut.bcis.researchdevelopment.database.DBInitialization;
-import aut.bcis.researchdevelopment.model.TreeMarker;
 
 import static aut.bcis.researchdevelopment.treeidfornz.MainActivity.database;
-import static aut.bcis.researchdevelopment.treeidfornz.MainActivity.txtSightedTreeCount;
 
 public class SaveSightedTreeActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
-    private TextView txtSavedTreeCommonName, txtSavedTreeLatinName, txtShowLocation;
-    private EditText txtSavedTreeNote;
-    private Button btnSaveTree;
-    private ImageView imgTakePicture;
-    private final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
-    private Place place;
+    private TextView txtSavedTreeCommonName, txtSavedTreeLatinName, txtSaveSightingLatLngState, txtSightingLocation;
+    private EditText editTxtSightingNote;
+    private Button btnSaveSighting, btnAddSightingLocation, btnChangeSightingLocation;
+    private String treeLocation,treeCommonName, treeMaoriName, treeLatinName;
+    private Double treeLatitude = -41.270020, treeLongitude = 173.891755;
+    private ImageView imgSightingPicture;
+    private final int LOCATION_REQUEST_CODE = 2603;
+    public static final int LOCATION_RESULT_CODE = 0106;
     private final int REQUEST_IMAGE_CAPTURE = 2;
     private final int PICK_IMAGE_REQUEST = 3;
     private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 4;
     private boolean mLocationPermissionGranted;
-    private RadioButton radChoosePlace, radCurrentPlace;
     private GoogleApiClient mGoogleApiClient;
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
-    private Location mLastKnownLocation;
     private final int MAX_ENTRIES = 5;
-    private String[] mLikelyPlaceNames = new String[MAX_ENTRIES];
-    private String[] mLikelyPlaceAddresses = new String[MAX_ENTRIES];
-    private String[] mLikelyPlaceAttributions = new String[MAX_ENTRIES];
     private LatLng[] mLikelyPlaceLatLngs = new LatLng[MAX_ENTRIES];
-    private LatLng spottedTreeLocation;
     private Bitmap imageBitmap;
 
     @Override
@@ -92,6 +75,25 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
     }
 
     private void addControls() {
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        TextView txtBarTitle = (TextView) myToolbar.findViewById(R.id.toolbar_title);
+        txtBarTitle.setText("New Sighting");
+        txtBarTitle.setTextColor(Color.WHITE);
+        Drawable drawable = ContextCompat.getDrawable(getApplicationContext(),R.drawable.icon_menuu); // change tool bar icon
+        myToolbar.setOverflowIcon(drawable);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        btnChangeSightingLocation = (Button) findViewById(R.id.btnChangeSightingLocation);
+        btnAddSightingLocation = (Button) findViewById(R.id.btnAddSightingLocation);
+        btnSaveSighting = (Button) findViewById(R.id.btnSaveSighting);
+        txtSightingLocation = (TextView) findViewById(R.id.txtSightingLocation);
+        txtSavedTreeCommonName = (TextView) findViewById(R.id.txtSavedTreeCommonName);
+        txtSavedTreeLatinName = (TextView) findViewById(R.id.txtSavedTreeLatinName);
+        txtSaveSightingLatLngState = (TextView) findViewById(R.id.txtSaveLatLngState);
+        editTxtSightingNote = (EditText) findViewById(R.id.editTxtSightingNote);
+        imgSightingPicture = (ImageView) findViewById(R.id.btnTakePicture);
+        registerForContextMenu(imgSightingPicture);
+        //-----------------------------------------------------------------------------------------------
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */,
                         this /* OnConnectionFailedListener */)
@@ -101,123 +103,86 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
                 .addApi(Places.PLACE_DETECTION_API)
                 .build();
         mGoogleApiClient.connect();
-        txtSavedTreeCommonName = (TextView) findViewById(R.id.txtSavedTreeCommonName);
-        txtSavedTreeLatinName = (TextView) findViewById(R.id.txtSavedTreeLatinName);
-        txtSavedTreeNote = (EditText) findViewById(R.id.txtSavedTreeNote);
-        txtShowLocation = (TextView) findViewById(R.id.txtShowLocation);
-        imgTakePicture = (ImageView) findViewById(R.id.btnTakePicture);
-        btnSaveTree = (Button) findViewById(R.id.btnSaveTree);
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra("Bundle");
-        txtSavedTreeCommonName.setText(bundle.getString("CommonName"));
-        txtSavedTreeLatinName.setText(bundle.getString("LatinName"));
-        radChoosePlace = (RadioButton) findViewById(R.id.radChoosePlace);
-        radCurrentPlace = (RadioButton) findViewById(R.id.radCurrentPlace);
+        treeCommonName = bundle.getString("CommonName");
+        treeMaoriName = bundle.getString("MaoriName");
+        treeLatinName = bundle.getString("LatinName");
+        txtSavedTreeCommonName.setText(treeCommonName + "/" + treeMaoriName);
+        txtSavedTreeLatinName.setText(treeLatinName);
+        intent.getStringExtra("Tree Location");
+        final LocationManager manager = (LocationManager) getSystemService(SaveSightedTreeActivity.LOCATION_SERVICE);
+        if(Utility.isNetworkAvailable(SaveSightedTreeActivity.this) && manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            getDeviceLocation();
+            getCurrentLagLng();
+        }
     }
 
     private void addEvents() {
-        btnSaveTree.setOnClickListener(new View.OnClickListener() {
+        btnAddSightingLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!txtShowLocation.getText().toString().equals("Location")) {
-                    Toast.makeText(SaveSightedTreeActivity.this, txtSavedTreeCommonName.getText().toString() + " has been successfully added to your own tree map.", Toast.LENGTH_LONG).show();
-                    String commonName = txtSavedTreeCommonName.getText().toString();
-                    String latinName = txtSavedTreeLatinName.getText().toString();
-                    String image = Utility.getTakenPicturePath(imageBitmap, SaveSightedTreeActivity.this);
-                    double latitude = spottedTreeLocation.latitude;
-                    double longitude = spottedTreeLocation.longitude;
-                    String place = txtShowLocation.getText().toString();
-                    String note = txtSavedTreeNote.getEditableText().toString();
-                    TreeMarker marker = new TreeMarker(commonName, latinName, place, note, image, latitude, longitude);
-                    if(Utility.foundInsertedFilter(marker.getCommonName()) == false) {
-                        Utility.insertFilterEntry(marker);
+                if(Utility.isNetworkAvailable(SaveSightedTreeActivity.this)) {
+                    Toast.makeText(SaveSightedTreeActivity.this, "Internet connected", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(SaveSightedTreeActivity.this, AddSightingLocationActivity.class);
+                    if (!txtSaveSightingLatLngState.getText().toString().isEmpty()) {
+                        String[] latLongString = txtSaveSightingLatLngState.getText().toString().split(",");
+                        treeLatitude = Double.parseDouble(latLongString[0].replace("lat/lng: (", ""));
+                        treeLongitude = Double.parseDouble(latLongString[1].substring(0, latLongString[1].length() - 1));
                     }
-                    Utility.insertNewMarker(marker);
-                    txtSightedTreeCount.setText(String.valueOf(Utility.countAllSightedTree()));
+                    intent.putExtra("CurrentLocationLatitude", treeLatitude);
+                    intent.putExtra("CurrentLocationLongitude", treeLongitude);
+                    startActivityForResult(intent, LOCATION_REQUEST_CODE);
                 }
                 else
-                    Toast.makeText(SaveSightedTreeActivity.this, "Please specify the tree location", Toast.LENGTH_LONG).show();
-
+                    createInternetAlertDialog();
             }
         });
-        registerForContextMenu(imgTakePicture);
-        radChoosePlace.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        btnChangeSightingLocation.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(!radCurrentPlace.isChecked() && radChoosePlace.isChecked()) {
-                    openLocationFinderActivity();
-                    radChoosePlace.setChecked(false);
+            public void onClick(View view) {
+                if(Utility.isNetworkAvailable(SaveSightedTreeActivity.this)) {
+                    Intent intent = new Intent(SaveSightedTreeActivity.this, AddSightingLocationActivity.class);
+                    intent.putExtra("CurrentLocationLatitude", treeLatitude);
+                    intent.putExtra("CurrentLocationLongitude", treeLongitude);
+                    startActivityForResult(intent, LOCATION_REQUEST_CODE);
                 }
-                else if(radChoosePlace.isChecked() && radCurrentPlace.isChecked()) {
-                    openLocationFinderActivity();
-                    radChoosePlace.setChecked(false);
-                }
+                else
+                    createInternetAlertDialog();
             }
         });
-        radCurrentPlace.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        btnSaveSighting.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(!radChoosePlace.isChecked() && radCurrentPlace.isChecked()) {
-                    getDeviceLocation();
-                    showCurrentPlace();
-                    radCurrentPlace.setChecked(false);
+            public void onClick(View view) {
+                String location = txtSightingLocation.getText().toString();
+                if(txtSightingLocation.getVisibility() == View.INVISIBLE) {
+                    location = "Location is not specified";
                 }
-                else if(radChoosePlace.isChecked() && radCurrentPlace.isChecked()) {
-                    getDeviceLocation();
-                    showCurrentPlace();
-                    radCurrentPlace.setChecked(false);
-                }
+                Toast.makeText(SaveSightedTreeActivity.this, location, Toast.LENGTH_SHORT).show();
+                String note = editTxtSightingNote.getEditableText().toString();
+                String timeStamp = Utility.getSystemDate();
+                String sightingDate = Utility.getSightingDate();
+                MainActivity.database = openOrCreateDatabase(DBInitialization.DATABASE_NAME, MODE_PRIVATE, null);
+                Cursor cursor = database.rawQuery("INSERT INTO " + DBContract.TABLE_SIGHTING + "(CommonName, LatinName, Date, Location, Note, MaoriName, TimeStamp, Latitude, Longitude) " +
+                        "VALUES ('" + treeCommonName + "', '" + treeLatinName + "', '" + sightingDate+ "', '" + location + "', '" + note + "', '" + treeMaoriName + "', '"
+                        + timeStamp + "', " + treeLatitude + ", " + treeLongitude + ")" , null);
+                cursor.moveToFirst();
+                cursor.close();
+                if(imageBitmap != null)
+                    Utility.insertSightingPicture(Utility.getLastInsertRowID(), imageBitmap, SaveSightedTreeActivity.this);
+                Toast.makeText(SaveSightedTreeActivity.this, "New Sighting is successfully added.", Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
     }
 
-    private void openLocationFinderActivity() {
-        try {
-            AutocompleteFilter autocompleteFilter = new AutocompleteFilter.Builder()
-                    .setTypeFilter(Place.TYPE_COUNTRY)
-                    .setCountry("NZ") //restrict place search to New Zealand
-                    .build();
-            Intent intent =
-                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
-                            .setFilter(autocompleteFilter)
-                            .build(this);
-            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-        } catch (GooglePlayServicesRepairableException e) {
-            // Indicates that Google Play Services is either not installed or not up to date. Prompt
-            // the user to correct the issue.
-            GoogleApiAvailability.getInstance().getErrorDialog(this, e.getConnectionStatusCode(),
-                    0 /* requestCode */).show();
-        } catch (GooglePlayServicesNotAvailableException e) {
-            // Indicates that Google Play Services is not available and the problem is not easily
-            // resolvable.
-            String message = "Google Play Services is not available: " +
-                    GoogleApiAvailability.getInstance().getErrorString(e.errorCode);
-
-            Log.e(MainActivity.LOG_TAG, message);
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-        }
-    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) { //for getting place function
-            if (resultCode == RESULT_OK) {
-                place = PlaceAutocomplete.getPlace(this, data);
-                spottedTreeLocation = place.getLatLng();
-                txtShowLocation.setText("Location: " + place.getAddress());
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-                // TODO: Handle the error.
-                Log.i(MainActivity.LOG_TAG, status.getStatusMessage());
-
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
-            }
-        }
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) { //for camera function
             Bundle extras = data.getExtras();
             imageBitmap = (Bitmap) extras.get("data");
-            imgTakePicture.setImageBitmap(imageBitmap);
-            imgTakePicture.setScaleType(ImageView.ScaleType.FIT_XY);
+            imgSightingPicture.setImageBitmap(imageBitmap);
+            imgSightingPicture.setScaleType(ImageView.ScaleType.FIT_XY);
         }
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
 
@@ -225,12 +190,36 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
 
             try {
                 imageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                imgTakePicture.setImageBitmap(imageBitmap);
-                imgTakePicture.setScaleType(ImageView.ScaleType.FIT_XY);
+                imgSightingPicture.setImageBitmap(imageBitmap);
+                imgSightingPicture.setScaleType(ImageView.ScaleType.FIT_XY);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        if(requestCode == LOCATION_REQUEST_CODE && resultCode == LOCATION_RESULT_CODE) {
+            treeLocation = data.getStringExtra("Tree Location");
+            treeLatitude = data.getDoubleExtra("Tree Latitude", 0.0);
+            treeLongitude = data.getDoubleExtra("Tree Longitude", 0.0);
+            btnAddSightingLocation.setVisibility(View.INVISIBLE);
+            btnChangeSightingLocation.setVisibility(View.VISIBLE);
+            txtSightingLocation.setVisibility(View.VISIBLE);
+            txtSightingLocation.setText(treeLocation);
+        }
+    }
+
+    private void createInternetAlertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(SaveSightedTreeActivity.this);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        })
+                .setTitle("Phone is not connected to the internet")
+                .setMessage("Please connect your phone to the internet. It is also recommended to turn on the GPS so the application" +
+                        "can access your current location.");
+        AlertDialog diag = builder.create();
+        diag.show();
     }
 
     private void dispatchTakePictureIntent() {
@@ -276,10 +265,6 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
          * Get the best and most recent location of the device, which may be null in rare
          * cases when a location is not available.
          */
-        if (mLocationPermissionGranted) {
-            mLastKnownLocation = LocationServices.FusedLocationApi
-                    .getLastLocation(mGoogleApiClient);
-        }
     }
 //
     @Override
@@ -298,65 +283,24 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
         }
     }
 
-    private void showCurrentPlace() {
-
+    private void getCurrentLagLng() {
         if (mLocationPermissionGranted) {
-            // Get the likely places - that is, the businesses and other points of interest that
-            // are the best match for the device's current location.
             @SuppressWarnings("MissingPermission")
             PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
                     .getCurrentPlace(mGoogleApiClient, null);
             result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
                 @Override
                 public void onResult(@NonNull PlaceLikelihoodBuffer likelyPlaces) {
-                    int i = 0;
-                    mLikelyPlaceNames = new String[MAX_ENTRIES];
-                    mLikelyPlaceAddresses = new String[MAX_ENTRIES];
-                    mLikelyPlaceAttributions = new String[MAX_ENTRIES];
-                    mLikelyPlaceLatLngs = new LatLng[MAX_ENTRIES];
                     for (PlaceLikelihood placeLikelihood : likelyPlaces) {
-                        // Build a list of likely places to show the user. Max 5.
-                        mLikelyPlaceNames[i] = (String) placeLikelihood.getPlace().getName();
-                        mLikelyPlaceAddresses[i] = (String) placeLikelihood.getPlace().getAddress();
-                        mLikelyPlaceAttributions[i] = (String) placeLikelihood.getPlace()
-                                .getAttributions();
-                        mLikelyPlaceLatLngs[i] = placeLikelihood.getPlace().getLatLng();
-                        i++;
-                        if (i > (MAX_ENTRIES - 1)) {
-                            break;
-                        }
+                        mLikelyPlaceLatLngs[0] = placeLikelihood.getPlace().getLatLng();
+                        break;
                     }
                     // Release the place likelihood buffer, to avoid memory leaks.
+                    txtSaveSightingLatLngState.setText(mLikelyPlaceLatLngs[0].toString());
                     likelyPlaces.release();
-
-                    // Show a dialog offering the user the list of likely places, and add a
-                    // marker at the selected place.
-                    openPlacesDialog();
                 }
             });
         }
-    }
-    private void openPlacesDialog() {
-        // Ask the user to choose the place where they are now.
-        DialogInterface.OnClickListener listener =
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // The "which" argument contains the position of the selected item.
-                        spottedTreeLocation = mLikelyPlaceLatLngs[which];
-                        String markerSnippet = mLikelyPlaceAddresses[which];
-                        txtShowLocation.setText("Location: " + markerSnippet);
-                        if (mLikelyPlaceAttributions[which] != null) {
-                            markerSnippet = markerSnippet + "\n" + mLikelyPlaceAttributions[which];
-                        };
-                    }
-                };
-
-        // Display the dialog.
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle("Pick a place")
-                .setItems(mLikelyPlaceNames, listener)
-                .show();
     }
 
     @Override
@@ -372,5 +316,28 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.menuHome) {
+            Intent intent = new Intent(SaveSightedTreeActivity.this, MainActivity.class);
+            startActivity(intent);
+        }
+        else if(item.getItemId() == R.id.menuList) {
+            Intent intent = new Intent(SaveSightedTreeActivity.this, ListActivity.class);
+            startActivity(intent);
+        }
+        else if(item.getItemId() == R.id.menuIdentification) {
+            Intent intent = new Intent(SaveSightedTreeActivity.this, IdentificationActivity.class);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -1,27 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/homepage"
     android:orientation="vertical"
     tools:context="aut.bcis.researchdevelopment.treeidfornz.MainActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/my_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#0ddd2c"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-        <TextView
-            android:id="@+id/toolbar_title"
-            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+    <Button
+        android:id="@+id/btnIdentifyATree"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="240dp"
+        android:background="@drawable/shape_identifytree"
+        android:text="IDENTIFY A TREE"
+        android:textColor="#FFFFFF" />
+
+    <Button
+        android:id="@+id/btnAToZOfTree"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btnIdentifyATree"
+        android:layout_alignStart="@+id/btnIdentifyATree"
+        android:layout_below="@+id/btnIdentifyATree"
+        android:layout_alignRight="@+id/btnIdentifyATree"
+        android:layout_alignEnd="@+id/btnIdentifyATree"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/shape_identifytree"
+        android:text="A-Z OF NZ TREES"
+        android:textColor="#FFFFFF" />
+
+    <Button
+        android:id="@+id/btnAbout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnAToZOfTree"
+        android:layout_alignLeft="@+id/btnIdentifyATree"
+        android:layout_alignStart="@+id/btnIdentifyATree"
+        android:layout_alignRight="@+id/btnIdentifyATree"
+        android:layout_alignEnd="@+id/btnIdentifyATree"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/shape_identifytree"
+        android:text="ABOUT THE PROJECT"
+        android:textColor="#FFFFFF" />
+
+    <RelativeLayout
+        android:id="@+id/favouriteLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <ImageButton
+            android:id="@+id/btnFavourite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-    </android.support.v7.widget.Toolbar>
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_toLeftOf="@+id/btnMyFavourites"
+            android:layout_toStartOf="@+id/btnMyFavourites"
+            android:background="@null"
+            app:srcCompat="@drawable/icon_whiteheart" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/btnMyFavourites"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:text="My favourites"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+</RelativeLayout>

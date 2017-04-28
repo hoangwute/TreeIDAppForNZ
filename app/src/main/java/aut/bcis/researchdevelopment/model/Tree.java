@@ -4,35 +4,34 @@ package aut.bcis.researchdevelopment.model;
  * Created by VS9 X64Bit on 26/08/2016.
  */
 public class Tree {
-    private String commonName;
-    private String latinName;
-    private String maoriName;
-
-
-
-    private String family;
-    private String genus;
-    private String firstPicture;
-    private int liked;
     private int id;
+    private String commonName;
+    private String maoriName;
+    private String latinName;
+    private String family;
+    private String structuralClass;
+    private String mainPicture;
+    private int liked;
 
-    public Tree(int id, String commonName, String maoriName, String latinName, String family, String genus, String firstPicture, int liked) {
+    public Tree(int id, String commonName, String maoriName, String latinName, String family, String structuralClass, String mainPicture, int liked) {
         this.id = id;
         this.commonName = commonName;
         this.maoriName = maoriName;
         this.latinName = latinName;
         this.family = family;
-        this.genus = genus;
-        this.firstPicture = firstPicture;
+        this.structuralClass = structuralClass;
+        this.mainPicture = mainPicture;
         this.liked = liked;
     }
-    public Tree(String commonName, String latinName, String family, String genus, int liked) {
+
+    public Tree(int id, String commonName, String maoriName, String latinName, String mainPicture) {
+        this.id = id;
         this.commonName = commonName;
+        this.maoriName = maoriName;
         this.latinName = latinName;
-        this.family = family;
-        this.genus = genus;
-        this.liked = liked;
+        this.mainPicture = mainPicture;
     }
+
 
     public Tree() {
     }
@@ -69,20 +68,20 @@ public class Tree {
         this.family = family;
     }
 
-    public String getGenus() {
-        return genus;
+    public String getStructuralClass() {
+        return structuralClass;
     }
 
-    public void setGenus(String genus) {
-        this.genus = genus;
+    public void setStructuralClass(String structuralClass) {
+        this.structuralClass = structuralClass;
     }
 
-    public String getFirstPicture() {
-        return firstPicture;
+    public String getMainPicture() {
+        return mainPicture;
     }
 
-    public void setFirstPicture(String firstPicture) {
-        this.firstPicture = firstPicture;
+    public void setMainPicture(String mainPicture) {
+        this.mainPicture = mainPicture;
     }
 
     public int getLiked() {
@@ -100,4 +99,5 @@ public class Tree {
     public void setMaoriName(String maoriName) {
         this.maoriName = maoriName;
     }
+
 }

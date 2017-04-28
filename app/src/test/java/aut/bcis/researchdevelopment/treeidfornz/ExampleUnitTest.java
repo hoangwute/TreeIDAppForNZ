@@ -108,9 +108,9 @@ public class ExampleUnitTest {
     public void testGenerateGenusHeadersAlgorithm() {
         ArrayList<Object> treeList = new ArrayList<>();
         Tree tree1 = new Tree();
-        tree1.setGenus("ExampleGenus1");
+        tree1.setStructuralClass("ExampleGenus1");
         Tree tree2 = new Tree();
-        tree2.setGenus("ExampleGenus2");
+        tree2.setStructuralClass("ExampleGenus2");
         Collections.addAll(treeList, tree1, tree2);
         Utility.generateGenusHeaders(treeList);
         ListHeader lh1 = (ListHeader) treeList.get(0);
@@ -156,9 +156,9 @@ public class ExampleUnitTest {
     public void testSortTypeCheckGenusCase() {
         ArrayList<Object> treeList = new ArrayList<>();
         Tree tree1 = new Tree();
-        tree1.setGenus("ExampleGenus1");
+        tree1.setStructuralClass("ExampleGenus1");
         Tree tree2 = new Tree();
-        tree2.setGenus("ExampleGenus2");
+        tree2.setStructuralClass("ExampleGenus2");
         Collections.addAll(treeList, tree1, tree2);
         Utility.sortTypeSwitch("Genus", treeList);
         ListHeader lh1 = (ListHeader) treeList.get(0);

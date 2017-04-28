@@ -1,28 +1,34 @@
 package aut.bcis.researchdevelopment.treeidfornz;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.maps.model.Marker;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Random;
 
 import aut.bcis.researchdevelopment.database.DBContract;
-import aut.bcis.researchdevelopment.database.DBInitialization;
 import aut.bcis.researchdevelopment.model.ListHeader;
+import aut.bcis.researchdevelopment.model.Sighting;
 import aut.bcis.researchdevelopment.model.Tree;
 import aut.bcis.researchdevelopment.model.TreeMarker;
 
 import static aut.bcis.researchdevelopment.treeidfornz.MainActivity.database;
-import static aut.bcis.researchdevelopment.treeidfornz.R.id.chkGenus;
 
 /**
  * Created by VS9 X64Bit on 28/08/2016.
@@ -49,20 +55,19 @@ public class Utility {
             picturePath = "";
         }
         // Updates the database entry for the report to point to the picture
-        Cursor cursor = database.rawQuery("UPDATE Tree SET " + DBContract.COLUMN_PICTURE_PATH + " = '" + picturePath + "' WHERE ID = " + reportId, null);
+        Cursor cursor = database.rawQuery("UPDATE Tree SET " + DBContract.COLUMN_MAIN_PICTURE + " = '" + picturePath + "' WHERE ID = " + reportId, null);
         cursor.moveToFirst();
         cursor.close();
     }
 
-    public static String getTakenPicturePath(Bitmap bitmapPicture, Context mContext) {
+    public static void insertSightingPicture(long reportId, Bitmap bitmapPicture, Context mContext) {
         // Saves the new picture to the internal storage with the unique identifier of the report as
         // the name. That way, there will never be two report pictures with the same name.
-        Random rand = new Random();
-        int randomNum = rand.nextInt((10000000 - 1) + 1) + 1;
         String picturePath = "";
-        File internalStorage = mContext.getDir("TakenPictures", Context.MODE_PRIVATE);
-        File reportFilePath = new File(internalStorage, randomNum + ".jpg");
+        File internalStorage = mContext.getDir("SightingPictures", Context.MODE_PRIVATE);
+        File reportFilePath = new File(internalStorage, reportId + ".jpg");
         picturePath = reportFilePath.toString();
+
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(reportFilePath);
@@ -73,7 +78,21 @@ public class Utility {
             Log.i("DATABASE", "Problem updating picture", ex);
             picturePath = "";
         }
-        return picturePath;
+        // Updates the database entry for the report to point to the picture
+        Cursor cursor = database.rawQuery("UPDATE " + DBContract.TABLE_SIGHTING + " SET " + DBContract.COLUMN_SIGHTING_PICTURE + " = '" + picturePath + "' WHERE ID = " + reportId, null);
+        cursor.moveToFirst();
+        cursor.close();
+    }
+
+    public static void deleteSightingPicture(long reportId, Context mContext) {
+        File internalStorage = mContext.getDir("SightingPictures", Context.MODE_PRIVATE);
+        File reportFilePath = new File(internalStorage, reportId + ".jpg");
+        Toast.makeText(mContext, reportFilePath.toString(), Toast.LENGTH_SHORT).show();
+        reportFilePath.delete();
+        // Delete the database entry for the report to point to the picture
+        Cursor cursor = database.rawQuery("DELETE FROM " + DBContract.TABLE_SIGHTING + " WHERE " + DBContract.COLUMN_SIGHTING_ID + " = " + reportId, null);
+        cursor.moveToFirst();
+        cursor.close();
     }
 
     public static void generateAlphabeticalHeaders(ArrayList<Object> treeList) {
@@ -139,6 +158,27 @@ public class Utility {
         }
     }
 
+    public static void generateSightingHeaders(ArrayList<Object> sightingList) {
+        ArrayList<Integer> positionList = new ArrayList<>();
+        ArrayList<String> valueList = new ArrayList<>();
+        for (int i = 0; i < sightingList.size(); i++) {
+            Sighting sighting = (Sighting) sightingList.get(i);
+            if (i == 0) {
+                positionList.add(i);
+                valueList.add(sighting.getDate());
+            } else {
+                Sighting previousSighting = (Sighting) sightingList.get(i - 1);
+                if (!sighting.getDate().equalsIgnoreCase(previousSighting.getDate())) {
+                    positionList.add(i);
+                    valueList.add(sighting.getDate());
+                }
+            }
+        }
+        for (int i = 0; i < positionList.size(); i++) {
+            sightingList.add(positionList.get(i) + i, new ListHeader(valueList.get(i))); //important plus i here as the array shifts the object position
+        }
+    }
+
     public static void generateGenusHeaders(ArrayList<Object> treeList) {
         ArrayList<Integer> positionList = new ArrayList<>();
         ArrayList<String> valueList = new ArrayList<>();
@@ -146,12 +186,12 @@ public class Utility {
             Tree tree = (Tree) treeList.get(i);
             if (i == 0) {
                 positionList.add(i);
-                valueList.add(tree.getGenus());
+                valueList.add(tree.getStructuralClass());
             } else {
                 Tree previousTree = (Tree) treeList.get(i - 1);
-                if (!tree.getGenus().equalsIgnoreCase(previousTree.getGenus())) {
+                if (!tree.getStructuralClass().equalsIgnoreCase(previousTree.getStructuralClass())) {
                     positionList.add(i);
-                    valueList.add(tree.getGenus());
+                    valueList.add(tree.getStructuralClass());
                 }
             }
         }
@@ -182,18 +222,18 @@ public class Utility {
     }
 
 
-    public static int countSightedTreeType(String commonName) {
-        Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM " + DBContract.TABLE_MARKER + " WHERE " + DBContract.COLUMN_MARKER_COMMON_NAME + " = '" + commonName + "'", null);
-        int count = 0;
-        while (cursor.moveToNext()) {
-            count = cursor.getInt(cursor.getColumnIndex("COUNT(*)"));
-        }
-        cursor.close();
-        return count;
-    }
+//    public static int countSightedTreeType(String commonName) {
+//        Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM " + DBContract.TABLE_MARKER + " WHERE " + DBContract.COLUMN_MARKER_COMMON_NAME + " = '" + commonName + "'", null);
+//        int count = 0;
+//        while (cursor.moveToNext()) {
+//            count = cursor.getInt(cursor.getColumnIndex("COUNT(*)"));
+//        }
+//        cursor.close();
+//        return count;
+//    }
 
-    public static int countAllSightedTree() {
-        Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM " + DBContract.TABLE_MARKER, null);
+    public static int countSightings(String treeName) {
+        Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM " + DBContract.TABLE_SIGHTING + " WHERE CommonName = \"" + treeName + "\"", null);
         int count = 0;
         while (cursor.moveToNext()) {
             count = cursor.getInt(cursor.getColumnIndex("COUNT(*)"));
@@ -219,17 +259,17 @@ public class Utility {
         cursor.close();
     }
 
-    public static boolean foundInsertedFilter(String filterCommonName) {
-        Cursor cursor = database.rawQuery("SELECT CommonName FROM MARKER", null);
-        while (cursor.moveToNext()) {
-            String commonName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_MARKER_COMMON_NAME));
-            if (commonName.equals(filterCommonName)) {
-                return true;
-            }
-        }
-        cursor.close();
-        return false;
-    }
+//    public static boolean foundInsertedFilter(String filterCommonName) {
+//        Cursor cursor = database.rawQuery("SELECT CommonName FROM MARKER", null);
+//        while (cursor.moveToNext()) {
+//            String commonName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_MARKER_COMMON_NAME));
+//            if (commonName.equals(filterCommonName)) {
+//                return true;
+//            }
+//        }
+//        cursor.close();
+//        return false;
+//    }
 
     public static void insertFilterEntry(TreeMarker marker) {
         Cursor cursor = database.rawQuery("INSERT INTO FilterEntry(CommonName, LatinName, Filtered) VALUES ('" + marker.getCommonName() + "', '" + marker.getLatinName() + "', 1)", null);
@@ -237,6 +277,29 @@ public class Utility {
         cursor.close();
     }
 
+    public static int getLastInsertRowID() {
+        Cursor cursor = database.rawQuery("SELECT last_insert_rowid()", null);
+        int id = 0;
+        while (cursor.moveToNext()) {
+            id = cursor.getInt(cursor.getColumnIndex("last_insert_rowid()"));
+        }
+        cursor.close();
+        return id;
+    }
+
+    public static String getSystemDate() {
+        Calendar cal = Calendar.getInstance();
+        Date fullDate = cal.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yy");
+        return sdf.format(fullDate);
+    }
+
+    public static String getSightingDate() {
+        Calendar cal = Calendar.getInstance();
+        Date fullDate = cal.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy");
+        return sdf.format(fullDate);
+    }
 
     public static void sortTypeSwitch(String sortType, ArrayList<Object> treeList) {
         switch (sortType) {
@@ -252,7 +315,7 @@ public class Utility {
             case DBContract.COLUMN_FAMILY:
                 Utility.generateFamilyHeaders(treeList);
                 break;
-            case DBContract.COLUMN_GENUS:
+            case DBContract.COLUMN_STRUCTURAL_CLASS:
                 Utility.generateGenusHeaders(treeList);
                 break;
         }
@@ -269,12 +332,29 @@ public class Utility {
     }
     public static String findTreeAttributeValueGivenName(String commonName, String treeAttribute) {
         String value = null;
-        Cursor cursor = database.rawQuery("SELECT " + treeAttribute + " FROM " + DBContract.TABLE_TREE + " WHERE " + DBContract.COLUMN_COMMON_NAME + " = '" + commonName + "'", null);
+        Cursor cursor = database.rawQuery("SELECT " + treeAttribute + " FROM " + DBContract.TABLE_TREE + " WHERE " + DBContract.COLUMN_COMMON_NAME + " = \"" + commonName + "\"", null);
         while (cursor.moveToNext()) {
              value = cursor.getString(cursor.getColumnIndex(treeAttribute));
         }
         cursor.close();
         return value;
+    }
+
+    public static String findSightingInfoGivenID(Integer id, String sightingInfo) {
+        String value = null;
+        Cursor cursor = database.rawQuery("SELECT " + sightingInfo + " FROM " + DBContract.TABLE_SIGHTING + " WHERE " + DBContract.COLUMN_SIGHTING_ID + " = " + id, null);
+        while (cursor.moveToNext()) {
+            value = cursor.getString(cursor.getColumnIndex(sightingInfo));
+        }
+        cursor.close();
+        return value;
+    }
+
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager)  context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 

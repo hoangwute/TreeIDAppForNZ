@@ -13,7 +13,7 @@ import java.io.OutputStream;
  * Created by VS9 X64Bit on 26/08/2016.
  */
 public class DBInitialization {
-    public static final String DATABASE_NAME = "NativeTrees.sqlite";
+    public static final String DATABASE_NAME = "TreeID.sqlite";
     private static final String DB_PATH_SUFFIX = "/databases/";
 
     public static void getDatabaseFromAssets(Activity context) {

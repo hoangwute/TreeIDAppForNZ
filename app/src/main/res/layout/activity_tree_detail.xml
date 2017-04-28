@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"
@@ -40,7 +41,7 @@
                 <aut.bcis.researchdevelopment.model.CustomViewPager
                     android:id="@+id/viewpager"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
+                    android:layout_height="250dp"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"></aut.bcis.researchdevelopment.model.CustomViewPager>
@@ -50,6 +51,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
+                    android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="false"
                     app:tabBackground="@drawable/tab_selector"
                     app:tabGravity="center"
@@ -80,42 +82,47 @@
                     android:id="@+id/btnTreeMedicalUse"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     android:layout_marginLeft="20dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
+                    android:background="@null"
                     android:clickable="false"
-                    android:background="@drawable/shape_medical"
-                    app:srcCompat="@drawable/icon_medical" />
+                    app:srcCompat="@drawable/icon_medicinal" />
+
                 <ImageButton
                     android:id="@+id/btnTreePoisonStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/icon_toxic"
                     android:clickable="false"
-                    android:background="@null"
-                    app:srcCompat="@drawable/icon_poison" />
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/icon_toxic" />
+
                 <ImageButton
                     android:id="@+id/btnTreeFruitStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/selector_fruiting"
                     android:clickable="false"
-                    android:background="@drawable/selector_season_status"
-                    app:srcCompat="@drawable/icon_fruit" />
+                    app:srcCompat="@drawable/selector_fruiting" />
+
                 <ImageButton
                     android:id="@+id/btnTreeFlowerStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/selector_flowering"
                     android:clickable="false"
-                    android:background="@drawable/selector_season_status"
-                    app:srcCompat="@drawable/icon_flower" />
+                    app:srcCompat="@drawable/selector_flowering" />
+
                 <Space
                     android:layout_width="0dp"
                     android:layout_height="0dp"
@@ -183,7 +190,7 @@
                     android:gravity="center_vertical"
                     android:paddingBottom="3dp"
                     android:paddingTop="3dp"
-                    android:text="Latin name:         "
+                    android:text="Latin name:          "
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@android:color/black" />
                 <TextView
@@ -200,7 +207,7 @@
                     android:gravity="center_vertical"
                     android:paddingBottom="3dp"
                     android:paddingTop="3dp"
-                    android:text="Family:                 "
+                    android:text="Family:                  "
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@android:color/black" />
                 <TextView
@@ -217,7 +224,7 @@
                     android:gravity="center_vertical"
                     android:paddingBottom="3dp"
                     android:paddingTop="3dp"
-                    android:text="Group:                  "
+                    android:text="Group:                   "
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@android:color/black" />
                 <TextView
@@ -262,11 +269,124 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:paddingBottom="3dp"
                 android:paddingTop="20dp"
                 android:text="SPECIES FEATURES"
                 android:textAlignment="center"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+            <LinearLayout
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="20dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+                <TextView
+                    android:id="@+id/txtTreeLeaves"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="Leaves: "
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/black" />
+                <TextView
+                    android:id="@+id/txtTreeFlower"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="Flower: "
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/black" />
+                <TextView
+                    android:id="@+id/txtTreeFruit"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="Fruit: "
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/black" />
+                <TextView
+                    android:id="@+id/txtTreeBark"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="Bark: "
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/line6"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:background="#e5e5e5" />
+
+            <TextView
+                android:id="@+id/textViewDescirption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingBottom="3dp"
+                android:paddingTop="10dp"
+                android:text="DESCRIPTION"
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtDescription"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="10dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="TextView"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/line7"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:background="#e5e5e5" />
+
+            <TextView
+                android:id="@+id/textViewDidyouknow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingBottom="3dp"
+                android:paddingTop="10dp"
+                android:text="DID YOU KNOW?"
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtDidYouKnow"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="20dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="TextView"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
         </LinearLayout>
+
     </ScrollView>
-</RelativeLayout>
+</LinearLayout>

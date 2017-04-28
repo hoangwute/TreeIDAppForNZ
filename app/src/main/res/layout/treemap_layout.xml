@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
-
-
-    <LinearLayout
-        android:orientation="horizontal"
+    xmlns:app="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#0ddd2c">
-
-        <ImageView
+        android:layout_height="?attr/actionBarSize"
+        android:background="#91B54D"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+        <TextView
+            android:id="@+id/toolbar_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            map:srcCompat="@drawable/icon_tree"
-            android:id="@+id/imageView2"
-            android:layout_gravity="left"
-            android:background="@null"
-            android:layout_weight="0.31" />
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            android:layout_gravity="center" />
+    </android.support.v7.widget.Toolbar>
 
-        <TextView
-            android:text="TextView"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/txtSightedTreeCount"
-            android:layout_weight="1"
-            android:textSize="20sp"
-            android:foregroundGravity="center_horizontal" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#91B54D"
+        android:orientation="horizontal"
+        android:paddingBottom="15dp"
+        android:paddingTop="15dp">
 
-        <Spinner
-            android:layout_width="75dp"
-            android:layout_height="match_parent"
-            android:id="@+id/spinner_collection"
-            android:layout_gravity="right"
-            android:layout_weight="0.09" />
+        <SearchView
+            android:id="@+id/listSearch"
+            android:layout_width="fill_parent"
+            android:layout_height="33dp"
+            android:background="@drawable/shape_searchbox"
+            android:iconifiedByDefault="false"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"></SearchView>
     </LinearLayout>
+
 
     <fragment
         android:id="@+id/map"
