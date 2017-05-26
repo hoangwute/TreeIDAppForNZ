@@ -67,27 +67,29 @@
                 android:layout_below="@+id/txtMaoriName" /> <!-- remove focus so the list item is clickable -->
 
             <ImageButton
+                android:id="@+id/btnLike"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/btnLike"
-                android:src="@drawable/icon_favourite_unselected"
                 android:layout_alignParentRight="true"
-                android:background="@null"
                 android:layout_centerInParent="true"
+                android:layout_marginRight="16dp"
+                android:background="@null"
+                android:focusable="false"
                 android:focusableInTouchMode="true"
-                android:focusable="false"/> <!-- remove focus so the list item is clickable -->
+                android:src="@drawable/icon_favourite_unselected" /> <!-- remove focus so the list item is clickable -->
 
             <ImageButton
+                android:id="@+id/btnDisLike"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/btnDisLike"
-                android:src="@drawable/icon_favourite_selected"
-                android:background="@null"
-                android:focusableInTouchMode="true"
-                android:focusable="false"
-                android:layout_alignTop="@+id/btnLike"
+                android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true" /> <!-- remove focus so the list item is clickable -->
+                android:layout_alignTop="@+id/btnLike"
+                android:background="@null"
+                android:focusable="false"
+                android:focusableInTouchMode="true"
+                android:paddingRight="16dp"
+                android:src="@drawable/icon_favourite_selected" /> <!-- remove focus so the list item is clickable -->
         </RelativeLayout>
     </LinearLayout>
 

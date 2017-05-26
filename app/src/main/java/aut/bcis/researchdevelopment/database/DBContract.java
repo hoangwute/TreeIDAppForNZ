@@ -21,7 +21,7 @@ public class DBContract {
     public static final String COLUMN_LEAF_TIP = "LeafTip";
     public static final String COLUMN_FLOWER_COLOUR = "FlowerColour";
     public static final String COLUMN_FRUIT_COLOUR = "FruitColour";
-    public static final String COLUMN_CONE_TYPE = "ConeType  ";
+    public static final String COLUMN_CONE_TYPE = "ConeType";
     public static final String COLUMN_TRUNK_TEXTURE = "TrunkTexture";
     public static final String COLUMN_TRUNK_COLOUR = "TrunkColour";
     public static final String COLUMN_SYNONYMS = "Synonyms";
@@ -34,7 +34,7 @@ public class DBContract {
     public static final String COLUMN_FLOWERING = "Flowering";
     public static final String COLUMN_FRUITING = "Fruiting";
     public static final String COLUMN_ETYMOLOGY = "Etymology";
-
+    public static final String COLUMN_GROUP_LEAF_SHAPE = "GroupLeafShape";
 
     //------------------------------------- Sighting table ------------------------------------
     public static final String TABLE_SIGHTING = "Sighting";
@@ -50,5 +50,9 @@ public class DBContract {
     public static final String COLUMN_SIGHTING_LONGITUDE = "Longitude";
     public static final String COLUMN_SIGHTING_LATITUDE = "Latitude";
 
+    //------------------------------------- Image table ------------------------------------
+    public static final String TABLE_IMAGE = "Image";
+    public static final String COLUMN_IMAGE_ID = "ID";
+    public static final String COLUMN_PICTURE_PATH = "PicturePath";
 
 }

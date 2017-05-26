@@ -11,12 +11,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -76,7 +74,7 @@ public class MySightingActivity extends AppCompatActivity {
         sightingAdapter = new SightingAdapter(MySightingActivity.this, sightingList); //this line fixes search bug occurred when changes the button
         lvSightingList.setAdapter(sightingAdapter);
         MainActivity.database = openOrCreateDatabase(DBInitialization.DATABASE_NAME, MODE_PRIVATE, null);
-        Cursor cursor = MainActivity.database.rawQuery("SELECT * FROM " + DBContract.TABLE_SIGHTING + " WHERE CommonName = '" + sightingName + "'"
+        Cursor cursor = MainActivity.database.rawQuery("SELECT * FROM " + DBContract.TABLE_SIGHTING + " WHERE CommonName = \"" + sightingName + "\""
                 + " ORDER BY " + DBContract.COLUMN_TIME_STAMP, null);
         while (cursor.moveToNext()) {
             int Id = cursor.getInt(cursor.getColumnIndex(DBContract.COLUMN_SIGHTING_ID));

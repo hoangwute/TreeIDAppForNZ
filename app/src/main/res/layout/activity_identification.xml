@@ -20,8 +20,8 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_gravity="bottom"
-            android:background="#519032"
-            android:text="Submit"
+            android:background="@drawable/shape_shadow_button"
+            android:text="49 Matches"
             android:textColor="#FFFFFF" />
     </RelativeLayout>
     <LinearLayout
@@ -70,14 +70,14 @@
                     android:visibility="visible" />
 
 
-                <RadioGroup
+                <LinearLayout
                     android:id="@+id/radGroupLeafEdge"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:orientation="horizontal">
 
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radEntire"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
                         android:background="@drawable/selector_entire"
                         android:button="@null" />
 
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radToothed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -95,7 +95,7 @@
                         android:background="@drawable/selector_toothed"
                         android:button="@null" />
 
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radNotSureLeafEdge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -105,7 +105,7 @@
                         android:background="@drawable/selector_notsure"
                         android:button="@null" />
 
-                </RadioGroup>
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/line1"
@@ -127,14 +127,14 @@
                     android:visibility="visible"
                     android:text="LEAF ARRANGEMENT" />
 
-                <RadioGroup
+                <LinearLayout
                     android:id="@+id/radGroupLeafArrangement"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:orientation="horizontal">
 
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radAlternate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -143,7 +143,7 @@
                         android:background="@drawable/selector_alternate"
                         android:button="@null" />
 
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radOpposite"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -152,7 +152,7 @@
                         android:background="@drawable/selector_opposite"
                         android:button="@null" />
 
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radWhorled"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -161,7 +161,7 @@
                         android:background="@drawable/selector_whorled"
                         android:button="@null" />
 
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radNotSureLeafArrangement"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -171,7 +171,8 @@
                         android:background="@drawable/selector_notsure"
                         android:button="@null" />
 
-                </RadioGroup>
+
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/line2"
@@ -193,14 +194,14 @@
                     android:visibility="visible"
                     android:text="LEAF SHAPE" />
 
-                <RadioGroup
+                <LinearLayout
                     android:id="@+id/radGroupLeafShape"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:orientation="horizontal">
 
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radLinear"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -209,7 +210,7 @@
                         android:background="@drawable/selector_linear"
                         android:button="@null" />
 
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radOblongOvateElliptic"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -218,7 +219,7 @@
                         android:background="@drawable/selector_oblongovateelliptic"
                         android:button="@null" />
 
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radNotSureLeafShape"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -228,7 +229,7 @@
                         android:background="@drawable/selector_notsure"
                         android:button="@null" />
 
-                </RadioGroup>
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/line3"
@@ -250,14 +251,14 @@
                     android:visibility="visible"
                     android:text="LEAF TIP" />
 
-                <RadioGroup
+                <LinearLayout
                     android:id="@+id/radGroupLeafTip"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:orientation="horizontal">
 
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radAcute"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -266,7 +267,7 @@
                         android:background="@drawable/selector_acute"
                         android:button="@null" />
 
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radObtuse"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -275,7 +276,7 @@
                         android:background="@drawable/selector_obtuse"
                         android:button="@null" />
 
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radNotSureLeafTip"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -285,7 +286,7 @@
                         android:background="@drawable/selector_notsure"
                         android:button="@null" />
 
-                </RadioGroup>
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/line4"
@@ -307,13 +308,13 @@
                     android:visibility="visible"
                     android:text="FLOWER COLOUR" />
 
-                <RadioGroup
+                <LinearLayout
                     android:id="@+id/radGroupFlowerColour"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:orientation="horizontal">
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFlowerWhite"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -321,7 +322,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/selector_white"
                         android:button="@null" />
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFlowerYellow"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -329,7 +330,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/selector_yellow"
                         android:button="@null" />
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFlowerOrange"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -337,7 +338,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/selector_orange"
                         android:button="@null" />
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFlowerPink"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -345,7 +346,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/selector_pink"
                         android:button="@null" />
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFlowerRed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -353,7 +354,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/selector_red"
                         android:button="@null" />
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFlowerGreen"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -361,7 +362,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/selector_green"
                         android:button="@null" />
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFlowerPurple"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -369,7 +370,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/selector_purple"
                         android:button="@null" />
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFlowerBlack"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -377,7 +378,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/selector_black"
                         android:button="@null" />
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFlowerNa"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -387,7 +388,7 @@
                         android:background="@drawable/selector_na"
                         android:button="@null"
                         android:paddingRight="16dp" />
-                </RadioGroup>
+                </LinearLayout>
                 <TextView
                     android:id="@+id/line5"
                     android:layout_width="match_parent"
@@ -408,13 +409,13 @@
                     android:visibility="visible"
                     android:text="FRUIT/CONE COLOUR" />
 
-                <RadioGroup
+                <LinearLayout
                     android:id="@+id/radGroupFruitColour"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:orientation="horizontal">
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFruitWhite"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -422,7 +423,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/selector_white"
                         android:button="@null" />
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFruitYellow"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -430,7 +431,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/selector_yellow"
                         android:button="@null" />
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFruitOrange"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -438,7 +439,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/selector_orange"
                         android:button="@null" />
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFruitPink"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -446,7 +447,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/selector_pink"
                         android:button="@null" />
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFruitRed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -454,7 +455,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/selector_red"
                         android:button="@null" />
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFruitGreen"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -462,7 +463,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/selector_green"
                         android:button="@null" />
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFruitPurple"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -470,7 +471,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/selector_purple"
                         android:button="@null" />
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFruitBlack"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -478,7 +479,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/selector_black"
                         android:button="@null" />
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFruitBrown"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -486,7 +487,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/selector_brown"
                         android:button="@null" />
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radFruitNa"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -496,7 +497,7 @@
                         android:background="@drawable/selector_na"
                         android:button="@null"
                         android:paddingRight="16dp" />
-                </RadioGroup>
+                </LinearLayout>
                 <TextView
                     android:id="@+id/line6"
                     android:layout_width="match_parent"
@@ -517,14 +518,14 @@
                     android:visibility="visible"
                     android:text="FRUIT/TRUNK TEXTURE" />
 
-                <RadioGroup
+                <LinearLayout
                     android:id="@+id/radGroupTrunkTexture"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:orientation="horizontal">
 
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radSmooth"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -533,7 +534,7 @@
                         android:background="@drawable/selector_smooth"
                         android:button="@null" />
 
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radRough"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -542,7 +543,7 @@
                         android:background="@drawable/selector_rough"
                         android:button="@null" />
 
-                    <RadioButton
+                    <CheckBox
                         android:id="@+id/radNotSureTrunkTexture"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -552,7 +553,7 @@
                         android:background="@drawable/selector_notsure"
                         android:button="@null" />
 
-                </RadioGroup>
+                </LinearLayout>
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

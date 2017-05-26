@@ -106,10 +106,15 @@ public class IdentificationResultActivity extends AppCompatActivity {
         listIdentifiedSearch.clearFocus();
         LinearLayout linearLayout1 = (LinearLayout) listIdentifiedSearch.getChildAt(0);
         LinearLayout linearLayout2 = (LinearLayout) linearLayout1.getChildAt(2);
-        LinearLayout linearLayout3 = (LinearLayout) linearLayout2.getChildAt(1);
-        ViewGroup.LayoutParams params = linearLayout3.getLayoutParams();
-        params.height = 45;
-        linearLayout3.setLayoutParams(params);
+        final LinearLayout linearLayout3 = (LinearLayout) linearLayout2.getChildAt(1);
+        linearLayout3.post(new Runnable() {
+            @Override
+            public void run() {
+                ViewGroup.LayoutParams params = linearLayout3.getLayoutParams();
+                params.height = linearLayout3.getHeight() + (linearLayout3.getHeight()/3);
+                linearLayout3.setLayoutParams(params);
+            }
+        });
         AutoCompleteTextView autoComplete = (AutoCompleteTextView) linearLayout3.getChildAt(0);
         autoComplete.setTextSize(15);
         chkIdentifiedStructuralClass.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -301,6 +306,7 @@ public class IdentificationResultActivity extends AppCompatActivity {
         }
         if(identifiedTreeList.isEmpty()) {
             Toast.makeText(IdentificationResultActivity.this, "There is no tree which matches your search", Toast.LENGTH_LONG).show();
+            finish();
         }
         cursor.close();
         Utility.sortTypeSwitch(sortType, identifiedTreeList);
@@ -313,7 +319,6 @@ public class IdentificationResultActivity extends AppCompatActivity {
         lvIdentifiedTreeList.setAdapter(identifiedTreeAdapter);
         MainActivity.database = openOrCreateDatabase(DBInitialization.DATABASE_NAME, MODE_PRIVATE, null);
         Cursor cursor = MainActivity.database.rawQuery(receivedDynamicQuery + " AND " + DBContract.COLUMN_LIKED + " = 1 ORDER BY " + DBContract.COLUMN_COMMON_NAME, null);
-        Toast.makeText(IdentificationResultActivity.this, receivedDynamicQuery + " AND " + DBContract.COLUMN_LIKED + " = 1 ORDER BY " + DBContract.COLUMN_COMMON_NAME, Toast.LENGTH_LONG).show();
         while (cursor.moveToNext()) {
             int Id = cursor.getInt(cursor.getColumnIndex(DBContract.COLUMN_ID));
             String commonName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_COMMON_NAME));

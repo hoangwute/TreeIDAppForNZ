@@ -78,7 +78,7 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
             holder.txtLatinName.setText(tree.getLatinName());
             holder.txtMaoriName.setText(tree.getMaoriName());
             if(tree.getMainPicture() != null)
-                Picasso.with(context).load(new File(tree.getMainPicture())).centerCrop().resize(120, 105).into(holder.imgFirstPicture); //load picture using Picasso library
+                Picasso.with(context).load(new File(tree.getMainPicture())).centerCrop().resize(107, 107).into(holder.imgFirstPicture); //load picture using Picasso library
             holder.imgFirstPicture.setScaleType(ImageView.ScaleType.FIT_XY);
 
             if(tree.getLiked() == 1) {

@@ -98,9 +98,9 @@ public class SightingAdapter extends ArrayAdapter<Object> {
             holder.txtSightingLatinName.setText(sighting.getLatinName());
             holder.txtSightingLocation.setText(sighting.getLocation());
             if(sighting.getSightingPicture() != null)
-                Picasso.with(context).load(new File(sighting.getSightingPicture())).into(holder.imgSightingPicture); //load picture using Picasso library
+                Picasso.with(context).load(new File(sighting.getSightingPicture())).centerCrop().resize(107, 107).into(holder.imgSightingPicture); //load picture using Picasso library
             else
-                Picasso.with(context).load(R.drawable.noimagefound).into(holder.imgSightingPicture);
+                Picasso.with(context).load(R.drawable.noimagefound).centerCrop().resize(107, 107).into(holder.imgSightingPicture);
             holder.imgSightingPicture.setScaleType(ImageView.ScaleType.FIT_XY);
             holder.entryLayout.setOnTouchListener(new OnSwipeTouchListener(context) {
                 @Override

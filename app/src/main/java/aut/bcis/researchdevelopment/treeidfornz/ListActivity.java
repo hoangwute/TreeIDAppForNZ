@@ -26,6 +26,7 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -111,10 +112,15 @@ public class ListActivity extends AppCompatActivity {
         listSearch.clearFocus();
         LinearLayout linearLayout1 = (LinearLayout) listSearch.getChildAt(0);
         LinearLayout linearLayout2 = (LinearLayout) linearLayout1.getChildAt(2);
-        LinearLayout linearLayout3 = (LinearLayout) linearLayout2.getChildAt(1);
-        ViewGroup.LayoutParams params = linearLayout3.getLayoutParams();
-        params.height = 45;
-        linearLayout3.setLayoutParams(params);
+        final LinearLayout linearLayout3 = (LinearLayout) linearLayout2.getChildAt(1);
+        linearLayout3.post(new Runnable() {
+            @Override
+            public void run() {
+                ViewGroup.LayoutParams params = linearLayout3.getLayoutParams();
+                params.height = linearLayout3.getHeight() + (linearLayout3.getHeight()/3);
+                linearLayout3.setLayoutParams(params);
+            }
+        });
         AutoCompleteTextView autoComplete = (AutoCompleteTextView) linearLayout3.getChildAt(0);
         autoComplete.setTextSize(15);
         chkStructuralClass.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -388,6 +394,11 @@ public class ListActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        if (favouriteSelected) {
+            displayFavouriteTreeBasedOnCheckedBox();
+        }
+        else
+            displayTreeBasedOnCheckedBox();
         listSearch.clearFocus();
         super.onResume();
     }

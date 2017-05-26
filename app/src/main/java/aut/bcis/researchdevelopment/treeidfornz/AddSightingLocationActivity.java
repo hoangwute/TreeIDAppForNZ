@@ -71,10 +71,15 @@ public class AddSightingLocationActivity extends AppCompatActivity implements On
         treeLocationDisplay.clearFocus();
         LinearLayout linearLayout1 = (LinearLayout) treeLocationDisplay.getChildAt(0);
         LinearLayout linearLayout2 = (LinearLayout) linearLayout1.getChildAt(2);
-        LinearLayout linearLayout3 = (LinearLayout) linearLayout2.getChildAt(1);
-        ViewGroup.LayoutParams params = linearLayout3.getLayoutParams();
-        params.height = 45;
-        linearLayout3.setLayoutParams(params);
+        final LinearLayout linearLayout3 = (LinearLayout) linearLayout2.getChildAt(1);
+        linearLayout3.post(new Runnable() {
+            @Override
+            public void run() {
+                ViewGroup.LayoutParams params = linearLayout3.getLayoutParams();
+                params.height = linearLayout3.getHeight() + (linearLayout3.getHeight()/3);
+                linearLayout3.setLayoutParams(params);
+            }
+        });
         AutoCompleteTextView autoComplete = (AutoCompleteTextView) linearLayout3.getChildAt(0);
         autoComplete.setTextSize(15);
         //-------------------------------------------Load Google Map-----------------------------------------------------------
@@ -110,7 +115,6 @@ public class AddSightingLocationActivity extends AppCompatActivity implements On
             }
             treeAddress = strReturnedAddress.toString();
             treeLocationDisplay.setQuery(treeAddress, false);
-            Toast.makeText(AddSightingLocationActivity.this, treeLocationDisplay.getQuery(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -195,7 +199,7 @@ public class AddSightingLocationActivity extends AppCompatActivity implements On
                         treeLatitude = latLng.latitude;
                         treeLongitude = latLng.longitude;
                         List<Address> addresses = geoCoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-                        if (addresses != null) {
+                        if (addresses.size() != 0) { //avoid user clicks at the place where no location is detected by api.
                             Address address = (addresses.get(0));
                             StringBuilder strReturnedAddress = new StringBuilder("");
                             for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
@@ -206,8 +210,6 @@ public class AddSightingLocationActivity extends AppCompatActivity implements On
                             }
                             treeAddress = strReturnedAddress.toString();
                             treeLocationDisplay.setQuery(treeAddress, false);
-                            Toast.makeText(AddSightingLocationActivity.this, treeLocationDisplay.getQuery(), Toast.LENGTH_SHORT).show();
-
                         }
                     } catch (IOException e) {
                         e.printStackTrace();

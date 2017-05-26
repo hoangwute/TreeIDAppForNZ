@@ -1,24 +1,32 @@
 package aut.bcis.researchdevelopment.treeidfornz;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,6 +37,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -38,8 +47,14 @@ import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import aut.bcis.researchdevelopment.database.DBContract;
 import aut.bcis.researchdevelopment.database.DBInitialization;
@@ -65,6 +80,12 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
     private final int MAX_ENTRIES = 5;
     private LatLng[] mLikelyPlaceLatLngs = new LatLng[MAX_ENTRIES];
     private Bitmap imageBitmap;
+    private ProgressDialog imageDialog;
+    private int width;
+    private String mCurrentPhotoPath;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +137,14 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
             getDeviceLocation();
             getCurrentLagLng();
         }
+        imageDialog = new ProgressDialog(SaveSightedTreeActivity.this);
+        imageDialog.setTitle("Please be patient");
+        imageDialog.setMessage("Saving your image...");
+        imageDialog.setCanceledOnTouchOutside(false);
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        width = size.x;
     }
 
     private void addEvents() {
@@ -123,7 +152,6 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
             @Override
             public void onClick(View view) {
                 if(Utility.isNetworkAvailable(SaveSightedTreeActivity.this)) {
-                    Toast.makeText(SaveSightedTreeActivity.this, "Internet connected", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(SaveSightedTreeActivity.this, AddSightingLocationActivity.class);
                     if (!txtSaveSightingLatLngState.getText().toString().isEmpty()) {
                         String[] latLongString = txtSaveSightingLatLngState.getText().toString().split(",");
@@ -156,22 +184,25 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
             public void onClick(View view) {
                 String location = txtSightingLocation.getText().toString();
                 if(txtSightingLocation.getVisibility() == View.INVISIBLE) {
-                    location = "Location is not specified";
+                    location = "Location is not specified.";
                 }
-                Toast.makeText(SaveSightedTreeActivity.this, location, Toast.LENGTH_SHORT).show();
                 String note = editTxtSightingNote.getEditableText().toString();
                 String timeStamp = Utility.getSystemDate();
                 String sightingDate = Utility.getSightingDate();
                 MainActivity.database = openOrCreateDatabase(DBInitialization.DATABASE_NAME, MODE_PRIVATE, null);
                 Cursor cursor = database.rawQuery("INSERT INTO " + DBContract.TABLE_SIGHTING + "(CommonName, LatinName, Date, Location, Note, MaoriName, TimeStamp, Latitude, Longitude) " +
-                        "VALUES ('" + treeCommonName + "', '" + treeLatinName + "', '" + sightingDate+ "', '" + location + "', '" + note + "', '" + treeMaoriName + "', '"
+                        "VALUES (\"" + treeCommonName + "\", '" + treeLatinName + "', '" + sightingDate+ "', '" + location + "', '" + note + "', '" + treeMaoriName + "', '"
                         + timeStamp + "', " + treeLatitude + ", " + treeLongitude + ")" , null);
                 cursor.moveToFirst();
                 cursor.close();
-                if(imageBitmap != null)
-                    Utility.insertSightingPicture(Utility.getLastInsertRowID(), imageBitmap, SaveSightedTreeActivity.this);
-                Toast.makeText(SaveSightedTreeActivity.this, "New Sighting is successfully added.", Toast.LENGTH_SHORT).show();
-                finish();
+                if(imageBitmap != null) {
+                    UpdateImageTask task = new UpdateImageTask(imageBitmap);
+                    task.execute();
+                }
+                else {
+                    Toast.makeText(SaveSightedTreeActivity.this, "New Sighting is successfully added.", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
             }
         });
     }
@@ -179,19 +210,20 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) { //for camera function
-            Bundle extras = data.getExtras();
-            imageBitmap = (Bitmap) extras.get("data");
-            imgSightingPicture.setImageBitmap(imageBitmap);
-            imgSightingPicture.setScaleType(ImageView.ScaleType.FIT_XY);
+            File f = new File(mCurrentPhotoPath);
+            Uri contentUri = Uri.fromFile(f);
+            try {
+                imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),contentUri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Glide.with(SaveSightedTreeActivity.this).load(contentUri).override(width,333).centerCrop().into(imgSightingPicture);
         }
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-
             Uri uri = data.getData();
-
             try {
                 imageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                imgSightingPicture.setImageBitmap(imageBitmap);
-                imgSightingPicture.setScaleType(ImageView.ScaleType.FIT_XY);
+                Glide.with(SaveSightedTreeActivity.this).load(uri).override(width,333).centerCrop().into(imgSightingPicture);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -224,10 +256,41 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(SaveSightedTreeActivity.this,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
         }
     }
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -240,7 +303,6 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
     public boolean onContextItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.openCamera) {
             dispatchTakePictureIntent();
-            Toast.makeText(SaveSightedTreeActivity.this, "Opening Camera", Toast.LENGTH_LONG).show();
         }
         else if(item.getItemId() == R.id.browseLibrary) {
             Intent intent = new Intent();
@@ -340,4 +402,44 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private class UpdateImageTask extends AsyncTask<String, Void, String> {
+        Bitmap imageBitmap;
+
+        public UpdateImageTask(Bitmap imageBitmap) {
+            this.imageBitmap = imageBitmap;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            File internalStorage = SaveSightedTreeActivity.this.getDir("SightingPictures", Context.MODE_PRIVATE);
+            File reportFilePath = new File(internalStorage, Utility.getLastInsertRowID() + ".jpg");
+            FileOutputStream fos = null;
+            String picturePath = reportFilePath.toString();
+            try {
+                fos = new FileOutputStream(reportFilePath);
+                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 50 /*quality*/, fos);
+                fos.close();
+                Cursor cursor = database.rawQuery("UPDATE " + DBContract.TABLE_SIGHTING + " SET " + DBContract.COLUMN_SIGHTING_PICTURE + " = '" + picturePath + "' WHERE ID = " + Utility.getLastInsertRowID(), null);
+                cursor.moveToFirst();
+                cursor.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            imageDialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(String picturePath) {
+            imageDialog.dismiss();
+            Toast.makeText(SaveSightedTreeActivity.this, "New Sighting is successfully added.", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
+
 }

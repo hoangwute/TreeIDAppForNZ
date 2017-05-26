@@ -21,7 +21,6 @@ public class DBInitialization {
         if (!dbFile.exists()) {
             try {
                 CopyDataBaseFromAsset(context);
-                Toast.makeText(context, "Copying database " + DATABASE_NAME + " from Assets folder", Toast.LENGTH_LONG).show();
             }
             catch(Exception e) {
                 Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();

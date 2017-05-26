@@ -59,9 +59,9 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_gravity="bottom"
-            android:textColor="#FFFFFF"
-            android:background="#91B54D"
-            android:text="Save" />
+            android:background="#519032"
+            android:text="Save"
+            android:textColor="#FFFFFF" />
     </RelativeLayout>
 
 

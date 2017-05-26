@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context="aut.bcis.researchdevelopment.treeidfornz.AboutActivity">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/my_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#91B54D"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+                android:layout_gravity="center" />
+        </android.support.v7.widget.Toolbar>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="The nztree.app was developed as a joint project of the School of Science, the School of Engineering, Computer and Mathematical Sciences, and the Centre for Teaching and Learning at Auckland University of Technology."
+                android:textColor="@color/cast_expanded_controller_background_color" />
+
+            <TextView
+                android:id="@+id/txtEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="For suggestions on how to improve the beta version of this app or to report a bug, please email "
+                android:textColor="@color/cast_expanded_controller_background_color" />
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Credits"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/txtConceptDevelopment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Concept Development"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:textStyle="italic" />
+            <TextView
+                android:id="@+id/textView5"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sebastian Leuzinger\r\nJohanna Spaak\r\nLen Gillman" />
+            <TextView
+                android:id="@+id/txtPrograming"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Programing"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:textStyle="italic" />
+            <TextView
+                android:id="@+id/textView6"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Quoc Hoang Nguyen\r\nJung Wook Lee\r\nLu Ming\r\nDaniel Jelavic" />
+            <TextView
+                android:id="@+id/txtDesign"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Design &amp; Marketing"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:textStyle="italic" />
+            <TextView
+                android:id="@+id/textView7"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Victorio Burcio-Martin\r\nSophia Spivak" />
+            <TextView
+                android:id="@+id/txtPhoto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Photos"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:textStyle="italic" />
+            <TextView
+                android:id="@+id/textView8"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Len Gillman" />
+            <TextView
+                android:id="@+id/txtSepcial"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Special thanks to"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:textStyle="italic" />
+            <TextView
+                android:id="@+id/textView9"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:text="Mark Northover\r\nPare Keiha\r\nJordyn Giddins\r\nHohepa Spooner" />
+            <TextView
+                android:id="@+id/txtExternalSources"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Sources"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:textStyle="italic" />
+            <TextView
+                android:id="@+id/textView10"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="http://www.theplantlist.org\r\nwikipedia\r\nterrain.co.nz\r\nMoon, P. (2005). A Tohunga's Natural World. Plants, gardening and food. David Ling Pub..
+                \r\nlandcare research\r\nnzpcn\r\nhttp://ngaitahu.iwi.nz/our_stories/good-oil-tough-old-titoki/\r\nCrowe, Andrew (1992). Which Native Tree? Penguin Books\r\nwww.nzflora.infowww.nzflora.info" />
+            <TextView
+                android:id="@+id/txtExternalPictures"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="External pictures"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:textStyle="italic" />
+            <TextView
+                android:id="@+id/textView11"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:text="1) Aristotelia serrata leaf and flowerg\r\nCredit: Stephenhartley CC BY-SA 4.0\r\n2) Aristotelia serrata habitus\r\nCredit: Grapeman4   CC BY-SA 3.0
+                \r\n3) Melicytus macrophyllus leaf\r\nCredit:aunty CC BY-NC\r\nCredit:aunty CC BY-NC4) M. macrophyllus fruits:\r\n5) Myorourum laetum leaves and fruits\r\nCredt: Júlio Reis CC BY-SA 3.0
+                \r\n6) Myoporum laetum flower\r\nCredit: Avenue CC BY-SA 3.0\r\n7) Nothofagus menziesii leaves\r\nCredit: public domain\r\n8) Nothofagus menziesii habitus
+                \r\nCredit: public domain\r\n9) Piper excelsum subsp. excelsum\r\nCredit: public domain\r\n10) Piper excelsum leaves\r\nCredit: public domain" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

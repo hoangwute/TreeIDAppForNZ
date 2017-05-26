@@ -4,29 +4,29 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
+import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.text.SpannableString;
+import android.text.style.LeadingMarginSpan;
+import android.view.Display;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Random;
+import java.util.HashMap;
 
 import aut.bcis.researchdevelopment.database.DBContract;
 import aut.bcis.researchdevelopment.model.ListHeader;
 import aut.bcis.researchdevelopment.model.Sighting;
 import aut.bcis.researchdevelopment.model.Tree;
-import aut.bcis.researchdevelopment.model.TreeMarker;
 
 import static aut.bcis.researchdevelopment.treeidfornz.MainActivity.database;
 
@@ -35,59 +35,9 @@ import static aut.bcis.researchdevelopment.treeidfornz.MainActivity.database;
  */
 public class Utility {
 
-    public static void updateReportPicture(long reportId, int picture, Context mContext) {
-        Bitmap bitmapPicture = BitmapFactory.decodeResource(mContext.getResources(), picture);
-        // Saves the new picture to the internal storage with the unique identifier of the report as
-        // the name. That way, there will never be two report pictures with the same name.
-        String picturePath = "";
-        File internalStorage = mContext.getDir("ReportPictures", Context.MODE_PRIVATE);
-        File reportFilePath = new File(internalStorage, reportId + ".jpg");
-        picturePath = reportFilePath.toString();
-
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(reportFilePath);
-            bitmapPicture.compress(Bitmap.CompressFormat.PNG, 100 /*quality*/, fos);
-            fos.close();
-            Toast.makeText(mContext, "Update " + picturePath + " successfully", Toast.LENGTH_SHORT).show();
-        } catch (Exception ex) {
-            Log.i("DATABASE", "Problem updating picture", ex);
-            picturePath = "";
-        }
-        // Updates the database entry for the report to point to the picture
-        Cursor cursor = database.rawQuery("UPDATE Tree SET " + DBContract.COLUMN_MAIN_PICTURE + " = '" + picturePath + "' WHERE ID = " + reportId, null);
-        cursor.moveToFirst();
-        cursor.close();
-    }
-
-    public static void insertSightingPicture(long reportId, Bitmap bitmapPicture, Context mContext) {
-        // Saves the new picture to the internal storage with the unique identifier of the report as
-        // the name. That way, there will never be two report pictures with the same name.
-        String picturePath = "";
-        File internalStorage = mContext.getDir("SightingPictures", Context.MODE_PRIVATE);
-        File reportFilePath = new File(internalStorage, reportId + ".jpg");
-        picturePath = reportFilePath.toString();
-
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(reportFilePath);
-            bitmapPicture.compress(Bitmap.CompressFormat.PNG, 100 /*quality*/, fos);
-            fos.close();
-            Toast.makeText(mContext, "Update " + picturePath + " successfully", Toast.LENGTH_SHORT).show();
-        } catch (Exception ex) {
-            Log.i("DATABASE", "Problem updating picture", ex);
-            picturePath = "";
-        }
-        // Updates the database entry for the report to point to the picture
-        Cursor cursor = database.rawQuery("UPDATE " + DBContract.TABLE_SIGHTING + " SET " + DBContract.COLUMN_SIGHTING_PICTURE + " = '" + picturePath + "' WHERE ID = " + reportId, null);
-        cursor.moveToFirst();
-        cursor.close();
-    }
-
     public static void deleteSightingPicture(long reportId, Context mContext) {
         File internalStorage = mContext.getDir("SightingPictures", Context.MODE_PRIVATE);
         File reportFilePath = new File(internalStorage, reportId + ".jpg");
-        Toast.makeText(mContext, reportFilePath.toString(), Toast.LENGTH_SHORT).show();
         reportFilePath.delete();
         // Delete the database entry for the report to point to the picture
         Cursor cursor = database.rawQuery("DELETE FROM " + DBContract.TABLE_SIGHTING + " WHERE " + DBContract.COLUMN_SIGHTING_ID + " = " + reportId, null);
@@ -222,16 +172,6 @@ public class Utility {
     }
 
 
-//    public static int countSightedTreeType(String commonName) {
-//        Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM " + DBContract.TABLE_MARKER + " WHERE " + DBContract.COLUMN_MARKER_COMMON_NAME + " = '" + commonName + "'", null);
-//        int count = 0;
-//        while (cursor.moveToNext()) {
-//            count = cursor.getInt(cursor.getColumnIndex("COUNT(*)"));
-//        }
-//        cursor.close();
-//        return count;
-//    }
-
     public static int countSightings(String treeName) {
         Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM " + DBContract.TABLE_SIGHTING + " WHERE CommonName = \"" + treeName + "\"", null);
         int count = 0;
@@ -242,39 +182,24 @@ public class Utility {
         return count;
     }
 
-    public static void insertNewMarker(TreeMarker marker) {
-        Cursor cursor = null;
-        if (!marker.getNote().isEmpty()) {
-            cursor = database.rawQuery("INSERT INTO MARKER(CommonName, LatinName, Location, Note, ImagePath" +
-                    ", Latitude, Longitude) VALUES ('" + marker.getCommonName() + "', '" + marker.getLatinName() + "', '" +
-                    marker.getLocation() + "', '" + marker.getNote() + "', '" + marker.getImagePath() + "', " + marker.getLatitude()
-                    + ", " + marker.getLongitude() + ")", null);
-        } else {
-            cursor = database.rawQuery("INSERT INTO MARKER(CommonName, LatinName, Location, Note, ImagePath" +
-                    ", Latitude, Longitude) VALUES ('" + marker.getCommonName() + "', '" + marker.getLatinName() + "', '" +
-                    marker.getLocation() + "', '', '" + marker.getImagePath() + "', " + marker.getLatitude()
-                    + ", " + marker.getLongitude() + ")", null);
+    public static int countTreeFound(String countQuery) {
+        Cursor cursor = database.rawQuery(countQuery, null);
+        int count = 0;
+        while (cursor.moveToNext()) {
+            count = cursor.getInt(cursor.getColumnIndex("COUNT(*)"));
         }
-        cursor.moveToFirst();
         cursor.close();
+        return count;
     }
 
-//    public static boolean foundInsertedFilter(String filterCommonName) {
-//        Cursor cursor = database.rawQuery("SELECT CommonName FROM MARKER", null);
-//        while (cursor.moveToNext()) {
-//            String commonName = cursor.getString(cursor.getColumnIndex(DBContract.COLUMN_MARKER_COMMON_NAME));
-//            if (commonName.equals(filterCommonName)) {
-//                return true;
-//            }
-//        }
-//        cursor.close();
-//        return false;
-//    }
-
-    public static void insertFilterEntry(TreeMarker marker) {
-        Cursor cursor = database.rawQuery("INSERT INTO FilterEntry(CommonName, LatinName, Filtered) VALUES ('" + marker.getCommonName() + "', '" + marker.getLatinName() + "', 1)", null);
-        cursor.moveToFirst();
+    public static int countAllTrees() {
+        Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM " + DBContract.TABLE_TREE, null);
+        int count = 0;
+        while (cursor.moveToNext()) {
+            count = cursor.getInt(cursor.getColumnIndex("COUNT(*)"));
+        }
         cursor.close();
+        return count;
     }
 
     public static int getLastInsertRowID() {
@@ -301,6 +226,10 @@ public class Utility {
         return sdf.format(fullDate);
     }
 
+    public static String getMonth(int month) {
+        return new DateFormatSymbols().getMonths()[month-1];
+    }
+
     public static void sortTypeSwitch(String sortType, ArrayList<Object> treeList) {
         switch (sortType) {
             case DBContract.COLUMN_COMMON_NAME:
@@ -321,15 +250,6 @@ public class Utility {
         }
     }
 
-    public static int checkFilterStatus(String markerCommonName) {
-        Cursor cursor = database.rawQuery("SELECT Filtered FROM FilterEntry WHERE CommonName = '" + markerCommonName + "'", null);
-        int filteredStatus = 0;
-        while (cursor.moveToNext()) {
-             filteredStatus = cursor.getInt(cursor.getColumnIndex("Filtered"));
-        }
-        cursor.close();
-        return filteredStatus;
-    }
     public static String findTreeAttributeValueGivenName(String commonName, String treeAttribute) {
         String value = null;
         Cursor cursor = database.rawQuery("SELECT " + treeAttribute + " FROM " + DBContract.TABLE_TREE + " WHERE " + DBContract.COLUMN_COMMON_NAME + " = \"" + commonName + "\"", null);
@@ -356,58 +276,209 @@ public class Utility {
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
+    public static SpannableString createIndentedText(String text, int marginFirstLine, int marginNextLines) {
+        SpannableString result=new SpannableString(text);
+        result.setSpan(new LeadingMarginSpan.Standard(marginFirstLine, marginNextLines),0,text.length(),0);
+        return result;
+    }
 
 
+    public static Bitmap decodeFile(File f){
+        try {
+            //decode image size
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(new FileInputStream(f),null,o);
+            //Find the correct scale value. It should be the power of 2.
+            final int REQUIRED_SIZE=70;
+            int width_tmp=o.outWidth, height_tmp=o.outHeight;
+            int scale=1;
+            while(true){
+                if(width_tmp/2<REQUIRED_SIZE || height_tmp/2<REQUIRED_SIZE)
+                    break;
+                width_tmp/=2;
+                height_tmp/=2;
+                scale++;
+            }
 
-    public static void archivedUpdatePicture(Context mContext) {
-        updateReportPicture(1, R.drawable.tree_tikouka, mContext);
-        updateReportPicture(2, R.drawable.tree_nikau, mContext);
-        updateReportPicture(3, R.drawable.tree_puriri, mContext);
-        updateReportPicture(4, R.drawable.tree_sevenfinger, mContext);
-        updateReportPicture(5, R.drawable.tree_fivefinger, mContext);
-        updateReportPicture(6, R.drawable.tree_kawakawa, mContext);
-        updateReportPicture(7, R.drawable.tree_northernrata, mContext);
-        updateReportPicture(8, R.drawable.tree_southernrata, mContext);
-        updateReportPicture(9, R.drawable.tree_pohutukawa, mContext);
-        updateReportPicture(10, R.drawable.tree_kamahi, mContext);
-        updateReportPicture(11, R.drawable.tree_pukatea, mContext);
-        updateReportPicture(12, R.drawable.tree_wineberry, mContext);
-        updateReportPicture(13, R.drawable.tree_pigeonwood, mContext);
-        updateReportPicture(14, R.drawable.tree_kohekohe, mContext);
-        updateReportPicture(15, R.drawable.tree_houherelacebark, mContext);
-        updateReportPicture(16, R.drawable.tree_horoekalancewood, mContext);
-        updateReportPicture(17, R.drawable.tree_horoekalancewood, mContext);
-        updateReportPicture(18, R.drawable.tree_honeysuckle, mContext);
-        updateReportPicture(19, R.drawable.tree_mahoe, mContext);
-        updateReportPicture(20, R.drawable.tree_mahoe, mContext);
-        updateReportPicture(21, R.drawable.tree_ngaio, mContext);
-        updateReportPicture(22, R.drawable.tree_hinau, mContext);
-        updateReportPicture(23, R.drawable.tree_titoki, mContext);
-        updateReportPicture(24, R.drawable.tree_tanekaha, mContext);
-        updateReportPicture(25, R.drawable.tree_hardbeech, mContext);
-        updateReportPicture(26, R.drawable.tree_redbeech, mContext);
-        updateReportPicture(27, R.drawable.tree_silverbeech, mContext);
-        updateReportPicture(28, R.drawable.tree_marbleleaf, mContext);
-        updateReportPicture(29, R.drawable.tree_kowhai, mContext);
-        updateReportPicture(30, R.drawable.tree_matai, mContext);
-        updateReportPicture(31, R.drawable.tree_miro, mContext);
-        updateReportPicture(32, R.drawable.tree_rimu, mContext);
-        updateReportPicture(33, R.drawable.tree_blackbeech, mContext);
-        updateReportPicture(34, R.drawable.tree_moutainbeech, mContext);
-        updateReportPicture(35, R.drawable.tree_totara, mContext);
-        updateReportPicture(36, R.drawable.tree_kapuka, mContext);
-        updateReportPicture(37, R.drawable.tree_pukatea, mContext); //false
-        updateReportPicture(38, R.drawable.tree_karaka, mContext);
-        updateReportPicture(39, R.drawable.tree_rangiora, mContext);
-        updateReportPicture(40, R.drawable.tree_taraire, mContext);
-        updateReportPicture(41, R.drawable.tree_kauri, mContext);
-        updateReportPicture(42, R.drawable.tree_karo, mContext);
-        updateReportPicture(43, R.drawable.tree_treefuschia, mContext);
-//        updateReportPicture(44, R.drawable.tree_tawa, mContext);
-//        updateReportPicture(45, R.drawable.tree_akeake, mContext);
-//        updateReportPicture(46, R.drawable.tree_tarata, mContext);
-//        updateReportPicture(47, R.drawable.tree_kohuhu, mContext);
-//        updateReportPicture(48, R.drawable.tree_kanuka, mContext);
-//        updateReportPicture(49, R.drawable.tree_manuka, mContext);
+            //decode with inSampleSize
+            BitmapFactory.Options o2 = new BitmapFactory.Options();
+            o2.inSampleSize=scale;
+            return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+        } catch (FileNotFoundException e) {
+
+        }
+        return null;
+    }
+
+    public static HashMap<Integer, Integer> mainImageMap() {
+        HashMap<Integer, Integer> imageMap = new HashMap<Integer, Integer>();
+        imageMap.put(1, R.drawable.tree_cordyline_australis);
+        imageMap.put(2, R.drawable.tree_rhopalostylis_sapida2);
+        imageMap.put(3, R.drawable.tree_vitex_lucens);
+        imageMap.put(4, R.drawable.tree_schefflera_digitata);
+        imageMap.put(5, R.drawable.tree_pseudopanax_arboreus);
+        imageMap.put(6, R.drawable.tree_piper_excelsum_subsp_excelsum);
+        imageMap.put(7, R.drawable.tree_metrosideros_robusta);
+        imageMap.put(8, R.drawable.tree_metrosideros_umbulata);
+        imageMap.put(9, R.drawable.tree_metrosideros_excelsa);
+        imageMap.put(10, R.drawable.tree_weinmannia_racemosa);
+        imageMap.put(11, R.drawable.tree_laurelia_novae_zelandiae);
+        imageMap.put(12, R.drawable.tree_aristotelia_serrata);
+        imageMap.put(13, R.drawable.tree_hedycara_arborea);
+        imageMap.put(14, R.drawable.tree_dysoxylum_spectabile);
+        imageMap.put(15, R.drawable.tree_hoheria_populnea);
+        imageMap.put(16, R.drawable.tree_pseudopanax_crassifolius);
+        imageMap.put(17, R.drawable.tree_pseudopanax_crassifolius_juvenile);
+        imageMap.put(18, R.drawable.tree_knightia_excelsa);
+        imageMap.put(19, R.drawable.tree_melicytus_ramiflorus);
+        imageMap.put(20, R.drawable.tree_melicytus_macrophyllus);
+        imageMap.put(21, R.drawable.tree_myoporum_laetum);
+        imageMap.put(22, R.drawable.tree_elaeocarpus_dentatus);
+        imageMap.put(23, R.drawable.tree_alectryon_excelsus);
+        imageMap.put(24, R.drawable.tree_phyllocladus_trichomanoides);
+        imageMap.put(25, R.drawable.tree_fuscospora_truncata);
+        imageMap.put(26, R.drawable.tree_fuscospora_fusca);
+        imageMap.put(27, R.drawable.tree_nothofagus_menziesii);
+        imageMap.put(28, R.drawable.tree_carpodetus_serratus);
+        imageMap.put(29, R.drawable.tree_sophora_microphylla);
+        imageMap.put(30, R.drawable.tree_prumnopitys_taxifolia);
+        imageMap.put(31, R.drawable.tree_prumnopitys_ferruginea);
+        imageMap.put(32, R.drawable.tree_dacrydium_cupressinum);
+        imageMap.put(33, R.drawable.tree_fuscospora_solandri);
+        imageMap.put(34, R.drawable.tree_fuscospora_cliffortioides);
+        imageMap.put(35, R.drawable.tree_podocarpus_totara);
+        imageMap.put(36, R.drawable.tree_griselinia_littoralis);
+        imageMap.put(37, R.drawable.tree_griselinia_lucida);
+        imageMap.put(38, R.drawable.tree_corynocarpus_laevigatus);
+        imageMap.put(39, R.drawable.tree_brachyglottis_repanda);
+        imageMap.put(40, R.drawable.tree_beilschmiedia_tarairi);
+        imageMap.put(41, R.drawable.tree_agathis_australis);
+        imageMap.put(42, R.drawable.tree_pittosporum_crassifolium);
+        imageMap.put(43, R.drawable.tree_fuchsia_excorticata);
+        imageMap.put(44, R.drawable.tree_beilschmiedia_tawa);
+        imageMap.put(45, R.drawable.tree_pittosporum_eugenioides);
+        imageMap.put(46, R.drawable.tree_myrsine_australis);
+        imageMap.put(47, R.drawable.tree_pittosporum_tenuifolium);
+        imageMap.put(48, R.drawable.tree_kunzea_ericoides);
+        imageMap.put(49, R.drawable.tree_leptospermum_scoparium);
+        return imageMap;
+    }
+
+    public static HashMap<Integer, Integer> secondImageMap() {
+        HashMap<Integer, Integer> imageMap = new HashMap<Integer, Integer>();
+        imageMap.put(1, R.drawable.tree_cordyline_australis2);
+        imageMap.put(2, R.drawable.tree_rhopalostylis_sapida);
+        imageMap.put(3, R.drawable.tree_vitex_lucens2);
+        imageMap.put(5, R.drawable.tree_pseudopanax_arboreus2);
+        imageMap.put(6, R.drawable.tree_piper_excelsum_subsp_excelsum2);
+        imageMap.put(8, R.drawable.tree_metrosideros_umbulata2);
+        imageMap.put(9, R.drawable.tree_metrosideros_excelsa2);
+        imageMap.put(10, R.drawable.tree_weinmannia_racemosa2);
+        imageMap.put(11, R.drawable.tree_laurelia_novae_zelandiae2);
+        imageMap.put(12, R.drawable.tree_aristotelia_serrata2);
+        imageMap.put(13, R.drawable.tree_hedycara_arborea2);
+        imageMap.put(14, R.drawable.tree_dysoxylum_spectabile2);
+        imageMap.put(15, R.drawable.tree_hoheria_populnea2);
+        imageMap.put(17, R.drawable.tree_pseudopanax_crassifolius_juvenile2);
+        imageMap.put(18, R.drawable.tree_knightia_excelsa2);
+        imageMap.put(19, R.drawable.tree_melicytus_ramiflorus2);
+        imageMap.put(21, R.drawable.tree_myoporum_laetum2);
+        imageMap.put(22, R.drawable.tree_elaeocarpus_dentatus2);
+        imageMap.put(23, R.drawable.tree_alectryon_excelsus2);
+        imageMap.put(24, R.drawable.tree_phyllocladus_trichomanoides2);
+        imageMap.put(27, R.drawable.tree_nothofagus_menziezii2);
+        imageMap.put(30, R.drawable.tree_prumnopitys_taxifolia2);
+        imageMap.put(31, R.drawable.tree_prumnopitys_ferruginea2);
+        imageMap.put(32, R.drawable.tree_dacrydium_cupressinum2);
+        imageMap.put(33, R.drawable.tree_fuscospora_solandri2);
+        imageMap.put(34, R.drawable.tree_fuscospora_cliffortioides2);
+        imageMap.put(35, R.drawable.tree_podocarpus_totara2);
+        imageMap.put(37, R.drawable.tree_griselinia_lucida2);
+        imageMap.put(38, R.drawable.tree_corynocarpus_laevigatus2);
+        imageMap.put(39, R.drawable.tree_brachyglottis_repanda2);
+        imageMap.put(40, R.drawable.tree_beilschmiedia_tarairi2);
+        imageMap.put(41, R.drawable.tree_agathis_australis2);
+        imageMap.put(42, R.drawable.tree_pittosporum_crassifolium2);
+        imageMap.put(43, R.drawable.tree_fuchsia_excorticata2);
+        imageMap.put(44, R.drawable.tree_beilschmiedia_tawa2);
+        imageMap.put(45, R.drawable.tree_pittosporum_eugenioides2);
+        imageMap.put(46, R.drawable.tree_myrsine_australis2);
+        imageMap.put(47, R.drawable.tree_pittosporum_tenuifolium2);
+        imageMap.put(48, R.drawable.tree_kunzea_ericoides2);
+        imageMap.put(49, R.drawable.tree_leptospermum_scoparium2);
+        return imageMap;
+    }
+
+    public static HashMap<Integer, Integer> thirdImageMap() {
+        HashMap<Integer, Integer> imageMap = new HashMap<Integer, Integer>();
+        imageMap.put(2, R.drawable.tree_rhopalostylis_sapida3);
+        imageMap.put(5, R.drawable.tree_pseudopanax_arboreus3);
+        imageMap.put(8, R.drawable.tree_metrosideros_umbulata3);
+        imageMap.put(9, R.drawable.tree_metrosideros_excelsa3);
+        imageMap.put(14, R.drawable.tree_dysoxylum_spectabile3);
+        imageMap.put(15, R.drawable.tree_hoheria_populnea3);
+        imageMap.put(17, R.drawable.tree_pseudopanax_crassifolius_juvenile3);
+        imageMap.put(18, R.drawable.tree_knightia_excelsa3);
+        imageMap.put(19, R.drawable.tree_melicytus_ramiflorus3);
+        imageMap.put(22, R.drawable.tree_elaeocarpus_dentatus3);
+        imageMap.put(23, R.drawable.tree_alectryon_excelsus3);
+        imageMap.put(24, R.drawable.tree_phyllocladus_trichomanoides3);
+        imageMap.put(30, R.drawable.tree_prumnopitys_taxifolia3);
+        imageMap.put(32, R.drawable.tree_dacrydium_cupressinum3);
+        imageMap.put(34, R.drawable.tree_fuscospora_cliffortioides3);
+        imageMap.put(35, R.drawable.tree_podocarpus_totara3);
+        imageMap.put(37, R.drawable.tree_griselinia_lucida3);
+        imageMap.put(38, R.drawable.tree_corynocarpus_laevigatus3);
+        imageMap.put(39, R.drawable.tree_brachyglottis_repanda3);
+        imageMap.put(41, R.drawable.tree_agathis_australis3);
+        imageMap.put(42, R.drawable.tree_pittosporum_crassifolium3);
+        imageMap.put(44, R.drawable.tree_beilschmiedia_tawa3);
+        imageMap.put(46, R.drawable.tree_myrsine_australis3);
+        imageMap.put(47, R.drawable.tree_pittosporum_tenuifolium3);
+        imageMap.put(48, R.drawable.tree_kunzea_ericoides3);
+        return imageMap;
+    }
+    public static HashMap<Integer, Integer> fourthImageMap() {
+        HashMap<Integer, Integer> imageMap = new HashMap<Integer, Integer>();
+        imageMap.put(2, R.drawable.tree_rhopalostylis_sapida4);
+        imageMap.put(5, R.drawable.tree_pseudopanax_arboreus4);
+        imageMap.put(15, R.drawable.tree_hoheria_populnea4);
+        imageMap.put(18, R.drawable.tree_knightia_excelsa4);
+        imageMap.put(23, R.drawable.tree_alectryon_excelsus4);
+        imageMap.put(34, R.drawable.tree_fuscospora_cliffortioides4);
+        imageMap.put(35, R.drawable.tree_podocarpus_totara4);
+        imageMap.put(37, R.drawable.tree_griselinia_lucida4);
+        imageMap.put(38, R.drawable.tree_corynocarpus_laevigatus4);
+        imageMap.put(39, R.drawable.tree_brachyglottis_repanda4);
+        imageMap.put(41, R.drawable.tree_agathis_australis4);
+        imageMap.put(44, R.drawable.tree_beilschmiedia_tawa4);
+        imageMap.put(46, R.drawable.tree_myrsine_australis4);
+        imageMap.put(47, R.drawable.tree_pittosporum_tenuifolium4);
+        imageMap.put(48, R.drawable.tree_kunzea_ericoides4);
+        return imageMap;
+    }
+    public static HashMap<Integer, Integer> fifthImageMap() {
+        HashMap<Integer, Integer> imageMap = new HashMap<Integer, Integer>();
+        imageMap.put(2, R.drawable.tree_rhopalostylis_sapida5);
+        imageMap.put(18, R.drawable.tree_knightia_excelsa5);
+        imageMap.put(34, R.drawable.tree_fuscospora_cliffortioides5);
+        imageMap.put(38, R.drawable.tree_corynocarpus_laevigatus5);
+        imageMap.put(41, R.drawable.tree_agathis_australis5);
+        imageMap.put(46, R.drawable.tree_myrsine_australis5);
+        imageMap.put(48, R.drawable.tree_kunzea_ericoides5);
+        return imageMap;
+    }
+    public static HashMap<Integer, Integer> sixthImageMap() {
+        HashMap<Integer, Integer> imageMap = new HashMap<Integer, Integer>();
+        imageMap.put(18, R.drawable.tree_knightia_excelsa6);
+        imageMap.put(34, R.drawable.tree_fuscospora_cliffortioides6);
+        imageMap.put(41, R.drawable.tree_agathis_australis6);
+        return imageMap;
+    }
+    public static HashMap<Integer, Integer> seventhImageMap() {
+        HashMap<Integer, Integer> imageMap = new HashMap<Integer, Integer>();
+        imageMap.put(34, R.drawable.tree_fuscospora_cliffortioides7);
+        return imageMap;
     }
 }
