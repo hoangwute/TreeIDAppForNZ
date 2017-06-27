@@ -2,14 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menuHome"
-        android:title="Home"></item>
+        android:id="@+id/menuIdentification"
+        android:title="Tree Identification"></item>
     <item
         android:id="@+id/menuList"
         android:title="A to Z of NZ Trees"></item>
     <item
-        android:id="@+id/menuIdentification"
-        android:title="Tree Identification"></item>
+        android:id="@+id/menuHome"
+        android:title="Home"></item>
+    <item
+        android:id="@+id/menuFavourite"
+        android:title="My Favourites"></item>
     <item android:id="@+id/action_search"
         android:title="Search"
         android:icon="@android:drawable/ic_menu_search"

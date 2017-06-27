@@ -172,6 +172,11 @@ public class AddSightingLocationActivity extends AppCompatActivity implements On
             Intent intent = new Intent(AddSightingLocationActivity.this, IdentificationActivity.class);
             startActivity(intent);
         }
+        else if(item.getItemId() == R.id.menuFavourite) {
+            Intent intent = new Intent(AddSightingLocationActivity.this, ListActivity.class);
+            intent.putExtra("FromHomePage", "homepage");
+            startActivity(intent);
+        }
         return super.onOptionsItemSelected(item);
     }
 

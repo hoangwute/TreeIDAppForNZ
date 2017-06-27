@@ -84,8 +84,7 @@ public class IdentificationResultActivity extends AppCompatActivity {
         else
             displayAllIdentifiedTreeBasedOnCheckedBox();
         groupIdentifiedRad = (RadioGroup) findViewById(R.id.groupIdentifiedRad);
-        groupIdentifiedRad.bringToFront();
-    }
+     }
 
     private void addEvents() {
         listIdentifiedSearch.setQueryHint("Search by keyword...");
@@ -183,12 +182,12 @@ public class IdentificationResultActivity extends AppCompatActivity {
                     animation.setAnimationListener(new Animation.AnimationListener() {
                         @Override
                         public void onAnimationStart(Animation animation) {
-
+                            groupIdentifiedRad.setVisibility(View.GONE);
                         }
 
                         @Override
                         public void onAnimationEnd(Animation animation) {
-                            groupIdentifiedRad.setVisibility(View.INVISIBLE);
+
                         }
 
                         @Override
@@ -230,6 +229,7 @@ public class IdentificationResultActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
                     radIdentifiedEnglishName.setTextColor(Color.BLACK);
+                    chkIdentifiedExpandSort.setButtonDrawable(R.drawable.icon_en);
                     displayAccordingToRadButton(DBContract.COLUMN_COMMON_NAME);
                 }
                 else {
@@ -242,6 +242,7 @@ public class IdentificationResultActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
                     radIdentifiedMaoriName.setTextColor(Color.BLACK);
+                    chkIdentifiedExpandSort.setButtonDrawable(R.drawable.icon_ma);
                     displayAccordingToRadButton(DBContract.COLUMN_MAORI_NAME);
                 }
                 else {
@@ -254,6 +255,7 @@ public class IdentificationResultActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
                     radIdentifiedLatinName.setTextColor(Color.BLACK);
+                    chkIdentifiedExpandSort.setButtonDrawable(R.drawable.icon_la);
                     displayAccordingToRadButton(DBContract.COLUMN_LATIN_NAME);
                 }
                 else {
@@ -282,6 +284,11 @@ public class IdentificationResultActivity extends AppCompatActivity {
         }
         else if(item.getItemId() == R.id.menuIdentification) {
             Intent intent = new Intent(IdentificationResultActivity.this, IdentificationActivity.class);
+            startActivity(intent);
+        }
+        else if(item.getItemId() == R.id.menuFavourite) {
+            Intent intent = new Intent(IdentificationResultActivity.this, ListActivity.class);
+            intent.putExtra("FromHomePage", "homepage");
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);

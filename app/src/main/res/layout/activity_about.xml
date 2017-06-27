@@ -129,7 +129,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:text="Mark Northover\r\nPare Keiha\r\nJordyn Giddins\r\nHohepa Spooner" />
+                android:text="Mark Northover\r\nPare Keiha\r\nJordyn Giddins\r\nHohepa Spooner\r\nShahper Vodanovich" />
             <TextView
                 android:id="@+id/txtExternalSources"
                 android:layout_width="match_parent"
@@ -139,7 +139,7 @@
                 android:textColor="@color/cast_expanded_controller_background_color"
                 android:textStyle="italic" />
             <TextView
-                android:id="@+id/textView10"
+                android:id="@+id/txtExternalSource"
                 android:textColor="@color/cast_expanded_controller_background_color"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -154,7 +154,7 @@
                 android:textColor="@color/cast_expanded_controller_background_color"
                 android:textStyle="italic" />
             <TextView
-                android:id="@+id/textView11"
+                android:id="@+id/txtExternalPicture"
                 android:textColor="@color/cast_expanded_controller_background_color"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

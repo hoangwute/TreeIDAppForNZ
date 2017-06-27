@@ -8,13 +8,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 public class AboutActivity extends AppCompatActivity {
-    private TextView txtEmail;
+    private TextView txtEmail, txtExternalSource, txtExternalPicture;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +33,18 @@ public class AboutActivity extends AppCompatActivity {
         myToolbar.setOverflowIcon(drawable);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         txtEmail = (TextView) findViewById(R.id.txtEmail);
-        txtEmail.append(Html.fromHtml("<a href=\"mailto:nztreeapp@aut.ac.nz\">nztreeapp@aut.ac.nz</a>"));
+        txtExternalSource = (TextView) findViewById(R.id.txtExternalSource);
+        txtExternalPicture = (TextView) findViewById(R.id.txtExternalPicture);
+        txtExternalSource.setText(Html.fromHtml("The Planlist.org <a href=\"http://www.theplantlist.org/\">http://www.theplantlist.org/</a><br>Wikipedia" +
+                "<br>Terrain <a href=\"http://terrain.net.nz/\">terrain.net.nz</a><br>Moon, P. (2005). A Tohunga's Natural World. Plants, gardening and food. David Ling Pub..<br>" +
+                "Landcare Research<br>NZPCN<br><a href=\"http://ngaitahu.iwi.nz/our_stories/good-oil-tough-old-titoki/\">ngaitahu.iwi.nz</a><br>Crowe, Andrew (1992). Which Native Tree? Penguin Books<br>" +
+                "<a href=\"http://nzflora.info/\">http://nzflora.info/</a>"));
+        txtExternalPicture.setText(Html.fromHtml("<i><b>Aristotelia serrata</b></i> leaf and flower<br>Credit: Stephenhartley CC BY-SA 4.0<br><br><i><b>Aristotelia serrata</b></i> habitus<br>Credit: Grapeman4 CC BY-SA 3.0<br><br><i><b>Melicytus macrophyllus</b></i> leaf<br>Credit:aunty CC BY-NC<br><br><i><b>M. macrophyllus</b></i> fruits" +
+                "<br>Credit: jacqui-nz CC-BY-NC<br><br><i><b>Myorporum laetum</b></i> leaves and fruits<br>Credit: Júlio Reis CC BY-SA 3.0<br><br><i><b>Myoporum laetum</b></i> flower<br>Credit: Avenue CC BY-SA 3.0"));
+        txtEmail.append(Html.fromHtml("\"<a href=\"mailto:nztreeapp@aut.ac.nz\">nztreeapp@aut.ac.nz</a>\""));
+        txtExternalSource.setMovementMethod(LinkMovementMethod.getInstance());
+        txtExternalPicture.setMovementMethod(LinkMovementMethod.getInstance());
+        txtEmail.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     @Override
@@ -54,6 +66,11 @@ public class AboutActivity extends AppCompatActivity {
         }
         else if(item.getItemId() == R.id.menuIdentification) {
             Intent intent = new Intent(AboutActivity.this, IdentificationActivity.class);
+            startActivity(intent);
+        }
+        else if(item.getItemId() == R.id.menuFavourite) {
+            Intent intent = new Intent(AboutActivity.this, ListActivity.class);
+            intent.putExtra("FromHomePage", "homepage");
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);

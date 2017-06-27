@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -22,7 +21,6 @@ import java.util.List;
 import aut.bcis.researchdevelopment.model.ListHeader;
 import aut.bcis.researchdevelopment.model.OnSwipeTouchListener;
 import aut.bcis.researchdevelopment.model.Sighting;
-import aut.bcis.researchdevelopment.model.Tree;
 
 import aut.bcis.researchdevelopment.treeidfornz.MySightingActivity;
 import aut.bcis.researchdevelopment.treeidfornz.R;
@@ -98,10 +96,9 @@ public class SightingAdapter extends ArrayAdapter<Object> {
             holder.txtSightingLatinName.setText(sighting.getLatinName());
             holder.txtSightingLocation.setText(sighting.getLocation());
             if(sighting.getSightingPicture() != null)
-                Picasso.with(context).load(new File(sighting.getSightingPicture())).centerCrop().resize(107, 107).into(holder.imgSightingPicture); //load picture using Picasso library
+                Picasso.with(context).load(new File(sighting.getSightingPicture())).centerCrop().resize(Utility.convertDPItoDevicePixel(context, 80), Utility.convertDPItoDevicePixel(context, 80)).into(holder.imgSightingPicture); //load picture using Picasso library
             else
-                Picasso.with(context).load(R.drawable.noimagefound).centerCrop().resize(107, 107).into(holder.imgSightingPicture);
-            holder.imgSightingPicture.setScaleType(ImageView.ScaleType.FIT_XY);
+                Picasso.with(context).load(R.drawable.noimagefound).centerCrop().resize(Utility.convertDPItoDevicePixel(context, 80), Utility.convertDPItoDevicePixel(context, 80)).into(holder.imgSightingPicture);
             holder.entryLayout.setOnTouchListener(new OnSwipeTouchListener(context) {
                 @Override
                 public void onSwipeRight() { //actually should be the reverse order.
@@ -150,7 +147,6 @@ public class SightingAdapter extends ArrayAdapter<Object> {
                 }
                 @Override
                 public void onClick() {
-                    Toast.makeText(context, String.valueOf(holder.btnDeleteSighting.isShown()), Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(context, SightingInfoActivity.class);
                     Sighting sighting = (Sighting) MySightingActivity.sightingList.get(position);
                     intent.putExtra("ID", sighting.getId());

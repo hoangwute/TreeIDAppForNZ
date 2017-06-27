@@ -27,6 +27,7 @@ import aut.bcis.researchdevelopment.treeidfornz.IdentificationResultActivity;
 import aut.bcis.researchdevelopment.treeidfornz.ListActivity;
 import aut.bcis.researchdevelopment.treeidfornz.MainActivity;
 import aut.bcis.researchdevelopment.treeidfornz.R;
+import aut.bcis.researchdevelopment.treeidfornz.Utility;
 
 /**
  * Created by VS9 X64Bit on 26/08/2016.
@@ -78,8 +79,7 @@ public class TreeAdapter extends ArrayAdapter<Object> implements Filterable {
             holder.txtLatinName.setText(tree.getLatinName());
             holder.txtMaoriName.setText(tree.getMaoriName());
             if(tree.getMainPicture() != null)
-                Picasso.with(context).load(new File(tree.getMainPicture())).centerCrop().resize(107, 107).into(holder.imgFirstPicture); //load picture using Picasso library
-            holder.imgFirstPicture.setScaleType(ImageView.ScaleType.FIT_XY);
+                Picasso.with(context).load(new File(tree.getMainPicture())).centerCrop().resize(Utility.convertDPItoDevicePixel(context, 80), Utility.convertDPItoDevicePixel(context, 80)).into(holder.imgFirstPicture); //load picture using Picasso library
 
             if(tree.getLiked() == 1) {
                 holder.btnLike.setVisibility(View.INVISIBLE);

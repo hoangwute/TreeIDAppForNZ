@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
@@ -12,11 +13,12 @@
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
         <TextView
             android:id="@+id/toolbar_title"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
             android:layout_gravity="center" />
     </android.support.v7.widget.Toolbar>
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -454,7 +456,7 @@
                 android:background="#e5e5e5" />
 
             <TextView
-                android:id="@+id/textViewDidyouknow"
+                android:id="@+id/textViewDidYouKnow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -468,6 +470,38 @@
 
             <TextView
                 android:id="@+id/txtDidYouKnow"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="20dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="TextView"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/line9"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:background="#e5e5e5" />
+
+            <TextView
+                android:id="@+id/textEtymology"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingBottom="3dp"
+                android:paddingTop="10dp"
+                android:text="ETYMOLOGY"
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtEtymology"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="16dp"

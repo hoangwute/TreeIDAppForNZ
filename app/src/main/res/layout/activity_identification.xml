@@ -10,24 +10,28 @@
     <RelativeLayout
         android:id="@+id/submitLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true">
+        android:layout_height="75dp"
+        android:layout_alignParentBottom="true"
+        android:background="#e5e5e5">
 
         <Button
             android:id="@+id/btnSubmit"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="70dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_gravity="bottom"
-            android:background="@drawable/shape_shadow_button"
+            android:background="@drawable/shape_submit"
             android:text="49 Matches"
             android:textColor="#FFFFFF" />
     </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/my_toolbar"

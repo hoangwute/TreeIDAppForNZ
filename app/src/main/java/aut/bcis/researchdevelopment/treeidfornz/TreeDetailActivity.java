@@ -3,6 +3,7 @@ package aut.bcis.researchdevelopment.treeidfornz;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -12,7 +13,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
+import android.text.style.StyleSpan;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,6 +31,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.util.Util;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -37,7 +44,7 @@ import aut.bcis.researchdevelopment.model.CustomViewPager;
 
 public class TreeDetailActivity extends AppCompatActivity {
     private TextView txtTreeCommonName, txtTreeLatinName, txtTreeMaoriName, txtTreeFamily, txtImageDescription,
-            txtTreeGroup, txtTreeLeaves, txtTreeFlower, txtTreeFruit, txtTreeBark, txtDescription, txtDidYouKnow, txt3DLink;
+            txtTreeGroup, txtTreeLeaves, txtTreeFlower, txtTreeFruit, txtTreeBark, txtDescription, txtDidYouKnow, txtEtymology, txt3DLink;
     private CheckBox chkTreeFavourite;
     private String treeCommonName;
     private ImageButton btnTreeFruitStatus, btnTreeFlowerStatus, btnTreePoisonStatus, btnTreeMedicalUse;
@@ -80,6 +87,7 @@ public class TreeDetailActivity extends AppCompatActivity {
         txtDescription = (TextView) findViewById(R.id.txtDescription);
         txtDidYouKnow = (TextView) findViewById(R.id.txtDidYouKnow);
         txt3DLink = (TextView) findViewById(R.id.txt3DLink);
+        txtEtymology = (TextView) findViewById(R.id.txtEtymology);
         layout3DPicture = (LinearLayout) findViewById(R.id.layout3DPic);
         if(treeCommonName.equalsIgnoreCase("Mountain Beech")) {
             layout3DPicture.setVisibility(View.VISIBLE);
@@ -149,7 +157,15 @@ public class TreeDetailActivity extends AppCompatActivity {
                     else
                         alertDescription += "\u25CF " + medicinalEntry[i] + "\n";
                 }
-                txtAlertDescription.setText(Utility.createIndentedText(alertDescription,0,20));
+                if(treeCommonName.equalsIgnoreCase("New Zealand Christmas Tree")) { //temporary solution.
+                    SpannableStringBuilder sb = new SpannableStringBuilder(alertDescription);
+                    final StyleSpan iss = new StyleSpan(Typeface.ITALIC);
+                    sb.setSpan(iss, 76, 99, Spannable.SPAN_INCLUSIVE_INCLUSIVE); // make Staphylococcus aureus italic
+                    txtAlertDescription.setText(sb);
+                }
+                else {
+                    txtAlertDescription.setText(Utility.createIndentedText(alertDescription, 0, 20));
+                }
             }
         });
         btnTreeFlowerStatus.setOnClickListener(new View.OnClickListener() {
@@ -186,7 +202,7 @@ public class TreeDetailActivity extends AppCompatActivity {
                     txtAlertDescription.setText(alertDescription);
                 }
                 else
-                    txtAlertDescription.setText("This species is non-flowering");
+                    txtAlertDescription.setText("No information available");
             }
         });
         btnTreeFruitStatus.setOnClickListener(new View.OnClickListener() {
@@ -223,7 +239,7 @@ public class TreeDetailActivity extends AppCompatActivity {
                     txtAlertDescription.setText(alertDescription);
                 }
                 else
-                    txtAlertDescription.setText("This species is non-fruiting.");
+                    txtAlertDescription.setText("No information available");
             }
         });
         btnTreePoisonStatus.setOnClickListener(new View.OnClickListener() {
@@ -286,10 +302,12 @@ public class TreeDetailActivity extends AppCompatActivity {
                 + Html.fromHtml(ATTRIBUTE_COLOR_CODE + Utility.findTreeAttributeValueGivenName(treeCommonName, DBContract.COLUMN_CONE_TYPE) + "<font>")));
         txtTreeBark.append(Html.fromHtml(ATTRIBUTE_COLOR_CODE + Utility.findTreeAttributeValueGivenName(treeCommonName, DBContract.COLUMN_TRUNK_COLOUR) + ", <font>"
                  + Html.fromHtml(ATTRIBUTE_COLOR_CODE + Utility.findTreeAttributeValueGivenName(treeCommonName, DBContract.COLUMN_TRUNK_TEXTURE) + "<font>")));
-        txtDescription.setText(Utility.findTreeAttributeValueGivenName(treeCommonName, DBContract.COLUMN_DESCRIPTION));
-        txtDidYouKnow.setText(Utility.findTreeAttributeValueGivenName(treeCommonName, DBContract.COLUMN_DID_YOU_KNOW));
+        txtDescription.setText(Html.fromHtml(Utility.findTreeAttributeValueGivenName(treeCommonName, DBContract.COLUMN_DESCRIPTION)));
+        txtDidYouKnow.setText(Html.fromHtml(Utility.findTreeAttributeValueGivenName(treeCommonName, DBContract.COLUMN_DID_YOU_KNOW)));
+        txtDidYouKnow.setMovementMethod(LinkMovementMethod.getInstance()); //make hyperlink clickable
+        txtEtymology.setText(Html.fromHtml(Utility.findTreeAttributeValueGivenName(treeCommonName, DBContract.COLUMN_ETYMOLOGY)));
         txt3DLink.setText(Html.fromHtml("<a href=\"https://sketchfab.com/models/504eeb3c07594a5185ff37a9c905b8e9\"> Link to view species 3D Model </a>"));
-        txt3DLink.setMovementMethod(LinkMovementMethod.getInstance());
+        txt3DLink.setMovementMethod(LinkMovementMethod.getInstance()) ;
         txtImageDescription = (TextView) findViewById(R.id.txtImageDescription);
         txtImageDescription.setText(treeCommonName);
         if(Utility.findTreeAttributeValueGivenName(treeCommonName, DBContract.COLUMN_LIKED).equals("1"))
@@ -327,6 +345,11 @@ public class TreeDetailActivity extends AppCompatActivity {
         }
         else if(item.getItemId() == R.id.menuIdentification) {
             Intent intent = new Intent(TreeDetailActivity.this, IdentificationActivity.class);
+            startActivity(intent);
+        }
+        else if(item.getItemId() == R.id.menuFavourite) {
+            Intent intent = new Intent(TreeDetailActivity.this, ListActivity.class);
+            intent.putExtra("FromHomePage", "homepage");
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);

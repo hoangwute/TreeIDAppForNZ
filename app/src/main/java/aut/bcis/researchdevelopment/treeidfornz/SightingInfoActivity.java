@@ -1,6 +1,7 @@
 package aut.bcis.researchdevelopment.treeidfornz;
 
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,14 +19,17 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.view.ContextMenu;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -37,6 +41,7 @@ import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -61,9 +66,9 @@ public class SightingInfoActivity extends AppCompatActivity {
     private final int PICK_IMAGE_REQUEST = 3;
     private Bitmap imageBitmap;
     private ProgressDialog dialog;
-    private int width;
+    private int width, height;
     private String mCurrentPhotoPath;
-
+    private String screenShotImagePath;
 
 
     @Override
@@ -98,6 +103,10 @@ public class SightingInfoActivity extends AppCompatActivity {
         btnShareSighting = (ImageButton) findViewById(R.id.btnShareSighting);
         btnEditSightingInfo = (Button) findViewById(R.id.btnEditSightingInfo);
         editTxtSightingInfoNote = (EditText) findViewById(R.id.editTxtSightingInfoNote);
+        editTxtSightingInfoNote.setInputType(InputType.TYPE_CLASS_TEXT);
+        editTxtSightingInfoNote.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        editTxtSightingInfoNote.setHorizontallyScrolling(false);
+        editTxtSightingInfoNote.setMaxLines(Integer.MAX_VALUE);
         fillSightingInfo();
         dialog = new ProgressDialog(SightingInfoActivity.this);
         dialog.setTitle("Please be patient.");
@@ -107,6 +116,7 @@ public class SightingInfoActivity extends AppCompatActivity {
         Point size = new Point();
         display.getSize(size);
         width = size.x;
+        height = size.y;
     }
 
     private void addEvents() {
@@ -138,8 +148,8 @@ public class SightingInfoActivity extends AppCompatActivity {
         btnEditSightingInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Cursor cursor = database.rawQuery("UPDATE " + DBContract.TABLE_SIGHTING + " SET " + DBContract.COLUMN_SIGHTING_LOCATION + " = '" + treeLocation
-                        + "', " + DBContract.COLUMN_SIGHTING_NOTE + " = '" + editTxtSightingInfoNote.getText().toString() + "' WHERE ID = " + sightingID, null);
+                Cursor cursor = database.rawQuery("UPDATE " + DBContract.TABLE_SIGHTING + " SET " + DBContract.COLUMN_SIGHTING_LOCATION + " = \"" + treeLocation
+                        + "\", " + DBContract.COLUMN_SIGHTING_NOTE + " = \"" + editTxtSightingInfoNote.getText().toString() + "\" WHERE ID = " + sightingID, null);
                 cursor.moveToFirst();
                 cursor.close();
                 if(imageBitmap!= null) {
@@ -154,11 +164,47 @@ public class SightingInfoActivity extends AppCompatActivity {
         btnShareSighting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-                shareIntent.setType("text/plain");
-                shareIntent.putExtra(Intent.EXTRA_TEXT, "Just sighted a new tree today!");
-                startActivity(shareIntent);
+                Bitmap bitmap = takeScreenshot();
+                try {
+                    saveBitmap(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                shareImage();
+            }
+        });
+        editTxtSightingInfoNote.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if(i == EditorInfo.IME_ACTION_DONE) {
+                    btnEditSightingInfo.setText("SAVE");
+                    Utility.hideKeyboard(SightingInfoActivity.this);
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+    boolean isOpened;
+    public void setListenerToRootView() {
+        final View activityRootView = getWindow().getDecorView().findViewById(android.R.id.content);
+        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+
+                int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
+                if (heightDiff > 100) { // 99% of the time the height diff will be due to a keyboard.
+                    Toast.makeText(getApplicationContext(), "Gotcha!!! softKeyboardup", Toast.LENGTH_SHORT).show();
+
+                    if (isOpened == false) {
+                        //Do two things, make the view top visible and the editText smaller
+                    }
+                    isOpened = true;
+                } else if (isOpened == true) {
+                    Toast.makeText(getApplicationContext(), "softkeyborad Down!!!", Toast.LENGTH_SHORT).show();
+                    btnEditSightingInfo.setText("SAVE");
+                    isOpened = false;
+                }
             }
         });
     }
@@ -173,14 +219,16 @@ public class SightingInfoActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Glide.with(SightingInfoActivity.this).load(contentUri).override(width,333).centerCrop().into(imgSightingInfoPicture);
+            Glide.with(SightingInfoActivity.this).load(contentUri).override(width,Utility.convertDPItoDevicePixel(this, 250)).centerCrop().into(imgSightingInfoPicture);
+            btnEditSightingInfo.setText("SAVE");
         }
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
 
             Uri uri = data.getData();
             try {
                 imageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                Glide.with(SightingInfoActivity.this).load(uri).override(width,333).centerCrop().into(imgSightingInfoPicture);
+                Glide.with(SightingInfoActivity.this).load(uri).override(width,Utility.convertDPItoDevicePixel(this, 250)).centerCrop().into(imgSightingInfoPicture);
+                btnEditSightingInfo.setText("SAVE");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -190,6 +238,7 @@ public class SightingInfoActivity extends AppCompatActivity {
             treeLatitude = data.getDoubleExtra("Tree Latitude", 0.0);
             treeLongitude = data.getDoubleExtra("Tree Longitude", 0.0);
             txtSightingInfoLocation.setText(treeLocation);
+            btnEditSightingInfo.setText("SAVE");
         }
     }
 
@@ -205,7 +254,7 @@ public class SightingInfoActivity extends AppCompatActivity {
         display.getSize(size);
         final int width = size.x;
         if(Utility.findSightingInfoGivenID(sightingID, DBContract.COLUMN_SIGHTING_PICTURE) != null)
-            Picasso.with(SightingInfoActivity.this).load(new File(Utility.findSightingInfoGivenID(sightingID, DBContract.COLUMN_SIGHTING_PICTURE))).centerCrop().resize(width, 333).into(imgSightingInfoPicture); //load picture using Picasso library
+            Picasso.with(SightingInfoActivity.this).load(new File(Utility.findSightingInfoGivenID(sightingID, DBContract.COLUMN_SIGHTING_PICTURE))).centerCrop().resize(width, Utility.convertDPItoDevicePixel(this, 250)).into(imgSightingInfoPicture); //load picture using Picasso library
         else
             registerForContextMenu(imgSightingInfoPicture);
     }
@@ -229,6 +278,11 @@ public class SightingInfoActivity extends AppCompatActivity {
         }
         else if(item.getItemId() == R.id.menuIdentification) {
             Intent intent = new Intent(SightingInfoActivity.this, IdentificationActivity.class);
+            startActivity(intent);
+        }
+        else if(item.getItemId() == R.id.menuFavourite) {
+            Intent intent = new Intent(SightingInfoActivity.this, ListActivity.class);
+            intent.putExtra("FromHomePage", "homepage");
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
@@ -268,6 +322,51 @@ public class SightingInfoActivity extends AppCompatActivity {
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
+    }
+    public Bitmap takeScreenshot() {
+        View rootView = findViewById(android.R.id.content).getRootView();
+        rootView.setDrawingCacheEnabled(true);
+        return rootView.getDrawingCache();
+    }
+    public void saveBitmap(Bitmap bitmap) throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+        Uri photoURI = FileProvider.getUriForFile(SightingInfoActivity.this,
+                "com.example.android.fileprovider",
+                image);
+        screenShotImagePath = image.getAbsolutePath();
+        FileOutputStream fos;
+        try {
+            fos = new FileOutputStream(screenShotImagePath);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, fos);
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
+        }
+    }
+
+    private void shareImage(){
+        File f = new File(screenShotImagePath);
+        Uri contentUri = Uri.fromFile(f);
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.setType("image/*");
+        String shareBody = "New sighting!";
+        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "New Sighting with nztree.app");
+        intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+        intent.putExtra(Intent.EXTRA_STREAM, contentUri);
+        try {
+            startActivity(Intent.createChooser(intent, "Share via"));
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "No App Available", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

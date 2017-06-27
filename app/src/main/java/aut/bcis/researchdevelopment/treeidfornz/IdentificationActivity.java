@@ -97,8 +97,7 @@ public class IdentificationActivity extends AppCompatActivity {
         radSmooth = (CheckBox) findViewById(R.id.radSmooth);
         radTrunkTextureNotsure = (CheckBox) findViewById(R.id.radNotSureTrunkTexture);
         btnSubmit = (Button) findViewById(R.id.btnSubmit);
-        btnSubmit.setText("SUBMIT [" + Utility.countAllTrees() + "]");
-        submitLayout = (RelativeLayout) findViewById(R.id.submitLayout);
+         submitLayout = (RelativeLayout) findViewById(R.id.submitLayout);
         submitLayout.bringToFront();
 
         radGroupLeafArrangement.post(new Runnable() {
@@ -124,12 +123,6 @@ public class IdentificationActivity extends AppCompatActivity {
                 radGroupLeafTip.setLayoutParams(groupLayoutParams);
                 radGroupLeafShape.setLayoutParams(groupLayoutParams);
                 radGroupTrunkTexture.setLayoutParams(lastLayoutParams);
-                Toast.makeText(IdentificationActivity.this, radLeafArrangementNotsure.getWidth() + "", Toast.LENGTH_SHORT).show();
-                Toast.makeText(IdentificationActivity.this, radAlternate.getWidth() + "", Toast.LENGTH_SHORT).show();
-                Toast.makeText(IdentificationActivity.this, radOpposite.getWidth() + "", Toast.LENGTH_SHORT).show();
-                Toast.makeText(IdentificationActivity.this, radWhorled.getWidth() + "", Toast.LENGTH_SHORT).show();
-
-
             }
         });
         radGroupFlowerColour.post(new Runnable() {
@@ -466,6 +459,11 @@ public class IdentificationActivity extends AppCompatActivity {
             Intent intent = new Intent(IdentificationActivity.this, IdentificationActivity.class);
             startActivity(intent);
         }
+        else if(item.getItemId() == R.id.menuFavourite) {
+            Intent intent = new Intent(IdentificationActivity.this, ListActivity.class);
+            intent.putExtra("FromHomePage", "homepage");
+            startActivity(intent);
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -546,10 +544,10 @@ public class IdentificationActivity extends AppCompatActivity {
 
     private void updateCountNumber() {
         if(generateDynamicCountQuery().length() > START_CHAR_COUNT_POSITION_TO_DELETE) {
-            btnSubmit.setText(Utility.countTreeFound(generateDynamicCountQuery()) + " matches");
+            btnSubmit.setText("SHOW " + Utility.countTreeFound(generateDynamicCountQuery()) + " MATCHES");
         }
         else
-            btnSubmit.setText(Utility.countAllTrees() + " matches");
+            btnSubmit.setText("SHOW " + Utility.countAllTrees() + " MATCHES");
     }
 
     private String handleCountFlowerColour() {

@@ -25,10 +25,10 @@
     <ImageView
         android:id="@+id/imgSightingInfoPicture"
         android:layout_width="match_parent"
+        android:layout_height="250dp"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
-        app:srcCompat="@drawable/icon_camera"
-        android:layout_height="250dp" />
+        app:srcCompat="@drawable/icon_camera" />
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="vertical"
@@ -117,7 +117,7 @@
         <Button
             android:id="@+id/btnChangeSightingInfoLocation"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="30dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignTop="@+id/txtSightingInfoLocation"
@@ -125,6 +125,7 @@
             android:layout_marginRight="16dp"
             android:background="@drawable/shape_change_button"
             android:text="Change"
+            android:textAlignment="center"
             android:textAllCaps="false"
             android:textColor="#FF8C00" />
 
@@ -161,8 +162,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
+            android:inputType="text"
+            android:scrollHorizontally="false"
             android:background="@null"
+            android:imeOptions="actionDone"
             android:textAppearance="?android:attr/textAppearanceSmall"
+            android:maxLines="3"
             android:paddingLeft="16dp" />
 
         <Button
@@ -172,7 +177,8 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_gravity="bottom"
-            android:background="@drawable/shape_shadow_button"
+            android:layout_marginTop="10dp"
+            android:background="#519032"
             android:text="Edit"
             android:textColor="#FFFFFF" />
     </RelativeLayout>

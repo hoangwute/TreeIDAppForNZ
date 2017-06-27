@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:paddingLeft="16dp"
             android:text="Location"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@android:color/black" />
 
         <RelativeLayout
@@ -125,7 +125,7 @@
             android:paddingLeft="16dp"
             android:paddingTop="3dp"
             android:text="Note"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@android:color/black" />
 
 
@@ -141,6 +141,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:maxLines="3"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:scrollHorizontally="false"
             android:background="@null"
             android:paddingLeft="16dp" />
 
@@ -151,7 +156,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_gravity="bottom"
-            android:background="@drawable/shape_shadow_button"
+            android:background="#519032"
             android:text="Save"
             android:textColor="#FFFFFF" />
     </RelativeLayout>

@@ -1,58 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
 
-    <RadioGroup
-        android:id="@+id/groupIdentifiedRad"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="165dp"
-        android:background="#91B54D"
-        android:orientation="horizontal"
-        android:paddingBottom="15dp"
-        android:paddingLeft="20dp"
-        android:paddingTop="15dp"
-        android:paddingRight="20dp"
-        android:visibility="invisible">
 
-        <RadioButton
-            android:id="@+id/radIdentifiedEnglishName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:checked="true"
-            android:background="@drawable/selector_checkbox"
-            android:button="@null"
-            android:textColor="#000000"
-            android:textAlignment="center"
-            android:text="English Name" />
-
-        <RadioButton
-            android:id="@+id/radIdentifiedMaoriName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/selector_checkbox"
-            android:button="@null"
-            android:textColor="#ffffff"
-            android:textAlignment="center"
-            android:text="Maori Name" />
-
-        <RadioButton
-            android:id="@+id/radIdentifiedLatinName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/selector_checkbox"
-            android:button="@null"
-            android:textColor="#ffffff"
-            android:textAlignment="center"
-            android:text="Latin Name" />
-
-    </RadioGroup>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
@@ -81,17 +35,15 @@
             android:layout_height="wrap_content"
             android:background="#91B54D"
             android:orientation="horizontal"
-            android:paddingBottom="15dp"
-            android:paddingTop="15dp">
+            android:paddingBottom="10dp">
 
             <SearchView
                 android:id="@+id/listIdentifiedSearch"
                 android:layout_width="fill_parent"
                 android:layout_height="33dp"
                 android:background="@drawable/shape_searchbox"
-                android:iconifiedByDefault="false"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"></SearchView>
+                android:iconifiedByDefault="false">
+            </SearchView>
         </LinearLayout>
 
         <LinearLayout
@@ -103,9 +55,9 @@
             <CheckBox
                 android:id="@+id/chkIdentifiedFamily"
                 android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:layout_marginLeft="20dp"
+                android:layout_height="35dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="16dp"
                 android:background="@drawable/selector_checkbox"
                 android:button="@null"
                 android:text="Family"
@@ -115,8 +67,8 @@
             <CheckBox
                 android:id="@+id/chkIdentifiedStructuralClass"
                 android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
+                android:layout_height="35dp"
+                android:layout_marginBottom="10dp"
                 android:layout_marginRight="10dp"
                 android:background="@drawable/selector_checkbox"
                 android:button="@null"
@@ -127,8 +79,8 @@
             <CheckBox
                 android:id="@+id/chkIdentifiedFavourite"
                 android:layout_width="90dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
+                android:layout_height="35dp"
+                android:layout_marginBottom="10dp"
                 android:layout_marginRight="20dp"
                 android:background="@drawable/selector_favourite"
                 android:button="@null"
@@ -142,14 +94,60 @@
                 android:layout_weight="1" />
 
             <CheckBox
+                android:id="@+id/chkIdentifiedExpandSort"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/chkIdentifiedExpandSort"
-                android:paddingRight="20dp"
-                android:button="@drawable/icon_sort"
-                android:checked="false" />
+                android:button="@drawable/icon_en"
+                android:checked="false"
+                android:paddingRight="4dp" />
 
         </LinearLayout>
+
+        <RadioGroup
+            android:id="@+id/groupIdentifiedRad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#91B54D"
+            android:orientation="horizontal"
+            android:paddingBottom="10dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="10dp"
+            android:visibility="gone">
+
+            <RadioButton
+                android:id="@+id/radIdentifiedEnglishName"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_weight="1"
+                android:background="@drawable/selector_checkbox"
+                android:button="@null"
+                android:checked="true"
+                android:text="English Name"
+                android:textAlignment="center"
+                android:textColor="#000000" />
+
+            <RadioButton
+                android:id="@+id/radIdentifiedMaoriName"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_weight="1"
+                android:background="@drawable/selector_checkbox"
+                android:button="@null"
+                android:text="Maori Name"
+                android:textAlignment="center"
+                android:textColor="#ffffff" />
+
+            <RadioButton
+                android:id="@+id/radIdentifiedLatinName"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_weight="1"
+                android:background="@drawable/selector_checkbox"
+                android:button="@null"
+                android:text="Latin Name"
+                android:textAlignment="center"
+                android:textColor="#ffffff" />
+        </RadioGroup>
 
         <ListView
             android:layout_width="match_parent"
@@ -158,4 +156,4 @@
             android:id="@+id/lvIdentifiedTreeList" />
 
     </LinearLayout>
-</FrameLayout>
+</LinearLayout>

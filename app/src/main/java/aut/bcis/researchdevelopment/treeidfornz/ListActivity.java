@@ -3,11 +3,13 @@ package aut.bcis.researchdevelopment.treeidfornz;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,7 +25,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -76,11 +77,13 @@ public class ListActivity extends AppCompatActivity {
         radMaoriName = (RadioButton) findViewById(R.id.radMaoriName);
         if (favouriteSelected) {
             displayFavouriteTreeBasedOnCheckedBox();
+            chkFavourite.setChecked(true);
+            chkFavourite.setTextColor(Color.BLACK);
         }
         else
             displayTreeBasedOnCheckedBox();
         groupRad = (RadioGroup) findViewById(R.id.groupRad);
-        groupRad.bringToFront();
+//        groupRad.bringToFront();
         Intent intent = getIntent();
         String homePage = intent.getStringExtra("FromHomePage");
         if(homePage != null && homePage.equals("homepage")) {
@@ -189,12 +192,12 @@ public class ListActivity extends AppCompatActivity {
                     animation.setAnimationListener(new Animation.AnimationListener() {
                         @Override
                         public void onAnimationStart(Animation animation) {
-
+                            groupRad.setVisibility(View.GONE);
                         }
 
                         @Override
                         public void onAnimationEnd(Animation animation) {
-                            groupRad.setVisibility(View.INVISIBLE);
+
                         }
 
                         @Override
@@ -236,6 +239,7 @@ public class ListActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
                     radEnglishName.setTextColor(Color.BLACK);
+                    chkExpandSort.setButtonDrawable(R.drawable.icon_en);
                     displayAccordingToRadButton(DBContract.COLUMN_COMMON_NAME);
                 }
                 else {
@@ -248,6 +252,7 @@ public class ListActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
                     radMaoriName.setTextColor(Color.BLACK);
+                    chkExpandSort.setButtonDrawable(R.drawable.icon_ma);
                     displayAccordingToRadButton(DBContract.COLUMN_MAORI_NAME);
                 }
                 else {
@@ -260,6 +265,7 @@ public class ListActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
                     radLatinName.setTextColor(Color.BLACK);
+                    chkExpandSort.setButtonDrawable(R.drawable.icon_la);
                     displayAccordingToRadButton(DBContract.COLUMN_LATIN_NAME);
                 }
                 else {
@@ -288,6 +294,11 @@ public class ListActivity extends AppCompatActivity {
         }
         else if(item.getItemId() == R.id.menuIdentification) {
             Intent intent = new Intent(ListActivity.this, IdentificationActivity.class);
+            startActivity(intent);
+        }
+        else if(item.getItemId() == R.id.menuFavourite) {
+            Intent intent = new Intent(ListActivity.this, ListActivity.class);
+            intent.putExtra("FromHomePage", "homepage");
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);

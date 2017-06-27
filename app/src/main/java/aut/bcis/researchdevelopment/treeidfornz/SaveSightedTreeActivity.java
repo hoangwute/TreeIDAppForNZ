@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -47,12 +46,10 @@ import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -82,10 +79,8 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
     private Bitmap imageBitmap;
     private ProgressDialog imageDialog;
     private int width;
+    private int height;
     private String mCurrentPhotoPath;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +107,8 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
         txtSavedTreeLatinName = (TextView) findViewById(R.id.txtSavedTreeLatinName);
         txtSaveSightingLatLngState = (TextView) findViewById(R.id.txtSaveLatLngState);
         editTxtSightingNote = (EditText) findViewById(R.id.editTxtSightingNote);
+        editTxtSightingNote.setHorizontallyScrolling(false); //multi-line edit text
+        editTxtSightingNote.setMaxLines(Integer.MAX_VALUE);
         imgSightingPicture = (ImageView) findViewById(R.id.btnTakePicture);
         registerForContextMenu(imgSightingPicture);
         //-----------------------------------------------------------------------------------------------
@@ -133,7 +130,7 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
         txtSavedTreeLatinName.setText(treeLatinName);
         intent.getStringExtra("Tree Location");
         final LocationManager manager = (LocationManager) getSystemService(SaveSightedTreeActivity.LOCATION_SERVICE);
-        if(Utility.isNetworkAvailable(SaveSightedTreeActivity.this) && manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        if(Utility.isNetworkAvailable(this) && manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             getDeviceLocation();
             getCurrentLagLng();
         }
@@ -145,6 +142,7 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
         Point size = new Point();
         display.getSize(size);
         width = size.x;
+        height = size.y;
     }
 
     private void addEvents() {
@@ -191,7 +189,7 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
                 String sightingDate = Utility.getSightingDate();
                 MainActivity.database = openOrCreateDatabase(DBInitialization.DATABASE_NAME, MODE_PRIVATE, null);
                 Cursor cursor = database.rawQuery("INSERT INTO " + DBContract.TABLE_SIGHTING + "(CommonName, LatinName, Date, Location, Note, MaoriName, TimeStamp, Latitude, Longitude) " +
-                        "VALUES (\"" + treeCommonName + "\", '" + treeLatinName + "', '" + sightingDate+ "', '" + location + "', '" + note + "', '" + treeMaoriName + "', '"
+                        "VALUES (\"" + treeCommonName + "\", '" + treeLatinName + "', '" + sightingDate + "', \"" + location + "\", \"" + note + "\", '" + treeMaoriName + "', '"
                         + timeStamp + "', " + treeLatitude + ", " + treeLongitude + ")" , null);
                 cursor.moveToFirst();
                 cursor.close();
@@ -217,13 +215,14 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Glide.with(SaveSightedTreeActivity.this).load(contentUri).override(width,333).centerCrop().into(imgSightingPicture);
+
+            Glide.with(SaveSightedTreeActivity.this).load(contentUri).override(width,Utility.convertDPItoDevicePixel(SaveSightedTreeActivity.this, 250)).centerCrop().into(imgSightingPicture);
         }
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri uri = data.getData();
             try {
                 imageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                Glide.with(SaveSightedTreeActivity.this).load(uri).override(width,333).centerCrop().into(imgSightingPicture);
+                Glide.with(SaveSightedTreeActivity.this).load(uri).override(width,Utility.convertDPItoDevicePixel(this, 250)).centerCrop().into(imgSightingPicture);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -248,8 +247,7 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
             }
         })
                 .setTitle("Phone is not connected to the internet")
-                .setMessage("Please connect your phone to the internet. It is also recommended to turn on the GPS so the application" +
-                        "can access your current location.");
+                .setMessage("Please connect your phone to the internet.");
         AlertDialog diag = builder.create();
         diag.show();
     }
@@ -350,18 +348,19 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
             @SuppressWarnings("MissingPermission")
             PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
                     .getCurrentPlace(mGoogleApiClient, null);
-            result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
-                @Override
-                public void onResult(@NonNull PlaceLikelihoodBuffer likelyPlaces) {
-                    for (PlaceLikelihood placeLikelihood : likelyPlaces) {
-                        mLikelyPlaceLatLngs[0] = placeLikelihood.getPlace().getLatLng();
-                        break;
+                result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
+                    @Override
+                    public void onResult(@NonNull PlaceLikelihoodBuffer likelyPlaces) {
+                        for (PlaceLikelihood placeLikelihood : likelyPlaces) {
+                            mLikelyPlaceLatLngs[0] = placeLikelihood.getPlace().getLatLng();
+                            break;
+                        }
+                        // Release the place likelihood buffer, to avoid memory leaks.
+                        if (mLikelyPlaceLatLngs[0]!= null)
+                            txtSaveSightingLatLngState.setText(mLikelyPlaceLatLngs[0].toString());
+                        likelyPlaces.release();
                     }
-                    // Release the place likelihood buffer, to avoid memory leaks.
-                    txtSaveSightingLatLngState.setText(mLikelyPlaceLatLngs[0].toString());
-                    likelyPlaces.release();
-                }
-            });
+                });
         }
     }
 
@@ -398,6 +397,11 @@ public class SaveSightedTreeActivity extends AppCompatActivity implements Google
         }
         else if(item.getItemId() == R.id.menuIdentification) {
             Intent intent = new Intent(SaveSightedTreeActivity.this, IdentificationActivity.class);
+            startActivity(intent);
+        }
+        else if(item.getItemId() == R.id.menuFavourite) {
+            Intent intent = new Intent(SaveSightedTreeActivity.this, ListActivity.class);
+            intent.putExtra("FromHomePage", "homepage");
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);

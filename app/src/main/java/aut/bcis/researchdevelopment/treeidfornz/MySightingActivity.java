@@ -112,6 +112,11 @@ public class MySightingActivity extends AppCompatActivity {
             Intent intent = new Intent(MySightingActivity.this, IdentificationActivity.class);
             startActivity(intent);
         }
+        else if(item.getItemId() == R.id.menuFavourite) {
+            Intent intent = new Intent(MySightingActivity.this, ListActivity.class);
+            intent.putExtra("FromHomePage", "homepage");
+            startActivity(intent);
+        }
         return super.onOptionsItemSelected(item);
     }
 

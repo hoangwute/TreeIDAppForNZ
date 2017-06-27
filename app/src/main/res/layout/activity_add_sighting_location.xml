@@ -37,7 +37,7 @@
             android:id="@+id/treeDisplay"
             android:layout_width="fill_parent"
             android:layout_height="33dp"
-            android:background="@drawable/shape_searchbox"
+            android:background="@drawable/shape_roundsearchbox"
             android:iconifiedByDefault="false"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"></SearchView>

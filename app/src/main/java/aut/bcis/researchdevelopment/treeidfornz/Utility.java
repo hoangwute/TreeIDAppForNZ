@@ -1,6 +1,8 @@
 package aut.bcis.researchdevelopment.treeidfornz;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,7 +13,10 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.SpannableString;
 import android.text.style.LeadingMarginSpan;
+import android.util.TypedValue;
 import android.view.Display;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -212,6 +217,24 @@ public class Utility {
         return id;
     }
 
+    public static int convertDPItoDevicePixel(Context context, int dp) {
+        Resources r = context.getResources();
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics());
+        int pixels = Math.round(px);
+        return pixels;
+    }
+
+    public static void hideKeyboard(Activity activity) { //only work if called from an activity
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
     public static String getSystemDate() {
         Calendar cal = Calendar.getInstance();
         Date fullDate = cal.getTime();
@@ -276,40 +299,14 @@ public class Utility {
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
+
+
     public static SpannableString createIndentedText(String text, int marginFirstLine, int marginNextLines) {
         SpannableString result=new SpannableString(text);
         result.setSpan(new LeadingMarginSpan.Standard(marginFirstLine, marginNextLines),0,text.length(),0);
         return result;
     }
 
-
-    public static Bitmap decodeFile(File f){
-        try {
-            //decode image size
-            BitmapFactory.Options o = new BitmapFactory.Options();
-            o.inJustDecodeBounds = true;
-            BitmapFactory.decodeStream(new FileInputStream(f),null,o);
-            //Find the correct scale value. It should be the power of 2.
-            final int REQUIRED_SIZE=70;
-            int width_tmp=o.outWidth, height_tmp=o.outHeight;
-            int scale=1;
-            while(true){
-                if(width_tmp/2<REQUIRED_SIZE || height_tmp/2<REQUIRED_SIZE)
-                    break;
-                width_tmp/=2;
-                height_tmp/=2;
-                scale++;
-            }
-
-            //decode with inSampleSize
-            BitmapFactory.Options o2 = new BitmapFactory.Options();
-            o2.inSampleSize=scale;
-            return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
-        } catch (FileNotFoundException e) {
-
-        }
-        return null;
-    }
 
     public static HashMap<Integer, Integer> mainImageMap() {
         HashMap<Integer, Integer> imageMap = new HashMap<Integer, Integer>();
